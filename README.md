@@ -53,5 +53,3 @@ DemoGPT is an open-source project licensed under [MIT License](LICENSE).
 ---
 
 For any issues, questions, or comments, please feel free to contact us or open an issue. We appreciate your feedback to make DemoGPT better.
-
-You can copy the above markdown text and save it as README.md in your project root directory.
