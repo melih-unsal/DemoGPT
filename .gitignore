@@ -61,6 +61,10 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
+LangChain.ipynb
+test.py
+src/.chroma/**/*
+
 # Flask stuff:
 instance/
 .webassets-cache
@@ -127,6 +131,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+src/.env
 
 # Spyder project settings
 .spyderproject

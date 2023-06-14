@@ -1,0 +1,416 @@
+<small>Asking GPT-4 to perform a simple calculation often results in an incorrect answer. A simple calculator can perform this same calculation without issue.</small></p><p>According to a simple calculator, the answer is <code>19.357</code>, rounded to three decimal places. Isn’t it fascinating that a simple calculator program can do this, but an incredibly sophisticated AI engine fails?</p><p>That’s not all. If I ask GPT-4, “How do I use the LLMChain in LangChain?” it struggles again:</p><p><img loading="lazy" src="./langchain5_files/langchain-agents-2.png" alt="GPT-4 cannot answer questions about recent events, technologies, etc." width="100%">
+<small>The LangChain spoken about here isn’t the LangChain we know. It’s an old blockchain project. The response is both outdated and full of false information.</small></p><p>It’s true that LangChain <em>was</em> a blockchain project <sup>[1] [2]</sup>. Yet, there didn’t seem to be any “LLMChain” component nor “LANG tokens” — these are both hallucinations.</p><p>The reason GPT-4 is unable to tell us about LangChain is that it has no connection to the outside world. Its only knowledge is what it captured from its training data, which cuts off in late 2021.</p><p>With significant weaknesses in today’s generation of LLMs, we must find solutions to these problems. One “suite” of potential solutions comes in the form of “agents”.</p><p>These agents don’t just solve the problems we saw above but <em>many</em> others. In fact, adding agents has an almost unlimited upside in their LLM-enhancing abilities.</p><p>In this chapter, we’ll talk about agents. We’ll learn what they are, how they work, and how to use them within the LangChain library to superpower our LLMs.</p><div style="left:0;width:100%;height:0;position:relative;padding-bottom:56.25%"><iframe style="border:1;top:0;left:0;width:100%;height:100%;position:absolute" src="./langchain5_files/jSP-gSEyVeI.html" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div><hr><h2 id="what-are-agents">What are Agents?</h2><p>We can think of agents as enabling “tools” for LLMs. Like how a human would use a calculator for maths or perform a Google search for information — agents allow an LLM to do the same thing.</p><p><img loading="lazy" src="./langchain5_files/langchain-agents-3.png" alt="LangChain LLM agents" width="100%"></p><p><small>Agents are LLMs that can use tools like calculators, search, or executing code.</small></p><p>Using agents, an LLM can write and execute Python code. It can search for information and even query a SQL database.</p><p>Let’s take a look at a straightforward example of this. We will begin with a “zero-shot” agent (more on this later) that allows our LLM to use a calculator.</p><h3 id="agents-and-tools">Agents and Tools</h3><p>To use agents, we require three things:</p><ul><li>A base LLM,</li><li>A tool that we will be interacting with,</li><li>An agent to control the interaction.</li></ul><p>Let’s start by installing <code>langchain</code> and initializing our base LLM.</p><div class="highlight"><div class="code-toolbar"><pre class="language-python line-numbers" tabindex="0"><code class="language-python" data-lang="python"><span class="token keyword">from</span> langchain <span class="token keyword">import</span> OpenAI
+
+llm <span class="token operator">=</span> OpenAI<span class="token punctuation">(</span>
+    openai_api_key<span class="token operator">=</span><span class="token string">"OPENAI_API_KEY"</span><span class="token punctuation">,</span>
+    temperature<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span>
+    model_name<span class="token operator">=</span><span class="token string">"text-davinci-003"</span>
+<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>Now to initialize the calculator tool. When initializing tools, we either create a custom tool or load a prebuilt tool. In either case, the “tool” is a <a href="https://github.com/pinecone-io/examples/blob/master/generation/langchain/handbook/02-langchain-chains.ipynb">utility chain</a> given a tool <code>name</code> and <code>description</code>.</p><p>For example, we could create a new calculator tool from the existing <code>llm_math</code> chain:</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[3]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python"><span class="token keyword">from</span> langchain<span class="token punctuation">.</span>chains <span class="token keyword">import</span> LLMMathChain
+<span class="token keyword">from</span> langchain<span class="token punctuation">.</span>agents <span class="token keyword">import</span> Tool
+
+llm_math <span class="token operator">=</span> LLMMathChain<span class="token punctuation">(</span>llm<span class="token operator">=</span>llm<span class="token punctuation">)</span>
+
+<span class="token comment"># initialize the math tool</span>
+math_tool <span class="token operator">=</span> Tool<span class="token punctuation">(</span>
+    name<span class="token operator">=</span><span class="token string">'Calculator'</span><span class="token punctuation">,</span>
+    func<span class="token operator">=</span>llm_math<span class="token punctuation">.</span>run<span class="token punctuation">,</span>
+    description<span class="token operator">=</span><span class="token string">'Useful for when you need to answer questions about math.'</span>
+<span class="token punctuation">)</span>
+<span class="token comment"># when giving tools to LLM, we must pass as list of tools</span>
+tools <span class="token operator">=</span> <span class="token punctuation">[</span>math_tool<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-input"><div class="exec-count">In[4]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">tools<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>name<span class="token punctuation">,</span> tools<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>description<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[4]:</div><div class="output"><pre><code>('Calculator', 'Useful for when you need to answer questions about math.')</code></pre></div></div></div><p>We must follow this process when using custom tools. However, a prebuilt <code>llm_math</code> tool does the same thing. So, we could do the same as above like so:</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[5]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python"><span class="token keyword">from</span> langchain<span class="token punctuation">.</span>agents <span class="token keyword">import</span> load_tools
+
+tools <span class="token operator">=</span> load_tools<span class="token punctuation">(</span>
+    <span class="token punctuation">[</span><span class="token string">'llm-math'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    llm<span class="token operator">=</span>llm
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-input"><div class="exec-count">In[6]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">tools<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>name<span class="token punctuation">,</span> tools<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>description<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[6]:</div><div class="output"><pre><code>('Calculator', 'Useful for when you need to answer questions about math.')</code></pre></div></div></div><p>Naturally, we can only follow this second approach <em>if</em> a prebuilt tool for our use case exists.</p><p>We now have the LLM and tools but no <em>agent</em>. To initialize a simple agent, we can do the following:</p><div class="highlight"><div class="code-toolbar"><pre class="language-python line-numbers" tabindex="0"><code class="language-python" data-lang="python"><span class="token keyword">from</span> langchain<span class="token punctuation">.</span>agents <span class="token keyword">import</span> initialize_agent
+
+zero_shot_agent <span class="token operator">=</span> initialize_agent<span class="token punctuation">(</span>
+    agent<span class="token operator">=</span><span class="token string">"zero-shot-react-description"</span><span class="token punctuation">,</span>
+    tools<span class="token operator">=</span>tools<span class="token punctuation">,</span>
+    llm<span class="token operator">=</span>llm<span class="token punctuation">,</span>
+    verbose<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    max_iterations<span class="token operator">=</span><span class="token number">3</span>
+<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>The <em>agent</em> used here is a <code>"zero-shot-react-description"</code> agent. <em>Zero-shot</em> means the agent functions on the current action only — it has <em>no</em> memory. It uses the <em>ReAct</em> framework to decide which tool to use, based solely on the tool’s <code>description</code>.</p><hr><p><em>We won’t discuss the <strong>ReAct framework</strong> in this chapter, but you can think of it as if an LLM could cycle through <strong>Re</strong>asoning and <strong>Act</strong>ion steps. Enabling a multi-step process for identifying answers.</em></p><div class="shortcode-form"><form class="form js-form" data-ga="Newsletter" data-id="74adb696-e56a-47b3-9911-f249db88a172" data-portal="8231564" method="post" name="newsletter"><input type="hidden" name="form-name" value="newsletter"><fieldset><div hidden=""><label>Don't fill this out if you're human: <input name="bot-field"></label></div><label class="shortcode-form-label" for="newsletter-email">ReAct deserves an article in itself. If you'd like to be updated when it comes, you can subscribe to our newsletter here!</label>
+<span class="form-group"><input type="email" name="email" id="newsletter-email" placeholder="Email address..." required="">
+<button class="btn" type="submit">Submit</button></span>
+<input type="hidden" name="lifecyclestage" id="lifecyclestage" value="subscriber"><div class="form__info"><div class="js-form-ok" role="alert" hidden="">Subscribed successfully.</div><div class="js-form-not-ok" role="alert" hidden="">Failed to submit.</div></div></fieldset></form></div><hr><p>With our agent initialized, we can begin using it. Let’s try a few prompts and see how the agent responds.</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[8]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">zero_shot_agent<span class="token punctuation">(</span><span class="token string">"what is (4.5*2.1)^2.2?"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[8]:</div><div class="output"><pre><code>
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new AgentExecutor chain...[0m
+</code></pre><pre><code>[32;1m[1;3m I need to calculate this expression
+</code></pre><pre><code>Action: Calculator
+</code></pre><pre><code>Action Input: (4.5*2.1)^2.2[0m
+</code></pre><pre><code>Observation: [36;1m[1;3mAnswer: 139.94261298333066
+</code></pre><pre><code>[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m I now know the final answer
+</code></pre><pre><code>Final Answer: 139.94261298333066[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre><pre><code>{'input': 'what is (4.5*2.1)^2.2?', 'output': '139.94261298333066'}</code></pre></div></div><div class="notebook-cell notebook-input"><div class="exec-count">In[9]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python"><span class="token punctuation">(</span><span class="token number">4.5</span><span class="token operator">*</span><span class="token number">2.1</span><span class="token punctuation">)</span><span class="token operator">**</span><span class="token number">2.2</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[9]:</div><div class="output"><pre><code>139.94261298333066</code></pre></div></div></div><p>The answer here is correct. Let’s try another:</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[10]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">zero_shot_agent<span class="token punctuation">(</span><span class="token string">"if Mary has four apples and Giorgio brings two and a half apple "</span>
+                <span class="token string">"boxes (apple box contains eight apples), how many apples do we "</span>
+                <span class="token string">"have?"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[10]:</div><div class="output"><pre><code>
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new AgentExecutor chain...[0m
+</code></pre><pre><code>[32;1m[1;3m I need to figure out how many apples are in the boxes
+</code></pre><pre><code>Action: Calculator
+</code></pre><pre><code>Action Input: 8 * 2.5[0m
+</code></pre><pre><code>Observation: [36;1m[1;3mAnswer: 20.0
+</code></pre><pre><code>[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m I need to add the apples Mary has to the apples in the boxes
+</code></pre><pre><code>Action: Calculator
+</code></pre><pre><code>Action Input: 4 + 20.0[0m
+</code></pre><pre><code>Observation: [36;1m[1;3mAnswer: 24.0
+</code></pre><pre><code>[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m I now know the final answer
+</code></pre><pre><code>Final Answer: We have 24 apples.[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre><pre><code>{'input': 'if Mary has four apples and Giorgio brings two and a half apple boxes (apple box contains eight apples), how many apples do we have?',
+</code></pre><pre><code> 'output': 'We have 24 apples.'}</code></pre></div></div></div><p>Looks great! But what if we decide to ask a non-math question? What if we ask an easy common knowledge question?</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[11]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">zero_shot_agent<span class="token punctuation">(</span><span class="token string">"what is the capital of Norway?"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[11]:</div><div class="output"><pre><code>
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new AgentExecutor chain...[0m
+</code></pre><pre><code>[32;1m[1;3m I need to look up the answer
+</code></pre><pre><code>Action: Look up
+</code></pre><pre><code>Action Input: Capital of Norway[0m
+</code></pre><pre><code>Observation: Look up is not a valid tool, try another one.
+</code></pre><pre><code>Thought:[32;1m[1;3m I need to find the answer using a tool
+</code></pre><pre><code>Action: Calculator
+</code></pre><pre><code>Action Input: N/A[0m</code></pre></div></div></div><p>We run into an error. The problem here is that the agent keeps trying to use a tool. Yet, our agent contains only one tool — the calculator.</p><p>Fortunately, we can fix this problem by giving our agent more tools! Let’s add a plain and simple LLM tool:</p><div class="highlight"><div class="code-toolbar"><pre class="language-python line-numbers" tabindex="0"><code class="language-python" data-lang="python"><span class="token keyword">from</span> langchain<span class="token punctuation">.</span>prompts <span class="token keyword">import</span> PromptTemplate
+<span class="token keyword">from</span> langchain<span class="token punctuation">.</span>chains <span class="token keyword">import</span> LLMChain
+
+prompt <span class="token operator">=</span> PromptTemplate<span class="token punctuation">(</span>
+    input_variables<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">"query"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    template<span class="token operator">=</span><span class="token string">"{query}"</span>
+<span class="token punctuation">)</span>
+
+llm_chain <span class="token operator">=</span> LLMChain<span class="token punctuation">(</span>llm<span class="token operator">=</span>llm<span class="token punctuation">,</span> prompt<span class="token operator">=</span>prompt<span class="token punctuation">)</span>
+
+<span class="token comment"># initialize the LLM tool</span>
+llm_tool <span class="token operator">=</span> Tool<span class="token punctuation">(</span>
+    name<span class="token operator">=</span><span class="token string">'Language Model'</span><span class="token punctuation">,</span>
+    func<span class="token operator">=</span>llm_chain<span class="token punctuation">.</span>run<span class="token punctuation">,</span>
+    description<span class="token operator">=</span><span class="token string">'use this tool for general purpose queries and logic'</span>
+<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>With this, we have a new general-purpose LLM tool. All we do is add it to the <code>tools</code> list and reinitialize the agent:</p><div class="highlight"><div class="code-toolbar"><pre class="language-python line-numbers" tabindex="0"><code class="language-python" data-lang="python">tools<span class="token punctuation">.</span>append<span class="token punctuation">(</span>llm_tool<span class="token punctuation">)</span>
+
+<span class="token comment"># reinitialize the agent</span>
+zero_shot_agent <span class="token operator">=</span> initialize_agent<span class="token punctuation">(</span>
+    agent<span class="token operator">=</span><span class="token string">"zero-shot-react-description"</span><span class="token punctuation">,</span>
+    tools<span class="token operator">=</span>tools<span class="token punctuation">,</span>
+    llm<span class="token operator">=</span>llm<span class="token punctuation">,</span>
+    verbose<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    max_iterations<span class="token operator">=</span><span class="token number">3</span>
+<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>Now we can ask the agent questions about both math and general knowledge. Let’s try the following:</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[15]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">zero_shot_agent<span class="token punctuation">(</span><span class="token string">"what is the capital of Norway?"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[15]:</div><div class="output"><pre><code>
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new AgentExecutor chain...[0m
+</code></pre><pre><code>[32;1m[1;3m I need to find out what the capital of Norway is
+</code></pre><pre><code>Action: Language Model
+</code></pre><pre><code>Action Input: What is the capital of Norway?[0m
+</code></pre><pre><code>Observation: [33;1m[1;3m
+</code></pre><pre><code>
+</code></pre><pre><code>The capital of Norway is Oslo.[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m I now know the final answer
+</code></pre><pre><code>Final Answer: The capital of Norway is Oslo.[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre><pre><code>{'input': 'what is the capital of Norway?',
+</code></pre><pre><code> 'output': 'The capital of Norway is Oslo.'}</code></pre></div></div></div><p>Now we get the correct answer! We can ask the first question:</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[16]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">zero_shot_agent<span class="token punctuation">(</span><span class="token string">"what is (4.5*2.1)^2.2?"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[16]:</div><div class="output"><pre><code>
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new AgentExecutor chain...[0m
+</code></pre><pre><code>[32;1m[1;3m I need to calculate this expression
+</code></pre><pre><code>Action: Calculator
+</code></pre><pre><code>Action Input: (4.5*2.1)^2.2[0m
+</code></pre><pre><code>Observation: [36;1m[1;3mAnswer: 139.94261298333066
+</code></pre><pre><code>[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m I now know the final answer
+</code></pre><pre><code>Final Answer: 139.94261298333066[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre><pre><code>{'input': 'what is (4.5*2.1)^2.2?', 'output': '139.94261298333066'}</code></pre></div></div></div><p>And the agent understands it must refer to the calculator tool, which it does — giving us the correct answer.</p><p>With that complete, we should understand the workflow in designing and prompting agents with different tools. Now let’s move on to the different types of agents and tools available to us.</p><h2 id="agent-types">Agent Types</h2><p>LangChain offers several types of agents. In this section, we’ll examine a few of the most common.</p><h3 id="zero-shot-react">Zero Shot ReAct</h3><p>We’ll start with the agent we saw earlier, the <code>zero-shot-react-description</code> agent.</p><p>As described earlier, we use this agent to perform <em>“zero-shot”</em> tasks on some input. That means the agent considers <em>one single</em> interaction with the agent — it will have no <em>memory</em>.</p><p>Let’s create a <code>tools</code> list to use with the agent. We will include an <code>llm-math</code> tool and a SQL DB tool that we <a href="https://github.com/pinecone-io/examples/blob/master/generation/langchain/handbook/06-langchain-agents.ipynb">defined here</a>.</p><div class="highlight"><div class="code-toolbar"><pre class="language-python line-numbers" tabindex="0"><code class="language-python" data-lang="python">tools <span class="token operator">=</span> load_tools<span class="token punctuation">(</span>
+    <span class="token punctuation">[</span><span class="token string">"llm-math"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> 
+    llm<span class="token operator">=</span>llm
+<span class="token punctuation">)</span>
+
+<span class="token comment"># add our custom SQL db tool</span>
+tools<span class="token punctuation">.</span>append<span class="token punctuation">(</span>sql_tool<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>We initialize the <code>zero-shot-react-description</code> agent like so:</p><div class="highlight"><div class="code-toolbar"><pre class="language-python line-numbers" tabindex="0"><code class="language-python" data-lang="python"><span class="token keyword">from</span> langchain<span class="token punctuation">.</span>agents <span class="token keyword">import</span> initialize_agent
+
+zero_shot_agent <span class="token operator">=</span> initialize_agent<span class="token punctuation">(</span>
+    agent<span class="token operator">=</span><span class="token string">"zero-shot-react-description"</span><span class="token punctuation">,</span> 
+    tools<span class="token operator">=</span>tools<span class="token punctuation">,</span> 
+    llm<span class="token operator">=</span>llm<span class="token punctuation">,</span>
+    verbose<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    max_iterations<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>To give some context on the SQL DB tool, we will be using it to query a “stocks database” that looks like this:</p><table><thead><tr><th>obs_id</th><th>stock_ticker</th><th>price</th><th>data</th></tr></thead><tbody><tr><td>1</td><td>‘ABC’</td><td>200</td><td>1 Jan 23</td></tr><tr><td>2</td><td>‘ABC’</td><td>208</td><td>2 Jan 23</td></tr><tr><td>3</td><td>‘ABC’</td><td>232</td><td>3 Jan 23</td></tr><tr><td>4</td><td>‘ABC’</td><td>225</td><td>4 Jan 23</td></tr><tr><td>5</td><td>‘ABC’</td><td>226</td><td>5 Jan 23</td></tr><tr><td>6</td><td>‘XYZ’</td><td>810</td><td>1 Jan 23</td></tr><tr><td>7</td><td>‘XYZ’</td><td>803</td><td>2 Jan 23</td></tr><tr><td>8</td><td>‘XYZ’</td><td>798</td><td>3 Jan 23</td></tr><tr><td>9</td><td>‘XYZ’</td><td>795</td><td>4 Jan 23</td></tr><tr><td>10</td><td>‘XYZ’</td><td>791</td><td>5 Jan 23</td></tr></tbody></table><p>Now we can begin asking questions about this SQL DB and pairing it with calculations via the calculator tool.</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[16]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">result <span class="token operator">=</span> zero_shot_agent<span class="token punctuation">(</span>
+    <span class="token string">"What is the multiplication of the ratio between stock prices for 'ABC' "</span>
+    <span class="token string">"and 'XYZ' in January 3rd and the ratio between the same stock prices in "</span>
+    <span class="token string">"January the 4th?"</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[16]:</div><div class="output"><pre><code>
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new AgentExecutor chain...[0m
+</code></pre><pre><code>[32;1m[1;3m I need to compare the stock prices of 'ABC' and 'XYZ' on two different days
+</code></pre><pre><code>Action: Stock DB
+</code></pre><pre><code>Action Input: Stock prices of 'ABC' and 'XYZ' on January 3rd and January 4th[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new SQLDatabaseChain chain...[0m
+</code></pre><pre><code>Stock prices of 'ABC' and 'XYZ' on January 3rd and January 4th 
+</code></pre><pre><code>SQLQuery:[32;1m[1;3m SELECT stock_ticker, price, date FROM stocks WHERE (stock_ticker = 'ABC' OR stock_ticker = 'XYZ') AND (date = '2023-01-03' OR date = '2023-01-04')[0m
+</code></pre><pre><code>SQLResult: [33;1m[1;3m[('ABC', 232.0, '2023-01-03'), ('ABC', 225.0, '2023-01-04'), ('XYZ', 798.0, '2023-01-03'), ('XYZ', 795.0, '2023-01-04')][0m
+</code></pre><pre><code>Answer:[32;1m[1;3m The stock prices of 'ABC' and 'XYZ' on January 3rd and January 4th were 232.0 and 798.0 respectively for 'ABC' and 'XYZ' on January 3rd, and 225.0 and 795.0 respectively for 'ABC' and 'XYZ' on January 4th.[0m
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre><pre><code>
+</code></pre><pre><code>Observation: [33;1m[1;3m The stock prices of 'ABC' and 'XYZ' on January 3rd and January 4th were 232.0 and 798.0 respectively for 'ABC' and 'XYZ' on January 3rd, and 225.0 and 795.0 respectively for 'ABC' and 'XYZ' on January 4th.[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m I need to calculate the ratio between the two stock prices on each day
+</code></pre><pre><code>Action: Calculator
+</code></pre><pre><code>Action Input: 232.0/798.0 and 225.0/795.0[0m
+</code></pre><pre><code>Observation: [36;1m[1;3mAnswer: 0.2907268170426065
+</code></pre><pre><code>0.2830188679245283
+</code></pre><pre><code>[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m I need to calculate the multiplication of the two ratios
+</code></pre><pre><code>Action: Calculator
+</code></pre><pre><code>Action Input: 0.2907268170426065 * 0.2830188679245283[0m
+</code></pre><pre><code>Observation: [36;1m[1;3mAnswer: 0.08228117463469994
+</code></pre><pre><code>[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre></div></div></div><p>We can see a lot of output here. At each step, there is a <strong>Thought</strong> that results in a chosen <strong>Action</strong> and <strong>Action Input</strong>. If the <strong>Action</strong> were to use a tool, then an <strong>Observation</strong> (the output from the tool) is passed back to the agent.</p><p>If we look at the prompt being used by the agent, we can see how the LLM decides which tool to use.</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[17]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python"><span class="token keyword">print</span><span class="token punctuation">(</span>zero_shot_agent<span class="token punctuation">.</span>agent<span class="token punctuation">.</span>llm_chain<span class="token punctuation">.</span>prompt<span class="token punctuation">.</span>template<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[17]:</div><div class="output"><pre><code>Answer the following questions as best you can. You have access to the following tools:
+</code></pre><pre><code>
+</code></pre><pre><code>Calculator: Useful for when you need to answer questions about math.
+</code></pre><pre><code>Stock DB: Useful for when you need to answer questions about stocks and their prices.
+</code></pre><pre><code>
+</code></pre><pre><code>Use the following format:
+</code></pre><pre><code>
+</code></pre><pre><code>Question: the input question you must answer
+</code></pre><pre><code>Thought: you should always think about what to do
+</code></pre><pre><code>Action: the action to take, should be one of [Calculator, Stock DB]
+</code></pre><pre><code>Action Input: the input to the action
+</code></pre><pre><code>Observation: the result of the action
+</code></pre><pre><code>... (this Thought/Action/Action Input/Observation can repeat N times)
+</code></pre><pre><code>Thought: I now know the final answer
+</code></pre><pre><code>Final Answer: the final answer to the original input question
+</code></pre><pre><code>
+</code></pre><pre><code>Begin!
+</code></pre><pre><code>
+</code></pre><pre><code>Question: {input}
+</code></pre><pre><code>Thought:{agent_scratchpad}
+</code></pre></div></div></div><p>We first tell the LLM the tools it can use (<code>Calculator</code> and <code>Stock DB</code>). Following this, an example format is defined; this follows the flow of <code>Question</code> (from the user), <code>Thought</code>, <code>Action</code>, <code>Action Input</code>, <code>Observation</code> — and repeat until reaching the <code>Final Answer</code>.</p><p>These tools and the thought process separate <em>agents</em> from <em>chains</em> in LangChain.</p><p>Whereas a <em>chain</em> defines an immediate input/output process, the logic of agents allows a step-by-step thought process. The advantage of this step-by-step process is that the LLM can work through multiple reasoning steps or tools to produce a better answer.</p><p>There is still one part of the prompt we still need to discuss. The final line is <code>"Thought:{agent_scratchpad}"</code>.</p><p>The <code>agent_scratchpad</code> is where we add <em>every</em> thought or action the agent has already performed. All thoughts and actions (within the <em>current</em> agent executor chain) can then be accessed by the <em>next</em> thought-action-observation loop, enabling continuity in agent actions.</p><h3 id="conversational-react">Conversational ReAct</h3><p>The zero-shot agent works well but lacks <a href="https://www.pinecone.io/learn/langchain-conversational-memory/">conversational memory</a>. This lack of memory can be problematic for chatbot-type use cases that need to <em>remember</em> previous interactions in a conversation.</p><p>Fortunately, we can use the <code>conversational-react-description</code> agent to <em>remember</em> interactions. We can think of this agent as the same as our previous <strong>Zero Shot ReAct</strong> agent, but with <em>conversational memory</em>.</p><p>To initialize the agent, we first need to initialize the memory we’d like to use. We will use the simple <code>ConversationBufferMemory</code>.</p><div class="highlight"><div class="code-toolbar"><pre class="language-python line-numbers" tabindex="0"><code class="language-python" data-lang="python"><span class="token keyword">from</span> langchain<span class="token punctuation">.</span>memory <span class="token keyword">import</span> ConversationBufferMemory
+
+memory <span class="token operator">=</span> ConversationBufferMemory<span class="token punctuation">(</span>memory_key<span class="token operator">=</span><span class="token string">"chat_history"</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>We pass this to the <code>memory</code> parameter when initializing our agent:</p><div class="highlight"><div class="code-toolbar"><pre class="language-python line-numbers" tabindex="0"><code class="language-python" data-lang="python">conversational_agent <span class="token operator">=</span> initialize_agent<span class="token punctuation">(</span>
+    agent<span class="token operator">=</span><span class="token string">'conversational-react-description'</span><span class="token punctuation">,</span> 
+    tools<span class="token operator">=</span>tools<span class="token punctuation">,</span> 
+    llm<span class="token operator">=</span>llm<span class="token punctuation">,</span>
+    verbose<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    max_iterations<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">,</span>
+    memory<span class="token operator">=</span>memory<span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>If we run this agent with a similar question, we should see a similar process followed as before:</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[22]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">result <span class="token operator">=</span> conversational_agent<span class="token punctuation">(</span>
+    <span class="token string">"Please provide me the stock prices for ABC on January the 1st"</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[22]:</div><div class="output"><pre><code>
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new AgentExecutor chain...[0m
+</code></pre><pre><code>[32;1m[1;3m
+</code></pre><pre><code>Thought: Do I need to use a tool? Yes
+</code></pre><pre><code>Action: Stock DB
+</code></pre><pre><code>Action Input: ABC on January the 1st[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new SQLDatabaseChain chain...[0m
+</code></pre><pre><code>ABC on January the 1st 
+</code></pre><pre><code>SQLQuery:[32;1m[1;3m SELECT price FROM stocks WHERE stock_ticker = 'ABC' AND date = '2023-01-01'[0m
+</code></pre><pre><code>SQLResult: [33;1m[1;3m[(200.0,)][0m
+</code></pre><pre><code>Answer:[32;1m[1;3m The price of ABC on January the 1st was 200.0.[0m
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre><pre><code>
+</code></pre><pre><code>Observation: [33;1m[1;3m The price of ABC on January the 1st was 200.0.[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m Do I need to use a tool? No
+</code></pre><pre><code>AI: Is there anything else I can help you with?[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre></div></div></div><p>So far, this looks very similar to our last <em>zero-shot</em> agent. However, <em>unlike</em> our zero-shot agent, we can now ask <em>follow-up</em> questions. Let’s ask about the stock price for <em>XYZ</em> on the <em>same date</em> without specifying January 1st.</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[24]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">result <span class="token operator">=</span> conversational_agent<span class="token punctuation">(</span>
+    <span class="token string">"What are the stock prices for XYZ on the same day?"</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[24]:</div><div class="output"><pre><code>
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new AgentExecutor chain...[0m
+</code></pre><pre><code>[32;1m[1;3m
+</code></pre><pre><code>Thought: Do I need to use a tool? Yes
+</code></pre><pre><code>Action: Stock DB
+</code></pre><pre><code>Action Input: Stock prices for XYZ on January 1st[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new SQLDatabaseChain chain...[0m
+</code></pre><pre><code>Stock prices for XYZ on January 1st 
+</code></pre><pre><code>SQLQuery:[32;1m[1;3m SELECT price FROM stocks WHERE stock_ticker = 'XYZ' AND date = '2023-01-01'[0m
+</code></pre><pre><code>SQLResult: [33;1m[1;3m[(810.0,)][0m
+</code></pre><pre><code>Answer:[32;1m[1;3m The stock price for XYZ on January 1st was 810.0.[0m
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre><pre><code>
+</code></pre><pre><code>Observation: [33;1m[1;3m The stock price for XYZ on January 1st was 810.0.[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m Do I need to use a tool? No
+</code></pre><pre><code>AI: Is there anything else I can help you with?[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre></div></div></div><p>We can see in the first <code>Action Input</code> that the agent is looking for <code>"Stock prices for XYZ on January 1st"</code>. It knows we are looking for <em>January 1st</em> because we asked for this date in our previous interaction.</p><p>How can it do this? We can take a look at the prompt template to find out:</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[23]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python"><span class="token keyword">print</span><span class="token punctuation">(</span>conversational_agent<span class="token punctuation">.</span>agent<span class="token punctuation">.</span>llm_chain<span class="token punctuation">.</span>prompt<span class="token punctuation">.</span>template<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[23]:</div><div class="output"><pre><code>Assistant is a large language model trained by OpenAI.
+</code></pre><pre><code>
+</code></pre><pre><code>Assistant is designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, Assistant is able to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
+</code></pre><pre><code>
+</code></pre><pre><code>Assistant is constantly learning and improving, and its capabilities are constantly evolving. It is able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. Additionally, Assistant is able to generate its own text based on the input it receives, allowing it to engage in discussions and provide explanations and descriptions on a wide range of topics.
+</code></pre><pre><code>
+</code></pre><pre><code>Overall, Assistant is a powerful tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether you need help with a specific question or just want to have a conversation about a particular topic, Assistant is here to assist.
+</code></pre><pre><code>
+</code></pre><pre><code>TOOLS:
+</code></pre><pre><code>------
+</code></pre><pre><code>
+</code></pre><pre><code>Assistant has access to the following tools:
+</code></pre><pre><code>
+</code></pre><pre><code>&gt; Calculator: Useful for when you need to answer questions about math.
+</code></pre><pre><code>&gt; Stock DB: Useful for when you need to answer questions about stocks and their prices.
+</code></pre><pre><code>
+</code></pre><pre><code>To use a tool, please use the following format:
+</code></pre><pre><code>
+</code></pre><pre><code>```
+</code></pre><pre><code>Thought: Do I need to use a tool? Yes
+</code></pre><pre><code>Action: the action to take, should be one of [Calculator, Stock DB]
+</code></pre><pre><code>Action Input: the input to the action
+</code></pre><pre><code>Observation: the result of the action
+</code></pre><pre><code>```
+</code></pre><pre><code>
+</code></pre><pre><code>When you have a response to say to the Human, or if you do not need to use a tool, you MUST use the format:
+</code></pre><pre><code>
+</code></pre><pre><code>```
+</code></pre><pre><code>Thought: Do I need to use a tool? No
+</code></pre><pre><code>AI: [your response here]
+</code></pre><pre><code>```
+</code></pre><pre><code>
+</code></pre><pre><code>Begin!
+</code></pre><pre><code>
+</code></pre><pre><code>Previous conversation history:
+</code></pre><pre><code>{chat_history}
+</code></pre><pre><code>
+</code></pre><pre><code>New input: {input}
+</code></pre><pre><code>{agent_scratchpad}
+</code></pre></div></div></div><p>We have a much larger instruction setup at the start of the prompt, but most important are the two lines near the end of the prompt:</p><pre><code>Previous conversation history:
+{chat_history}
+</code></pre><p>Here is where we add all previous interactions to the prompt. Within this space will be the information that we asked <code>"Please provide me the stock prices for ABC on January the 1st"</code> — allowing the agent to understand that our follow-up question refers to the same date.</p><p>It’s worth noting that the conversational ReAct agent is designed for conversation and struggles more than the zero-shot agent when combining multiple complex steps. We can see this if we ask the agent to answer our earlier question:</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[26]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">result <span class="token operator">=</span> conversational_agent<span class="token punctuation">(</span>
+    <span class="token string">"What is the multiplication of the ratio of the prices of stocks 'ABC' "</span>
+    <span class="token string">"and 'XYZ' in January 3rd and the ratio of the same prices of the same "</span>
+    <span class="token string">"stocks in January the 4th?"</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[26]:</div><div class="output"><pre><code>
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new AgentExecutor chain...[0m
+</code></pre><pre><code>[32;1m[1;3mThought: Do I need to use a tool? Yes
+</code></pre><pre><code>Action: Stock DB
+</code></pre><pre><code>Action Input: Get the ratio of the prices of stocks 'ABC' and 'XYZ' in January 3rd and the ratio of the same prices of the same stocks in January the 4th[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new SQLDatabaseChain chain...[0m
+</code></pre><pre><code>Get the ratio of the prices of stocks 'ABC' and 'XYZ' in January 3rd and the ratio of the same prices of the same stocks in January the 4th 
+</code></pre><pre><code>SQLQuery:[32;1m[1;3m SELECT (SELECT price FROM stocks WHERE stock_ticker = 'ABC' AND date = '2023-01-03') / (SELECT price FROM stocks WHERE stock_ticker = 'XYZ' AND date = '2023-01-03') AS ratio_jan_3, (SELECT price FROM stocks WHERE stock_ticker = 'ABC' AND date = '2023-01-04') / (SELECT price FROM stocks WHERE stock_ticker = 'XYZ' AND date = '2023-01-04') AS ratio_jan_4 FROM stocks LIMIT 5;[0m
+</code></pre><pre><code>SQLResult: [33;1m[1;3m[(0.2907268170426065, 0.2830188679245283), (0.2907268170426065, 0.2830188679245283), (0.2907268170426065, 0.2830188679245283), (0.2907268170426065, 0.2830188679245283), (0.2907268170426065, 0.2830188679245283)][0m
+</code></pre><pre><code>Answer:[32;1m[1;3m The ratio of the prices of stocks 'ABC' and 'XYZ' in January 3rd is 0.2907268170426065 and the ratio of the same prices of the same stocks in January the 4th is 0.2830188679245283.[0m
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre><pre><code>
+</code></pre><pre><code>Observation: [33;1m[1;3m The ratio of the prices of stocks 'ABC' and 'XYZ' in January 3rd is 0.2907268170426065 and the ratio of the same prices of the same stocks in January the 4th is 0.2830188679245283.[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m Do I need to use a tool? No
+</code></pre><pre><code>AI: The answer is 0.4444444444444444. Is there anything else I can help you with?[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre><pre><code>Spent a total of 2518 tokens
+</code></pre></div></div></div><p>With this, the agent still manages to solve the question but uses a more complex approach of pure SQL rather than relying on more straightforward SQL and the calculator tool.</p><h3 id="react-docstore">ReAct Docstore</h3><p>Another common agent is the <code>react-docstore</code> agent. As before, it uses the ReAct methodology, but now it is explicitly built for information search and lookup using a LangChain <em>docstore</em>.</p><p>LangChain docstores allow us to store and retrieve information using traditional retrieval methods. One of these docstores is Wikipedia, which gives us access to the information on the site.</p><p>We will implement this agent using two docstore methods — <code>Search</code> and <code>Lookup</code>. With <code>Search</code>, our agent will search for a relevant article, and with <code>Lookup</code>, the agent will find the relevant chunk of information within the retrieved article. To initialize these two tools, we do:</p><div class="highlight"><div class="code-toolbar"><pre class="language-python line-numbers" tabindex="0"><code class="language-python" data-lang="python"><span class="token keyword">from</span> langchain <span class="token keyword">import</span> Wikipedia
+<span class="token keyword">from</span> langchain<span class="token punctuation">.</span>agents<span class="token punctuation">.</span>react<span class="token punctuation">.</span>base <span class="token keyword">import</span> DocstoreExplorer
+
+docstore<span class="token operator">=</span>DocstoreExplorer<span class="token punctuation">(</span>Wikipedia<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+tools <span class="token operator">=</span> <span class="token punctuation">[</span>
+    Tool<span class="token punctuation">(</span>
+        name<span class="token operator">=</span><span class="token string">"Search"</span><span class="token punctuation">,</span>
+        func<span class="token operator">=</span>docstore<span class="token punctuation">.</span>search<span class="token punctuation">,</span>
+        description<span class="token operator">=</span><span class="token string">'search wikipedia'</span>
+    <span class="token punctuation">)</span><span class="token punctuation">,</span>
+    Tool<span class="token punctuation">(</span>
+        name<span class="token operator">=</span><span class="token string">"Lookup"</span><span class="token punctuation">,</span>
+        func<span class="token operator">=</span>docstore<span class="token punctuation">.</span>lookup<span class="token punctuation">,</span>
+        description<span class="token operator">=</span><span class="token string">'lookup a term in wikipedia'</span>
+    <span class="token punctuation">)</span>
+<span class="token punctuation">]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>Now initialize the agent:</p><div class="highlight"><div class="code-toolbar"><pre class="language-python line-numbers" tabindex="0"><code class="language-python" data-lang="python">docstore_agent <span class="token operator">=</span> initialize_agent<span class="token punctuation">(</span>
+    tools<span class="token punctuation">,</span> 
+    llm<span class="token punctuation">,</span> 
+    agent<span class="token operator">=</span><span class="token string">"react-docstore"</span><span class="token punctuation">,</span> 
+    verbose<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    max_iterations<span class="token operator">=</span><span class="token number">3</span>
+<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>Let’s try the following:</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[30]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">docstore_agent<span class="token punctuation">(</span><span class="token string">"What were Archimedes' last words?"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[30]:</div><div class="output"><pre><code>
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new AgentExecutor chain...[0m
+</code></pre><pre><code>[32;1m[1;3mThought: I need to search Archimedes and find his last words.
+</code></pre><pre><code>Action: Search[Archimedes][0m
+</code></pre><pre><code>Observation: [36;1m[1;3mArchimedes of Syracuse (; c. 287 – c. 212 BC) was a Greek mathematician, physicist, engineer...[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m The paragraph does not mention Archimedes' last words. I need to look up "last words".
+</code></pre><pre><code>Action: Lookup[last words][0m
+</code></pre><pre><code>Observation: [33;1m[1;3m(Result 1/1) Plutarch (45–119 AD) wrote in his Parallel Lives that Archimedes was related to King Hiero...[0m
+</code></pre><pre><code>Thought:[32;1m[1;3m The last words attributed to Archimedes are "Do not disturb my circles", so the answer is "Do not disturb my circles".
+</code></pre><pre><code>Action: Finish["Do not disturb my circles"][0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre><pre><code>{'input': "What were Archimedes' last words?",
+</code></pre><pre><code> 'output': '"Do not disturb my circles"'}</code></pre></div></div></div><p>The prompt for this agent is very long, so we’ll show a shortened version. All it contains are several examples of how this agent should use the <code>Search</code> and <code>Lookup</code> tools:</p><div class="highlight"><div class="code-toolbar"><pre class="language-markdown line-numbers" tabindex="0"><code class="language-markdown" data-lang="markdown">Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+
+Thought: I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.
+Action: Search[Colorado orogeny]
+Observation: The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.
+
+Thought: It does not mention the eastern sector. So I need to look up eastern sector.
+Action: Lookup[eastern sector]
+Observation: (Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.
+
+Thought: The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.
+Action: Search[High Plains]
+Observation: High Plains refers to one of two distinct land regions
+
+Thought: I need to instead search High Plains (United States).
+Action: Search[High Plains (United States)]
+Observation: The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]
+
+Thought: High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.
+Action: Finish[1,800 to 7,000 ft]
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>The prompt contains several examples in a similar format. At the end of the prompt, we see:</p><div class="highlight"><div class="code-toolbar"><pre class="language-markdown line-numbers" tabindex="0"><code class="language-markdown" data-lang="markdown">Question: {input}
+{agent_scratchpad}
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>As before, we have an <code>{input}</code> to pass in the most recent user query and the <code>{agent_scratchpad}</code> to keep track of previous thoughts and actions.</p><p>Unlike our <em>conversational</em> agent, there is <em>no</em> <code>{chat_history}</code> input. That means that we are using another <em>zero-shot</em> agent.</p><h3 id="self-ask-with-search">Self-Ask With Search</h3><p>Let’s look at one final agent — the <code>self-ask-with-search</code> agent. This agent is the first you should consider when connecting an LLM with a search engine.</p><p>The agent will perform searches and ask follow-up questions as often as required to get a final answer. We initialize the agent like so:</p><div class="highlight"><div class="code-toolbar"><pre class="language-python line-numbers" tabindex="0"><code class="language-python" data-lang="python"><span class="token keyword">from</span> langchain <span class="token keyword">import</span> SerpAPIWrapper
+
+<span class="token comment"># initialize the search chain</span>
+search <span class="token operator">=</span> SerpAPIWrapper<span class="token punctuation">(</span>serpapi_api_key<span class="token operator">=</span><span class="token string">'serp_api_key'</span><span class="token punctuation">)</span>
+
+<span class="token comment"># create a search tool</span>
+tools <span class="token operator">=</span> <span class="token punctuation">[</span>
+    Tool<span class="token punctuation">(</span>
+        name<span class="token operator">=</span><span class="token string">"Intermediate Answer"</span><span class="token punctuation">,</span>
+        func<span class="token operator">=</span>search<span class="token punctuation">.</span>run<span class="token punctuation">,</span>
+        description<span class="token operator">=</span><span class="token string">'google search'</span>
+    <span class="token punctuation">)</span>
+<span class="token punctuation">]</span>
+
+<span class="token comment"># initialize the search enabled agent</span>
+self_ask_with_search <span class="token operator">=</span> initialize_agent<span class="token punctuation">(</span>
+    tools<span class="token punctuation">,</span>
+    llm<span class="token punctuation">,</span>
+    agent<span class="token operator">=</span><span class="token string">"self-ask-with-search"</span><span class="token punctuation">,</span>
+    verbose<span class="token operator">=</span><span class="token boolean">True</span>
+<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><p>Now let’s ask a question requiring multiple searches and <em>“self ask”</em> steps.</p><div class="jupyter-notebook" style="max-height:none"><div class="notebook-cell notebook-input"><div class="exec-count">In[38]:</div><div class="code-toolbar"><pre class="notebook no-line-numbers language-python line-numbers" tabindex="0"><code class="notebook language-python">self_ask_with_search<span class="token punctuation">(</span>
+    <span class="token string">"who lived longer; Plato, Socrates, or Aristotle?"</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div></div><div class="notebook-cell notebook-output"><div class="exec-count">Out[38]:</div><div class="output"><pre><code>
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Entering new AgentExecutor chain...[0m
+</code></pre><pre><code>[32;1m[1;3m Yes.
+</code></pre><pre><code>Follow up: How old was Plato when he died?[0m
+</code></pre><pre><code>Intermediate answer: [36;1m[1;3meighty[0m[32;1m[1;3m
+</code></pre><pre><code>Follow up: How old was Socrates when he died?[0m
+</code></pre><pre><code>Intermediate answer: [36;1m[1;3mapproximately 71[0m[32;1m[1;3m
+</code></pre><pre><code>Follow up: How old was Aristotle when he died?[0m
+</code></pre><pre><code>Intermediate answer: [36;1m[1;3m62 years[0m[32;1m[1;3m
+</code></pre><pre><code>So the final answer is: Plato[0m
+</code></pre><pre><code>
+</code></pre><pre><code>[1m&gt; Finished chain.[0m
+</code></pre><pre><code>{'input': 'who lived longer; Plato, Socrates, or Aristotle?',
+</code></pre><pre><code> 'output': 'Plato'}</code></pre></div></div></div><p>We can see the multi-step process of the agent. It performs multiple follow-up questions to hone in on the final answer.</p><hr><p>That’s it for this chapter on LangChain agents. As you have undoubtedly noticed, agents cover a vast scope of tooling in LangChain. We have covered much of the essentials, but there is much more that we could talk about.</p><p>The transformative potential of agents is a monumental leap forward for Large Language Models (LLMs), and it is only a matter of time before the term “LLM agents” becomes synonymous with LLMs themselves.</p><p>By empowering LLMs to utilize tools and navigate complex, multi-step thought processes within these agent frameworks, we are venturing into a mind-bogglingly huge realm of AI-driven opportunities.</p><h2 id="references">References</h2><p>[1] <a href="https://web.archive.org/web/20180806170305/http://langchain.io/">Langchain.io</a> (2019), Wayback Machine</p><p>[2] Jun-hang Lee, <a href="https://www.slideshare.net/JunhangLee/mother-of-languages-langchain-95416686">Mother of Language Slides</a> (2018), SlideShare</p><hr>
