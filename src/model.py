@@ -62,6 +62,7 @@ class Model:
         print("Number of texts:", len(texts))
 
         self.docsearch = Chroma.from_documents(texts, embeddings, metadatas=[{"source": str(i)} for i in range(len(texts))]).as_retriever()
+        self.OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     
     def getIndex(self,txt_path):
         loader = TextLoader(txt_path)
@@ -82,17 +83,17 @@ class Model:
         for _ in trange(iterations):
             document = self.getRelatedText(response + "\n" + topic)
             messages = [
-            SystemMessage(content="""
+            SystemMessage(content=f"""
             You are a helpful code assistant that can teach a junior developer how to code. Your language of choice is Python. You use langchain library. Don't explain the code, just generate the code block itself.
             Keep in mind that 
-            OPENAI API KEY is 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
+            OPENAI API KEY is {self.OPENAI_API_KEY}
             So, you can use this kind of code below:
-            openai.api_key = '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'
+            openai.api_key = '{self.OPENAI_API_KEY}'
 
             or 
 
             llm = OpenAI(
-                openai_api_key='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'
+                openai_api_key='{self.OPENAI_API_KEY}'
             )
 
             """)
@@ -109,7 +110,7 @@ class Model:
             
                     Please refine the code using the following document
                     document:{document}  
-                    If you want to use API Key, please use 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
+                    If you want to use API Key, please use {self.OPENAI_API_KEY}
                     """)
                 )
             code = self.llm(messages).content
