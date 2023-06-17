@@ -1,12 +1,13 @@
 import streamlit as st
 from model import Model
 
+num_of_iterations = 10
 
 agent = Model()
 
 def generate_response(txt):
-    for code,response in agent(txt):
-        yield code,response
+    for data in agent(txt,num_of_iterations):
+        yield data
     
 # Page title
 title = '🦜🔗 DemoGPT'
@@ -16,8 +17,24 @@ st.title(title)
 # Text input
 txt_input = st.text_area('Enter your LLM-based demo idea', '', height=200)
 
+progress_text = "Operation in progress. Please wait."
+complete_text = {
+    "success":"Operation completed",
+    "fail":"Operation failed"
+    }
+
+st.subheader("Code")
 empty_code = st.empty()
-empty_response = st.empty()
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("Feedback")
+    empty_feedback = st.empty()
+    
+with col2:
+    st.subheader("Response")
+    empty_response = st.empty()
 
 # Form to accept user's text input for summarization
 result = []
@@ -25,10 +42,28 @@ result = []
 with st.form('a', clear_on_submit=True):
     submitted = st.form_submit_button('Submit')
     if submitted:
-        with st.spinner('Calculating...'):
-            for code,response in generate_response(txt_input):
-                empty_code.code(code, language='python')
+        #with st.spinner('Calculating...'):
+        bar = st.progress(0, text=progress_text)
+        for data in generate_response(txt_input):
+            response = data["out"]
+            feedback = data["feedback"]
+            code = data["code"]
+            percentage = data["percentage"]
+            success = data["success"]
+            empty_code.code(code, language='python')
+            empty_feedback.markdown(feedback)
+            if success:
                 empty_response.markdown(response)
-
-if len(result):
-    st.balloons()
+            else:
+                empty_response.error(response)
+            if percentage == 100:
+                if success:
+                    text = complete_text["success"]
+                else:
+                    text = complete_text["fail"]
+            else:
+                text = progress_text
+            bar.progress(percentage, text=text)
+            if percentage == 100:
+                if success:
+                    st.balloons()
