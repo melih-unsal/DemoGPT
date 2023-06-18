@@ -23,6 +23,9 @@ complete_text = {
     "fail":"Operation failed"
     }
 
+st.subheader("Plan")
+empty_plan = st.empty()
+
 st.subheader("Code")
 empty_code = st.empty()
 
@@ -50,12 +53,14 @@ with st.form('a', clear_on_submit=True):
             code = data["code"]
             percentage = data["percentage"]
             success = data["success"]
+            plan=data["plan"]
             empty_code.code(code, language='python')
             empty_feedback.markdown(feedback)
+            empty_plan.markdown(plan)
             if success:
                 empty_response.markdown(response)
             else:
-                empty_response.error(response)
+                empty_response.exception(response)
             if percentage == 100:
                 if success:
                     text = complete_text["success"]
