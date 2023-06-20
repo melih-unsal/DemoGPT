@@ -26,17 +26,15 @@ class Model:
 
         embeddings = HuggingFaceEmbeddings(model_kwargs = {'device': 'cuda'})
 
-        splitter = RecursiveCharacterTextSplitter.from_language(
-        language=Language.MARKDOWN, chunk_size=4000, chunk_overlap=0
-        )
-        texts = splitter.create_documents([open(f"../documents/txt/guide.txt").read()])
-
-        print("Texts have been created!")
-        print("Number of texts:", len(texts))
-
         if os.path.exists(persist_directory):
             self.docsearch = Chroma(persist_directory=persist_directory, embedding_function=embeddings).as_retriever()
         else:
+            splitter = RecursiveCharacterTextSplitter.from_language(
+                language=Language.MARKDOWN, chunk_size=4000, chunk_overlap=0
+                )
+            texts = splitter.create_documents([open(f"../documents/tree/explanation.txt").read()])
+            print("Texts have been created!")
+            print("Number of texts:", len(texts))
             self.docsearch = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory, metadatas=[{"source": str(i)} for i in range(len(texts))]).as_retriever()
         
 
@@ -102,7 +100,8 @@ class Model:
                 "out":error,
                 "feedback":feedback,
                 "percentage":min(100,percentage),
-                "plan":plan
+                "plan":plan,
+                "document":document
             }
         if not error:
             yield {
@@ -111,7 +110,8 @@ class Model:
                 "out":out,
                 "feedback":"",
                 "percentage":100,
-                "plan":plan
+                "plan":plan,
+                "document":document
             }
         else:
             yield {
@@ -120,7 +120,8 @@ class Model:
                 "out":error,
                 "feedback":feedback,
                 "percentage":100,
-                "plan":plan
+                "plan":plan,
+                "document":document
             }
         
 

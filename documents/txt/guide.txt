@@ -1,0 +1,96 @@
+Get predictions from a language model
+The basic building block of LangChain is the LLM, which takes in text and generates more text.
+
+As an example, suppose we're building an application that generates a company name based on a company description. In order to do this, we need to initialize an OpenAI model wrapper. In this case, since we want the outputs to be MORE random, we'll initialize our model with a HIGH temperature.
+
+from langchain.llms import OpenAI
+
+llm = OpenAI(temperature=0.9)
+
+And now we can pass in text and get predictions!
+
+llm.predict("What would be a good company name for a company that makes colorful socks?")
+# >> Feetful of Fun
+
+
+Chat models
+Chat models are a variation on language models. While chat models use language models under the hood, the interface they expose is a bit different: rather than expose a "text in, text out" API, they expose an interface where "chat messages" are the inputs and outputs.
+
+You can get chat completions by passing one or more messages to the chat model. The response will be a message. The types of messages currently supported in LangChain are AIMessage, HumanMessage, SystemMessage, and ChatMessage -- ChatMessage takes in an arbitrary role parameter. Most of the time, you'll just be dealing with HumanMessage, AIMessage, and SystemMessage.
+
+from langchain.chat_models import ChatOpenAI
+from langchain.schema import (
+    AIMessage,
+    HumanMessage,
+    SystemMessage
+)
+
+chat = ChatOpenAI(temperature=0)
+chat.predict_messages([HumanMessage(content="Translate this sentence from English to French. I love programming.")])
+# >> AIMessage(content="J'aime programmer.", additional_kwargs={})
+
+
+It is useful to understand how chat models are different from a normal LLM, but it can often be handy to just be able to treat them the same. LangChain makes that easy by also exposing an interface through which you can interact with a chat model as you would a normal LLM. You can access this through the predict interface.
+
+chat.predict("Translate this sentence from English to French. I love programming.")
+# >> J'aime programmer
+
+
+Prompt templates
+Most LLM applications do not pass user input directly into to an LLM. Usually they will add the user input to a larger piece of text, called a prompt template, that provides additional context on the specific task at hand.
+
+In the previous example, the text we passed to the model contained instructions to generate a company name. For our application, it'd be great if the user only had to provide the description of a company/product, without having to worry about giving the model instructions.
+
+Similar to LLMs, you can make use of templating by using a MessagePromptTemplate. You can build a ChatPromptTemplate from one or more MessagePromptTemplates. You can use ChatPromptTemplate's format_messages method to generate the formatted messages.
+
+Because this is generating a list of messages, it is slightly more complex than the normal prompt template which is generating only a string. Please see the detailed guides on prompts to understand more options available to you here.
+
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+template = "You are a helpful assistant that translates {input_language} to {output_language}."
+system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+human_template = "{text}"
+human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+
+chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+
+chat_prompt.format_messages(input_language="English", output_language="French", text="I love programming.")
+
+
+[
+    SystemMessage(content="You are a helpful assistant that translates English to French.", additional_kwargs={}),
+    HumanMessage(content="I love programming.")
+]
+
+
+Chains
+Now that we've got a model and a prompt template, we'll want to combine the two. Chains give us a way to link (or chain) together multiple primitives, like models, prompts, and other chains.
+
+LLMs
+Chat models
+The LLMChain can be used with chat models as well:
+
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+chat = ChatOpenAI(temperature=0)
+
+template = "You are a helpful assistant that translates {input_language} to {output_language}."
+system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+human_template = "{text}"
+human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+
+chain = LLMChain(llm=chat, prompt=chat_prompt)
+chain.run(input_language="English", output_language="French", text="I love programming.")
+
+J'aime programmer.

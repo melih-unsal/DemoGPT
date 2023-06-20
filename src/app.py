@@ -23,27 +23,28 @@ complete_text = {
     "fail":"Operation failed"
     }
 
-st.subheader("Plan")
-empty_plan = st.empty()
-
-st.subheader("Code")
-empty_code = st.empty()
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.subheader("Feedback")
-    empty_feedback = st.empty()
-    
-with col2:
-    st.subheader("Response")
-    empty_response = st.empty()
-
-# Form to accept user's text input for summarization
-result = []
 
 with st.form('a', clear_on_submit=True):
     submitted = st.form_submit_button('Submit')
+
+    st.subheader("Plan")
+    empty_plan = st.empty()
+
+    st.subheader("Document")
+    empty_document = st.empty()
+
+    st.subheader("Code")
+    empty_code = st.empty()
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Feedback")
+        empty_feedback = st.empty()
+        
+    with col2:
+        st.subheader("Response")
+        empty_response = st.empty()
     if submitted:
         #with st.spinner('Calculating...'):
         bar = st.progress(0, text=progress_text)
@@ -54,9 +55,11 @@ with st.form('a', clear_on_submit=True):
             percentage = data["percentage"]
             success = data["success"]
             plan=data["plan"]
+            document=data["document"]
             empty_code.code(code, language='python')
             empty_feedback.markdown(feedback)
             empty_plan.markdown(plan)
+            empty_document.markdown(document)
             if success:
                 empty_response.markdown(response)
             else:
