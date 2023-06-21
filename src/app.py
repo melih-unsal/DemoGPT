@@ -56,6 +56,7 @@ with st.form('a', clear_on_submit=True):
             success = data["success"]
             plan=data["plan"]
             document=data["document"]
+            print("document:",document)
             empty_code.code(code, language='python')
             empty_feedback.markdown(feedback)
             empty_plan.markdown(plan)

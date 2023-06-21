@@ -1,7 +1,7 @@
 from prompts import *
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
-from langchain.text_splitter import RecursiveCharacterTextSplitter, Language
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from subprocess import PIPE, run
@@ -27,15 +27,15 @@ class Model:
         embeddings = HuggingFaceEmbeddings(model_kwargs = {'device': 'cuda'})
 
         if os.path.exists(persist_directory):
-            self.docsearch = Chroma(persist_directory=persist_directory, embedding_function=embeddings).as_retriever()
+            self.docsearch = Chroma(persist_directory=persist_directory, embedding_function=embeddings)#.as_retriever(search_kwargs={"k": 2})
         else:
-            splitter = RecursiveCharacterTextSplitter.from_language(
-                language=Language.MARKDOWN, chunk_size=4000, chunk_overlap=0
+            splitter = RecursiveCharacterTextSplitter(
+                chunk_size=4000, chunk_overlap=0
                 )
             texts = splitter.create_documents([open(f"../documents/tree/explanation.txt").read()])
             print("Texts have been created!")
             print("Number of texts:", len(texts))
-            self.docsearch = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory, metadatas=[{"source": str(i)} for i in range(len(texts))]).as_retriever()
+            self.docsearch = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory, metadatas=[{"source": str(i)} for i in range(len(texts))])#.as_retriever(search_kwargs={"k": 2})
         
 
         self.with_code_chain = LLMChain(llm=self.llm, prompt=with_code_chat_prompt)
@@ -56,7 +56,8 @@ class Model:
     def getRelatedText(self,query, max_count=2):
         print("query:",query)
         resulting_text = ""
-        docs = self.docsearch.get_relevant_documents(query)
+        #docs = self.docsearch.get_relevant_documents(query)
+        docs = self.docsearch.similarity_search(query)
         for i,doc in enumerate(docs):
             if i >= max_count:
                 break
