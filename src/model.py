@@ -2,10 +2,16 @@ from prompts import *
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.document_loaders import DirectoryLoader
+from langchain.docstore.document import Document
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from subprocess import PIPE, run
 import tempfile
+import os
+from tqdm import tqdm
+from langchain.chains.summarize import load_summarize_chain
+from langchain.text_splitter import CharacterTextSplitter
 
 from langchain.schema import (
     AIMessage,
@@ -27,16 +33,28 @@ class Model:
         embeddings = HuggingFaceEmbeddings(model_kwargs = {'device': 'cuda'})
 
         if os.path.exists(persist_directory):
-            self.docsearch = Chroma(persist_directory=persist_directory, embedding_function=embeddings)#.as_retriever(search_kwargs={"k": 2})
+            self.docsearch = Chroma(persist_directory=persist_directory, embedding_function=embeddings).as_retriever(search_type="mmr")
         else:
-            splitter = RecursiveCharacterTextSplitter(
-                chunk_size=4000, chunk_overlap=0
-                )
-            texts = splitter.create_documents([open(f"../documents/tree/explanation.txt").read()])
-            print("Texts have been created!")
+            DOC_ROOT = "../documents/langchain_summary/"
+            docs = []
+            for filename in tqdm(os.listdir(DOC_ROOT)):
+                filepath = os.path.join(DOC_ROOT, filename)
+
+                source_path = filepath.replace("langchain_summary","langchain")
+                with open(source_path) as sf:
+                    metadata = {"source":sf.read()}
+                with open(filepath) as f:
+                    docs.append(Document(page_content=f.read(), metadata=metadata))
+            print("Docs have been created!")
+            print("Number of docs:", len(docs))
+
+            text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=100)
+            texts = text_splitter.split_documents(docs)
+
             print("Number of texts:", len(texts))
-            self.docsearch = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory, metadatas=[{"source": str(i)} for i in range(len(texts))])#.as_retriever(search_kwargs={"k": 2})
-        
+
+            #self.docsearch = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory).as_retriever(search_type="mmr")
+            self.docsearch = Chroma.from_documents(texts, embeddings).as_retriever(search_type="mmr")
 
         self.with_code_chain = LLMChain(llm=self.llm, prompt=with_code_chat_prompt)
         self.without_code_chain = LLMChain(llm=self.llm, prompt=without_code_chat_prompt)
@@ -56,31 +74,34 @@ class Model:
     def getRelatedText(self,query, max_count=2):
         print("query:",query)
         resulting_text = ""
-        #docs = self.docsearch.get_relevant_documents(query)
-        docs = self.docsearch.similarity_search(query)
+        docs = self.docsearch.get_relevant_documents(query)
         for i,doc in enumerate(docs):
             if i >= max_count:
                 break
-            resulting_text += doc.page_content
+            resulting_text += doc.metadata["source"]
         return resulting_text
     
     def __call__(self,topic,iterations=10):
 
         code = ""
-        error = topic
+        error = ""
         feedback=""
         out = ""
         plan=""
         percentage = 0
         for _ in trange(iterations):
-            document = self.getRelatedText(error + "\n" + topic)
+            if feedback:
+                document = self.getRelatedText(feedback + "\n" + topic)
+            else:
+                document = self.getRelatedText(topic)
+            print ("document:",document)
             
             if code:
-                #code = self.with_code_chain.run(document=document,topic=topic,code=code,error=error,feedback=feedback)
-                code = self.refine_chain.run(content=code,
+                code = self.with_code_chain.run(document=document,topic=topic,code=code,error=error,feedback=feedback)
+                """code = self.refine_chain.run(content=code,
                                              critics=error,
                                              document=document,
-                                             instruction_hint="Fix the code snippet based on the error provided. Only provide the fixed code snippet between `` and nothing else.")
+                                             instruction_hint="Fix the code snippet based on the error provided. Only provide the fixed code snippet between `` and nothing else.")"""
             else:
                 plan = self.plan_chain.run(document=document,topic=topic)
                 code = self.without_code_chain.run(document=document,topic=topic,plan=plan)
@@ -127,3 +148,29 @@ class Model:
         
 
         
+class Summarizer:
+    def __init__(self) -> None:
+        llm = ChatOpenAI(temperature=0)
+        self.chain = load_summarize_chain(llm, chain_type="map_reduce")
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size = 4000,
+            chunk_overlap  = 200,
+            length_function = len
+            )
+    def __call__(self,path):
+        out_path = path.replace("langchain/","langchain_summary/")
+        if os.path.exists(out_path):
+            return 
+        with open(path) as f:
+            state_of_the_union = f.read()
+        texts = self.text_splitter.split_text(state_of_the_union)
+        docs = [Document(page_content=t) for t in texts]
+        summary = self.chain.run(docs)
+        with open(out_path,"w") as f:
+            f.write(summary)
+if __name__ == "__main__":
+    model = Summarizer()
+    path = "../documents/langchain/Vectara Text Generation.txt"
+    summary = model(path)
+    with open(path.replace("langchain/","langchain_summary/"),"w") as f:
+        f.write(summary)        
