@@ -48,7 +48,7 @@ class Model:
             print("Docs have been created!")
             print("Number of docs:", len(docs))
 
-            text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=100)
+            text_splitter = CharacterTextSplitter(chunk_size=1500, chunk_overlap=100)
             texts = text_splitter.split_documents(docs)
 
             print("Number of texts:", len(texts))
