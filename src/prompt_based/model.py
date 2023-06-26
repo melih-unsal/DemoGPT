@@ -66,17 +66,9 @@ class Model:
             print("response:",response,type(response))
             print("error:",colored(error,"red"),colored(type(error),"red"))
 
-            success = len(response) > 0
-            if success:
-                refined_code = self.check_chain.run(topic=topic,code=total_code,response=response)
-
-                
-
-            print("response:",response)
-            print("error:",error)
+            success = len(response) > 0                
 
             feedback = self.fix_chain.run(code=total_code,error=error)
-
 
             percentage += 100 // num_iterations
 

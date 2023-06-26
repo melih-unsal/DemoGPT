@@ -1,0 +1,74 @@
+Examples:
+================================================================
+Goal: Generate blog post from title. Generate at least 500 words
+---------
+Python Code:
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+def generate_blog_post(title):
+    chat = ChatOpenAI(temperature=0)
+
+    template = "You are a helpful assistant that generates a blog post from the title: {title}. Please provide some content."
+    system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+    human_template = "{text}"
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(title=title)
+    return result # it will return string with at least 500 words.
+================================================================================================================================
+Goal: Implement language translation
+---------
+Python Code:
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+def generate_translation(input_language, output_language, text):
+    chat = ChatOpenAI(temperature=0)
+
+    template = "You are a helpful assistant that translates {input_language} to {output_language}."
+    system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+    human_template = "{text}"
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(input_language=input_language, output_language=output_language, text=text)
+    return result # it will return string
+================================================================
+Goal: Animal name from animal
+---------
+Python Code:
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+def generate_animal_name(animal):
+    chat = ChatOpenAI(temperature=0)
+
+    template = "You are a helpful assistant that generates a name for an animal. You generate short answer."
+    system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+    human_template = "What is a good name for a {animal}?"
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(animal=animal)
+    return result # it will return string
+================================================================
