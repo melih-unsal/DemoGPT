@@ -1,9 +1,15 @@
 import streamlit as st
-from model import Model
+import os
+import signal
+from model import LogicModel, StreamlitModel
+import webbrowser
+from time import sleep
 
 num_of_iterations = 10
 
-agent = Model()
+agent = LogicModel()
+
+streamlit_agent = StreamlitModel()
 
 def generate_response(txt):
     for data in agent(txt,num_of_iterations):
@@ -15,62 +21,51 @@ title = '🦜🔗 DemoGPT'
 st.set_page_config(page_title=title)
 st.title(title)
 # Text input
-txt_input = st.text_area('Enter your LLM-based demo idea', '', height=200)
+demo_title = st.text_input('Enter your demo title', 'Awesome App')
+demo_idea = st.text_area('Enter your LLM-based demo idea', placeholder = 'Type your demo idea here', height=100)
 
+cols = st.columns(3)
+
+
+examples = ["Language Translator 📝","Grammer Corrector 🛠","Blog post generator from title 📔"] 
+
+pid = None
+
+example_submitted = False
 
 with st.form('a', clear_on_submit=True):
     submitted = st.form_submit_button('Submit')
+    st.write("Examples")
+    for col,example in zip(cols,examples):
+        if col.button(example):
+            example_submitted = True
+            demo_idea = example
+            print(demo_idea)
 
-    st.subheader("Total Code")
-    empty_total_code = st.empty()
+    if submitted or example_submitted:
 
-    st.subheader("Code")
-    empty_code = st.empty()
-
-    st.subheader("Refined Code")
-    empty_refined_code = st.empty()
-
-    st.subheader("Test Code")
-    empty_test_code = st.empty()
-
-    st.subheader("Response")
-    empty_response = st.empty()
-
-    st.subheader("Feedback")
-    empty_feedback = st.empty()
-
-    st.subheader("Error")
-    empty_error = st.empty()
-
-    if submitted:
-        bar = st.progress(0, text="Processing...")
-        for data in generate_response(txt_input):
+        if pid:
+            print("Terminating...")
+            os.kill(pid, signal.SIGTERM)
+            pid = None
+        
+        bar = st.progress(25, "Generating Code...")
+        for data in generate_response(demo_idea):
             response = data["out"]
             error = data["error"]
             code = data["code"]
-            total_code = data["total_code"]
             test_code = data["test_code"]
-            refined_code = data["refined_code"]
             success = data["success"]
             percentage = data["percentage"]
-            feedback = data["feedback"]
-
-            empty_code.code(code, language='python')
-            empty_total_code.code(total_code, language='python')
-            empty_test_code.code(test_code, language='python')
-            empty_refined_code.code(refined_code, language='python')
-            empty_response.markdown(response)
-            if not success:
-                empty_error.exception(error)
-            else:
-                empty_error.success(response)
-
-            empty_feedback.markdown(feedback)
 
             if success:
-                bar.progress(percentage, text="Successfully completed")
+                bar.progress(75, text="Creating App...")
+                example_submitted = False
+                pid = streamlit_agent(demo_idea,demo_title,code,test_code,bar.progress,st.balloons)
+                sleep(4)
+                webbrowser.open('http://localhost:8502')
             else:
-                bar.progress(percentage, text="Processing...")
+                bar.progress(50, text="Refining Code...")
 
             if success:
                 st.balloons()

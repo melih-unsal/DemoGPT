@@ -60,16 +60,18 @@ human_template3 = """
 human_message_prompt3 = HumanMessagePromptTemplate.from_template(human_template3)
 
 refine_remplate = """
-Based on the critics, fix the content provided to you while you can use the document. {instruction_hint}:
+Examples:
+{document}
+================================================================
+Based on the critics, fix the content provided to you. {instruction_hint}:
 content:
 {content}
 ---------
 critics:
 {critics}
 ---------
-document:
-{document}
----------
+Python Code:
+import
 """
 
 refine_message_prompt = HumanMessagePromptTemplate.from_template(refine_remplate)
