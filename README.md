@@ -41,19 +41,6 @@ Then, install the necessary dependencies.
 ```
 pip install -r requirements.txt
 ```
-You will then need to set the environment variable in the terminal.
-
-```
-export OPENAI_API_KEY="..."
-```
-
-Alternatively, you could do this from inside the Jupyter notebook (or Python script):
-```
-import os
-os.environ["OPENAI_API_KEY"] = "..."
-```
-
-Note: Further instructions about dependencies will be added as the project develops.
 
 ## Usage
 
