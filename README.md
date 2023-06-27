@@ -23,7 +23,7 @@ The process is fully automated, with DemoGPT generating code, running tests, and
 
 ## Pipeline
 ### DemoGPT Sequence Diagram
-![DemoGPT Pipeline](pipeline.png?raw=true "DemoGPT Pipeline")
+![DemoGPT Pipeline](demogpt_pipeline.png?raw=true "DemoGPT Pipeline")
 
 ## Installation
 
