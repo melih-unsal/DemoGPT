@@ -57,9 +57,11 @@ Note: Further instructions about dependencies will be added as the project devel
 
 ## Usage
 
-To use DemoGPT, you can follow these steps:
+To use DemoGPT, you can run the command below:
 
-Note: The detailed steps on how to use the project will be added as the project develops.
+```
+streamlit run src/prompt_based/app.py
+```
 
 ## Contribute
 
