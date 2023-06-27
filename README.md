@@ -47,7 +47,8 @@ pip install -r requirements.txt
 To use DemoGPT, you can run the command below:
 
 ```
-streamlit run src/prompt_based/app.py
+cs src/prompt_based
+streamlit run app.py
 ```
 
 ## Contribute
