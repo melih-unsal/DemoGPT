@@ -2,6 +2,9 @@
 
 ![DemoGPT](DemoGPT_banner_new.jpeg)
 
+## Demo
+
+https://github.com/melih-unsal/DemoGPT/assets/34304254/728545ba-860b-47c9-b9e9-1a51ab9f3647
 
 ## Table of Contents
 
@@ -54,9 +57,11 @@ Note: Further instructions about dependencies will be added as the project devel
 
 ## Usage
 
-To use DemoGPT, you can follow these steps:
+To use DemoGPT, you can run the command below:
 
-Note: The detailed steps on how to use the project will be added as the project develops.
+```
+streamlit run src/prompt_based/app.py
+```
 
 ## Contribute
 
