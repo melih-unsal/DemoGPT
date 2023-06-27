@@ -13,8 +13,9 @@ import os
 load_dotenv()
 
 class LogicModel:
-    def __init__(self):
-        self.llm = ChatOpenAI(temperature=0.0)
+    def __init__(self,openai_api_key):
+        self.openai_api_key = openai_api_key
+        self.llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.0)
         self.code_chain = LLMChain(llm=self.llm, prompt=code_prompt)
         self.test_chain = LLMChain(llm=self.llm, prompt=test_prompt)
         self.refine_chain = LLMChain(llm=self.llm,prompt=refine_chat_prompt)
@@ -29,7 +30,7 @@ class LogicModel:
         with tempfile.NamedTemporaryFile("w") as tmp:
             tmp.write(code)
             tmp.flush()
-            command = f"OPENAI_API_KEY={os.getenv('OPENAI_API_KEY')} python "+tmp.name
+            command = f"OPENAI_API_KEY={self.openai_api_key} python "+tmp.name
             print(colored(command,"blue"))
             result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
             return result.stdout, result.stderr
@@ -104,16 +105,17 @@ class LogicModel:
 
 
 class StreamlitModel:
-    def __init__(self):
-        self.llm = ChatOpenAI(temperature=0.0)
+    def __init__(self,openai_api_key):
+        self.openai_api_key = openai_api_key
+        self.llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.0)
         self.streamlit_code_chain = LLMChain(llm=self.llm, prompt=streamlit_code_prompt)
 
     def run_code(self,code):
         with tempfile.NamedTemporaryFile("w",suffix=".py") as tmp:
             tmp.write(code)
             tmp.flush()
-            command = f"OPENAI_API_KEY={os.getenv('OPENAI_API_KEY')} streamlit run "+tmp.name
-            environmental_variables = {'OPENAI_API_KEY':os.getenv('OPENAI_API_KEY'),"STREAMLIT_SERVER_PORT":"8502"}
+            command = f"OPENAI_API_KEY={self.openai_api_key} streamlit run "+tmp.name
+            environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
             #p = subprocess.Popen(["/home/melih/anaconda3/envs/synthdata/bin/streamlit","run",tmp.name],stdout=DEVNULL,stderr=STDOUT, close_fds=True, env=environmental_variables)
             process = subprocess.Popen(["/home/melih/anaconda3/envs/synthdata/bin/streamlit","run",tmp.name], env=environmental_variables)
             pid = process.pid
@@ -126,8 +128,8 @@ class StreamlitModel:
         with open(filepath,"w") as tmp:
             tmp.write(code)
             tmp.flush()
-        command = f"OPENAI_API_KEY={os.getenv('OPENAI_API_KEY')} streamlit run "+filepath
-        environmental_variables = {'OPENAI_API_KEY':os.getenv('OPENAI_API_KEY'),"STREAMLIT_SERVER_PORT":"8502"}
+        command = f"OPENAI_API_KEY={self.openai_api_key} streamlit run "+filepath
+        environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
         #p = subprocess.Popen(["/home/melih/anaconda3/envs/synthdata/bin/streamlit","run",tmp.name],stdout=DEVNULL,stderr=STDOUT, close_fds=True, env=environmental_variables)
         process = subprocess.Popen(["/home/melih/anaconda3/envs/synthdata/bin/streamlit","run",filepath], env=environmental_variables)
         pid = process.pid

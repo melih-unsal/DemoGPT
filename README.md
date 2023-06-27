@@ -1,6 +1,6 @@
 # DemoGPT
 
-![DemoGPT](DemoGPT_banner.png)
+![DemoGPT](DemoGPT_banner_new.jpeg)
 
 
 ## Table of Contents
