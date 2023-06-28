@@ -125,6 +125,10 @@ documents/**/*
 # SageMath parsed files
 *.sage.py
 
+# custom files
+pipeline.png
+demogpt.mp4
+
 # Environments
 .env
 .venv

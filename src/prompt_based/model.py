@@ -7,6 +7,7 @@ import tempfile
 from termcolor import colored
 import subprocess
 from subprocess import DEVNULL, STDOUT
+import sys
 
 from dotenv import load_dotenv
 import os
@@ -116,8 +117,10 @@ class StreamlitModel:
             tmp.flush()
             command = f"OPENAI_API_KEY={self.openai_api_key} streamlit run "+tmp.name
             environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
-            #p = subprocess.Popen(["/home/melih/anaconda3/envs/synthdata/bin/streamlit","run",tmp.name],stdout=DEVNULL,stderr=STDOUT, close_fds=True, env=environmental_variables)
-            process = subprocess.Popen(["/home/melih/anaconda3/envs/synthdata/bin/streamlit","run",tmp.name], env=environmental_variables)
+            #python_path = subprocess.check_output("which python", shell=True).strip().decode('utf-8')
+            #process = subprocess.Popen([python_path,"-m","streamlit",tmp.name], env=environmental_variables)
+            streamlit_path = subprocess.check_output("which streamlit", shell=True).strip().decode('utf-8')
+            process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
             pid = process.pid
             print("pid:",colored(pid,"red"))
             return pid
@@ -130,8 +133,11 @@ class StreamlitModel:
             tmp.flush()
         command = f"OPENAI_API_KEY={self.openai_api_key} streamlit run "+filepath
         environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
-        #p = subprocess.Popen(["/home/melih/anaconda3/envs/synthdata/bin/streamlit","run",tmp.name],stdout=DEVNULL,stderr=STDOUT, close_fds=True, env=environmental_variables)
-        process = subprocess.Popen(["/home/melih/anaconda3/envs/synthdata/bin/streamlit","run",filepath], env=environmental_variables)
+        #python_path = subprocess.check_output("which python", shell=True).strip().decode('utf-8')
+        #process = subprocess.Popen([python_path,"-m","streamlit",filepath], env=environmental_variables)
+        streamlit_path = subprocess.check_output("which streamlit", shell=True).strip().decode('utf-8')
+        process = subprocess.Popen([streamlit_path,"run",filepath], env=environmental_variables)
+
         pid = process.pid
         print("pid:",colored(pid,"red"))
         return pid
