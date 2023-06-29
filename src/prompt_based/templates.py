@@ -1,3 +1,15 @@
+def wait():
+    import streamlit as st
+    import time
+
+    progress_text = "Operation in progress. Please wait."
+    my_bar = st.progress(0, text=progress_text)
+    with st.spinner('Wait for it...'):
+        for percent_complete in range(100):
+            time.sleep(0.01)
+            my_bar.progress(percent_complete + 1, text=progress_text)
+    my_bar.empty()
+   
 def language_translator(openai_api_key,demo_title="My Lang App"):
     import streamlit as st
     from langchain import LLMChain
@@ -21,8 +33,8 @@ def language_translator(openai_api_key,demo_title="My Lang App"):
         result = chain.run(input_language=input_language, output_language=output_language, text=text)
         return result
 
-    st.title(demo_title)
-
+    st.header(demo_title)
+    
     input_language = st.text_input("Input Language")
     output_language = st.text_input("Output Language")
     text = st.text_area("Text")
@@ -56,7 +68,7 @@ def blog_post_generator(openai_api_key,demo_title="My Blogger"):
         result = chain.run(title=title, text="")
         return result
 
-    st.title(demo_title)
+    st.header(demo_title)
 
     title = st.text_input("Enter the title of your blog post")
     if st.button("Generate Blog Post"):
@@ -88,7 +100,7 @@ def grammer_corrector(openai_api_key,demo_title="My Grammerly"):
         result = chain.run(text=text)
         return result
 
-    st.title(demo_title)
+    st.header(demo_title)
 
     text = st.text_input("Enter the text you want to correct")
     if st.button("Correct Grammar"):
@@ -119,7 +131,7 @@ def lyrics_generator(openai_api_key,demo_title="Lyrics Maker"):
         result = chain.run(title=title, text="")
         return result
 
-    st.title(demo_title)
+    st.header(demo_title)
 
     title = st.text_input("Enter the song title:")
     if st.button("Generate Song"):
@@ -137,4 +149,4 @@ example2pages={
     for example,page in zip(examples,pages)
 }
 
-__all__ = ['language_translator','grammer_corrector','blog_post_generator','lyrics_generator','example2pages','examples']
+__all__ = ['language_translator','grammer_corrector','blog_post_generator','lyrics_generator','example2pages','examples','wait']

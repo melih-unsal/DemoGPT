@@ -22,10 +22,26 @@ cols = st.columns([1,1,1.2,1.2])
 
 pid = None
 
-submitted = False
+pressed = False
 
-demo_name = st.sidebar.selectbox("Choose a demo", example2pages.keys())
-if openai_api_key:
-    example2pages[demo_name](openai_api_key,demo_title)
-else:
-    st.warning('Please enter your OpenAI API Key', icon="⚠️")
+if 'current' not in st.session_state:
+    st.session_state['current'] = ''
+    st.session_state['done'] = None 
+elif st.session_state['done']:
+    st.session_state['done'].empty()
+
+for col,example in zip(cols,examples):
+    if col.button(example):
+        st.session_state['current'] = example
+        pressed = True
+
+
+if st.session_state['current']:
+    with st.container():
+        if not openai_api_key:
+            st.warning('Please enter your OpenAI API Key', icon="⚠️")
+        else:
+            if pressed:
+                wait()
+                st.session_state['done'] = st.success('Done!')
+            example2pages[st.session_state['current']](openai_api_key,demo_title)
