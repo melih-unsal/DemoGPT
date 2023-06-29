@@ -22,7 +22,7 @@ DemoGPT is an innovative open-source project designed to streamline the developm
 The process is fully automated, with DemoGPT generating code, running tests, and progressively developing the project step by step. Each piece of code is tested and evaluated by itself. If it passes the auto-generated tests, the development proceeds, allowing for efficient and error-free development.
 
 ## Pipeline
-### DemoGPT Sequence Diagram
+### DemoGPT Pipeline
 ![DemoGPT Pipeline](demogpt_pipeline.png?raw=true "DemoGPT Pipeline")
 
 ## Installation
