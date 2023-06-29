@@ -1,4 +1,7 @@
 # DemoGPT
+[![Official Website](https://img.shields.io/badge/Official%20Website-demogpt.io-blue?style=flat&logo=world&logoColor=white)](https://demogpt.io)
+[![GitHub Repo stars](https://img.shields.io/github/stars/melih-unsal/DemoGPT?style=social)](https://github.com/melih-unsal/DemoGPT/stargazers)
+[![Twitter Follow](https://img.shields.io/twitter/follow/demo_gpt?style=social)](https://twitter.com/demo_gpt)
 
 ![DemoGPT](DemoGPT_banner_new.jpeg)
 
