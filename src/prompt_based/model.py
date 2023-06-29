@@ -51,7 +51,7 @@ class LogicModel:
         total_code=""
         refined_code=""
 
-        for _ in range(num_iterations):
+        for i in range(num_iterations):
             if error:
                 code = self.refine_chain.run(content=code,
                                              critics=feedback,
@@ -68,8 +68,8 @@ class LogicModel:
 
             response, error = self.run_python(total_code)
 
-            print("response:",response,type(response))
-            print("error:",colored(error,"red"),colored(type(error),"red"))
+            if len(error) > 0:
+                print("Iteration:",i,"error:",colored(error,"red"),colored(type(error),"red"))
 
             success = len(response) > 0    
 
@@ -122,7 +122,6 @@ class StreamlitModel:
             streamlit_path = subprocess.check_output("which streamlit", shell=True).strip().decode('utf-8')
             process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
             pid = process.pid
-            print("pid:",colored(pid,"red"))
             return pid
         
     def run_code_v2(self,code):
@@ -139,7 +138,6 @@ class StreamlitModel:
         process = subprocess.Popen([streamlit_path,"run",filepath], env=environmental_variables)
 
         pid = process.pid
-        print("pid:",colored(pid,"red"))
         return pid
 
     def refine_code(self,code):

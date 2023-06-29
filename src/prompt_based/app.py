@@ -1,9 +1,11 @@
 import streamlit as st
-import os
 import signal
 from model import LogicModel, StreamlitModel
 import webbrowser
 from time import sleep
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 num_of_iterations = 10
 
@@ -18,7 +20,7 @@ st.set_page_config(page_title=title)
 st.title(title)
 # Text input
 
-openai_api_key = st.text_input('Enter your OpenAI API Key', placeholder='sk-...',type="password")
+openai_api_key = st.text_input('Enter your OpenAI API Key', placeholder='sk-...',value=os.getenv('OPENAI_API_KEY',''),type="password")
 demo_title = st.text_input('Enter your demo title', placeholder='Type your demo title')
 empty_idea = st.empty()
 demo_idea = empty_idea.text_area('Enter your LLM-based demo idea', placeholder = 'Type your demo idea here', height=100)
