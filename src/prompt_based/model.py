@@ -31,10 +31,17 @@ class LogicModel:
         with tempfile.NamedTemporaryFile("w") as tmp:
             tmp.write(code)
             tmp.flush()
-            command = f"OPENAI_API_KEY={self.openai_api_key} python "+tmp.name
+            environmental_variables = {'OPENAI_API_KEY':self.openai_api_key}
+            python_path = subprocess.check_output("which python", shell=True).strip().decode('utf-8')
+            process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
+            output, err = process.communicate()
+            return output.strip().decode('utf-8'), err.strip().decode('utf-8')
+        
+
+            """command = f"OPENAI_API_KEY={self.openai_api_key} python "+tmp.name
             print(colored(command,"blue"))
             result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
-            return result.stdout, result.stderr
+            return result.stdout, result.stderr"""
         
     def refine_code(self,code):
         if "```" in code: 

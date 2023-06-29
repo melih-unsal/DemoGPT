@@ -14,7 +14,7 @@ template = """
     """
 system_message_prompt = SystemMessagePromptTemplate.from_template(template)
 
-human_template = """Write a streamlit code by looking at the logic code and test code to accomplish the GOAL with the given title. Also add st.balloons() to the code
+human_template = """Write a streamlit code by looking at the logic code and test code to accomplish the GOAL with the given title. Also when the result is ready add st.balloons() to the code 
 
 GOAL: {topic}
 --------- 
