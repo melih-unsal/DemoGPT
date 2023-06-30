@@ -1,8 +1,6 @@
 import streamlit as st
 from time import sleep
-from dotenv import load_dotenv
 import os
-load_dotenv()
 from templates import *
    
     
