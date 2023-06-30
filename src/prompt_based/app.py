@@ -3,9 +3,12 @@ import signal
 from model import LogicModel, StreamlitModel
 import webbrowser
 from time import sleep
-from dotenv import load_dotenv
 import os
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception as e:
+    print("dotenv import error but no needed")
 
 num_of_iterations = 10
 

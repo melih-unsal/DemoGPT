@@ -2,3 +2,4 @@ streamlit
 langchain
 openai
 tiktoken
+python-dotenv
