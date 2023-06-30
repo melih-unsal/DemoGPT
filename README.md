@@ -2,7 +2,7 @@
 [![Release Notes](https://img.shields.io/github/release/melih-unsal/DemoGPT)](https://github.com/melih-unsal/DemoGPT/releases)
 [![Official Website](https://img.shields.io/badge/Official%20Website-demogpt.io-blue?style=flat&logo=world&logoColor=white)](https://demogpt.io)
 [![GitHub star chart](https://img.shields.io/github/stars/melih-unsal/DemoGPT?style=social)](https://star-history.com/#melih-unsal/DemoGPT)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Twitter Follow](https://img.shields.io/twitter/follow/demo_gpt?style=social)](https://twitter.com/demo_gpt)
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://demogpt.streamlit.app)
