@@ -15,7 +15,6 @@ def wait():
             for percent_complete in range(start, end):
                 time.sleep(0.03*(num_of_texts-i))
                 my_bar.progress(percent_complete + 1, text=text)
-                print(percent_complete)
     my_bar.empty()
    
 def language_translator(openai_api_key,demo_title="My Lang App"):
@@ -149,14 +148,106 @@ def lyrics_generator(openai_api_key,demo_title="Lyrics Maker"):
             st.write(result)
             st.balloons()
 
+def twit_generator(openai_api_key,demo_title="My AutoTwitter"):
+    import streamlit as st
+    from langchain import LLMChain
+    from langchain.chat_models import ChatOpenAI
+    from langchain.prompts.chat import (
+        ChatPromptTemplate,
+        SystemMessagePromptTemplate,
+        HumanMessagePromptTemplate,
+    )
 
-examples = ["Language Translator 📝","Grammer Corrector 🛠","Blog post generator from title 📔","Lyrics generator from song title 🎤"] 
+    def twitter(hashtag):
+        chat = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.1)
 
-pages = [language_translator,grammer_corrector,blog_post_generator,lyrics_generator]
+        template = "You are a helpful assistant that generate twit from {hashtag}. Please provide the hashtag to generate a twit."
+        system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+        human_template = "Only generate the corresponding twit for this hashtag {hashtag}"
+        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+        chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+
+        chain = LLMChain(llm=chat, prompt=chat_prompt)
+        result = chain.run(hashtag=hashtag)
+        return result
+
+    st.header(demo_title)
+    
+    hashtag = st.text_input("Hashtag",placeholder="#")
+
+    if st.button("Generate"):
+        result = twitter(hashtag)
+        st.write(result)
+        st.balloons()
+
+def email_generator(openai_api_key,demo_title="My AutoTwitter"):
+    import streamlit as st
+    from langchain import LLMChain
+    from langchain.chat_models import ChatOpenAI
+    from langchain.prompts.chat import (
+        ChatPromptTemplate,
+        SystemMessagePromptTemplate,
+        HumanMessagePromptTemplate,
+    )
+
+    def email(sender_name,receiver_name,purpose,keywords,tone):
+        chat = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.1)
+
+        template = "You are a helpful assistant that generate email to a person according to the given purpose, keywords and tone."
+        system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+        human_template = """Generate email for a person according to the given purpose, keywords and tone.
+        Sender Name:{sender_name}
+        Receiver Name:{receiver_name}
+        Purpose:{purpose}
+        Keywords:{keywords}
+        Tone:{tone}
+        Directly start to type an email
+        """
+        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+        chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+
+        chain = LLMChain(llm=chat, prompt=chat_prompt)
+        result = chain.run(sender_name=sender_name, receiver_name=receiver_name, purpose=purpose, keywords=keywords, tone=tone)
+        return result
+
+    st.header(demo_title)
+    
+    sender_name = st.text_input("Name of the sender")
+    receiver_name = st.text_input("Receiver of the sender")
+    purpose = st.text_input("Purpose of email")
+    keywords = st.text_input("Primary keywords",placeholder="comma separated list of keywords")
+    tone = st.text_input("Tone of the email")
+
+    if st.button("Generate"):
+        with st.spinner("Generating email..."):
+            result = email(sender_name,receiver_name,purpose,keywords,tone)
+            st.write(result)
+            st.balloons()
+
+examples1 = [
+    "Language Translator 📝",
+    "Grammer Corrector 🛠",
+    "Blog post generator from title 📔"
+    ]
+
+examples2=[
+    "Lyrics generator from song title 🎤",
+    "Twit generation from hashtag 🐦",
+    'Email generator :email:'
+    ] 
+
+examples = examples1 + examples2
+
+pages1 = [language_translator,grammer_corrector,blog_post_generator]
+pages2=[lyrics_generator,twit_generator,email_generator]
+
+pages = pages1 + pages2
 
 example2pages={
     example:page
     for example,page in zip(examples,pages)
 }
 
-__all__ = ['language_translator','grammer_corrector','blog_post_generator','lyrics_generator','example2pages','examples','wait']
+
+__all__ = ['language_translator','grammer_corrector','blog_post_generator','lyrics_generator','twit_generator',
+           'example2pages', 'examples', 'examples1', 'examples2', 'wait']
