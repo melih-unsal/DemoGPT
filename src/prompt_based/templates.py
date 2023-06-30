@@ -2,12 +2,20 @@ def wait():
     import streamlit as st
     import time
 
-    progress_text = "Operation in progress. Please wait."
-    my_bar = st.progress(0, text=progress_text)
-    with st.spinner('Wait for it...'):
-        for percent_complete in range(100):
-            time.sleep(0.01)
-            my_bar.progress(percent_complete + 1, text=progress_text)
+    progress_texts = ["Generating Code...:pencil:","Creating App...:running:","Rendering the demo page...:tv:"]
+    num_of_texts = len(progress_texts)
+    progress_texts_iter =  iter(progress_texts)
+    my_bar = st.progress(0, "Initializing...")
+    with st.spinner('Processing...'):
+        start = end = 0
+        for i in range(num_of_texts):
+            text = next(progress_texts_iter)
+            start = end
+            end = start + 100 // num_of_texts
+            for percent_complete in range(start, end):
+                time.sleep(0.03*(num_of_texts-i))
+                my_bar.progress(percent_complete + 1, text=text)
+                print(percent_complete)
     my_bar.empty()
    
 def language_translator(openai_api_key,demo_title="My Lang App"):
@@ -73,9 +81,10 @@ def blog_post_generator(openai_api_key,demo_title="My Blogger"):
     title = st.text_input("Enter the title of your blog post")
     if st.button("Generate Blog Post"):
         print("Generate")
-        result = generate_blog_post(title)
-        st.write(result)
-        st.balloons()
+        with st.spinner("Generating the blog post..."):
+            result = generate_blog_post(title)
+            st.write(result)
+            st.balloons()
 
 def grammer_corrector(openai_api_key,demo_title="My Grammerly"):
     import streamlit as st
@@ -135,9 +144,10 @@ def lyrics_generator(openai_api_key,demo_title="Lyrics Maker"):
 
     title = st.text_input("Enter the song title:")
     if st.button("Generate Song"):
-        result = generate_song(title)
-        st.write(result)
-        st.balloons()
+        with st.spinner("Generating song..."):
+            result = generate_song(title)
+            st.write(result)
+            st.balloons()
 
 
 examples = ["Language Translator 📝","Grammer Corrector 🛠","Blog post generator from title 📔","Lyrics generator from song title 🎤"] 

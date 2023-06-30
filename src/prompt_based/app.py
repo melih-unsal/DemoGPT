@@ -35,7 +35,7 @@ for col,example in zip(cols,examples):
         st.session_state['current'] = example
         pressed = True
 
-
+st.markdown('----')
 if st.session_state['current']:
     with st.container():
         if not openai_api_key:
@@ -45,3 +45,4 @@ if st.session_state['current']:
                 wait()
                 st.session_state['done'] = st.success('Done!')
             example2pages[st.session_state['current']](openai_api_key,demo_title)
+st.markdown('----')
