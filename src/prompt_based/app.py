@@ -3,7 +3,7 @@ from time import sleep
 import os
 from templates import *
    
-    
+
 # Page title
 title = '🦜🔗 DemoGPT'
 
@@ -57,3 +57,5 @@ if st.session_state['current']:
                 st.session_state['done'] = st.success('Done!')
             example2pages[st.session_state['current']](openai_api_key,demo_title)
 st.markdown('----')
+REPO_URL = "https://github.com/melih-unsal/DemoGPT"
+st.markdown(f"project [repo on github]({REPO_URL}) waiting for your :star:")
