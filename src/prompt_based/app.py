@@ -18,7 +18,7 @@ st.markdown(
 )
 # Text input    
 
-openai_api_key = st.text_input('Enter your OpenAI API Key', placeholder='sk-...',value=os.getenv('OPENAI_API_KEY',''),type="password")
+openai_api_key = st.text_input('Enter your OpenAI API Key', placeholder='sk-...',type="password")
 demo_title = st.text_input('Enter your demo title', placeholder='Type your demo title')
 
 st.write("Examples")
