@@ -213,7 +213,7 @@ def email_generator(openai_api_key,demo_title="My AutoTwitter"):
     st.header(demo_title)
     
     sender_name = st.text_input("Name of the sender")
-    receiver_name = st.text_input("Receiver of the sender")
+    receiver_name = st.text_input("Name of the receiver")
     purpose = st.text_input("Purpose of email")
     keywords = st.text_input("Primary keywords",placeholder="comma separated list of keywords")
     tone = st.text_input("Tone of the email")
