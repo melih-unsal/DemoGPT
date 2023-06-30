@@ -5,6 +5,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Twitter Follow](https://img.shields.io/twitter/follow/demo_gpt?style=social)](https://twitter.com/demo_gpt)
 
+## Spaces
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://demogpt.streamlit.app)
+[![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97-Spaces-yellow)](https://huggingface.co/spaces/melihunsal/demogpt)
+
 ![DemoGPT](DemoGPT_banner_new.jpeg)
 
 ## Demo
