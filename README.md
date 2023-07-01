@@ -14,7 +14,7 @@
 
 ![DemoGPT](DemoGPT_banner_new.jpeg)
 
-## Demo
+## 🔥 Demo
 
 For quick demo, you can visit [our website](https://demogpt.io)
 
