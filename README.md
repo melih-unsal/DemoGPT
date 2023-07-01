@@ -1,4 +1,6 @@
 # DemoGPT
+⚡ Create quick demos by just using prompt.⚡
+
 [![Release Notes](https://img.shields.io/github/release/melih-unsal/DemoGPT)](https://github.com/melih-unsal/DemoGPT/releases)
 [![Official Website](https://img.shields.io/badge/Official%20Website-demogpt.io-blue?style=flat&logo=world&logoColor=white)](https://demogpt.io)
 [![GitHub star chart](https://img.shields.io/github/stars/melih-unsal/DemoGPT?style=social)](https://star-history.com/#melih-unsal/DemoGPT)
@@ -13,6 +15,8 @@
 ![DemoGPT](DemoGPT_banner_new.jpeg)
 
 ## Demo
+
+For quick demo, you can visit [our site](https://demogpt.io)
 
 https://github.com/melih-unsal/DemoGPT/assets/34304254/8991e296-b6fe-4817-bd08-4dab6d13020d
 
