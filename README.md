@@ -14,7 +14,7 @@
 
 ## Demo
 
-https://github.com/melih-unsal/DemoGPT/assets/34304254/7100d8e0-87ba-4690-8e5c-9689d9f9c112
+https://github.com/melih-unsal/DemoGPT/assets/34304254/8991e296-b6fe-4817-bd08-4dab6d13020d
 
 ## Table of Contents
 
