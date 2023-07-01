@@ -22,12 +22,12 @@ https://github.com/melih-unsal/DemoGPT/assets/34304254/8991e296-b6fe-4817-bd08-4
 
 ## 📑 Table of Contents
 
-- [Introduction](#introduction)
-- [Pipeline](#pipeline)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contribute](#contribute)
-- [License](#license)
+- [Introduction](#-introduction)
+- [Pipeline](#%EF%B8%8F-pipeline)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Contribute](#-contribute)
+- [License](#-license)
 
 ## 📌 Introduction
 
