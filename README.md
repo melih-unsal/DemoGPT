@@ -29,17 +29,17 @@ https://github.com/melih-unsal/DemoGPT/assets/34304254/8991e296-b6fe-4817-bd08-4
 - [Contribute](#contribute)
 - [License](#license)
 
-## Introduction
+## 📌 Introduction
 
 DemoGPT is an innovative open-source project designed to streamline the development of Language Learning Model (LLM) based applications. It leverages the capabilities of GPT-3.5-turbo to auto-generate LangChain code using a 'Tree of Thoughts' (ToT) approach. LangChain is traditionally used for creating pipelines for LLM-based applications, and with DemoGPT, we are transforming the way we handle these pipelines. 
 
 The process is fully automated, with DemoGPT generating code, running tests, and progressively developing the project step by step. Each piece of code is tested and evaluated by itself. If it passes the auto-generated tests, the development proceeds, allowing for efficient and error-free development.
 
-## Pipeline
+## ⚙️ Pipeline
 ### DemoGPT Pipeline
 ![DemoGPT Pipeline](demogpt_pipeline.png?raw=true "DemoGPT Pipeline")
 
-## Installation
+## 🔧 Installation
 
 To get started with DemoGPT, you'll first need to clone the repository:
 ```
@@ -56,7 +56,7 @@ Then, install the necessary dependencies.
 pip install -r requirements.txt
 ```
 
-## Usage
+## 🎮 Usage
 
 To use DemoGPT, you can run the command below:
 
@@ -65,13 +65,13 @@ cd src/prompt_based
 streamlit run app.py
 ```
 
-## Contribute
+## 🤝 Contribute
 
 Contributions to the DemoGPT project are welcomed! Whether you're fixing bugs, improving the documentation, or proposing new features, your efforts are highly appreciated. Please check the open issues before starting any work.
 
 > Please read [`CONTRIBUTING`](CONTRIBUTING.md) for details on our [`CODE OF CONDUCT`](CODE_OF_CONDUCT.md), and the process for submitting pull requests to us.
 
-## License
+## 📜 License
 
 DemoGPT is an open-source project licensed under [MIT License](LICENSE).
 
