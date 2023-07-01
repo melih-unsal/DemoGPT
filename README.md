@@ -1,5 +1,5 @@
 # 🚀🔮 DemoGPT
-⚡ Create quick demos by just using prompt.⚡
+⚡ Create quick demos by just using prompt. ⚡
 
 [![Release Notes](https://img.shields.io/github/release/melih-unsal/DemoGPT)](https://github.com/melih-unsal/DemoGPT/releases)
 [![Official Website](https://img.shields.io/badge/Official%20Website-demogpt.io-blue?style=flat&logo=world&logoColor=white)](https://demogpt.io)
