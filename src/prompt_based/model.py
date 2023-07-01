@@ -2,12 +2,10 @@ from prompts import *
 from streamlit_prompts import *
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
-from subprocess import PIPE, run
+from subprocess import PIPE
 import tempfile
 from termcolor import colored
 import subprocess
-from subprocess import DEVNULL, STDOUT
-import sys
 import shutil
 
 from dotenv import load_dotenv
@@ -33,17 +31,10 @@ class LogicModel:
             tmp.write(code)
             tmp.flush()
             environmental_variables = {'OPENAI_API_KEY':self.openai_api_key}
-            #python_path = subprocess.check_output("which python", shell=True).strip().decode('utf-8')
             python_path = shutil.which("python")
             process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
             output, err = process.communicate()
             return output.strip().decode('utf-8'), err.strip().decode('utf-8')
-        
-
-            """command = f"OPENAI_API_KEY={self.openai_api_key} python "+tmp.name
-            print(colored(command,"blue"))
-            result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
-            return result.stdout, result.stderr"""
         
     def refine_code(self,code):
         if "```" in code: 
@@ -85,6 +76,8 @@ class LogicModel:
             if success:
                 break
 
+            response = error
+
             feedback = self.fix_chain.run(code=total_code,error=error)
 
             percentage += 100 // num_iterations
@@ -124,11 +117,7 @@ class StreamlitModel:
         with tempfile.NamedTemporaryFile("w",suffix=".py") as tmp:
             tmp.write(code)
             tmp.flush()
-            command = f"OPENAI_API_KEY={self.openai_api_key} streamlit run "+tmp.name
             environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
-            #python_path = subprocess.check_output("which python", shell=True).strip().decode('utf-8')
-            #process = subprocess.Popen([python_path,"-m","streamlit",tmp.name], env=environmental_variables)
-            #streamlit_path = subprocess.check_output("which streamlit", shell=True).strip().decode('utf-8')
             streamlit_path = shutil.which("python")
             process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
             pid = process.pid
@@ -140,14 +129,9 @@ class StreamlitModel:
         with open(filepath,"w") as tmp:
             tmp.write(code)
             tmp.flush()
-        command = f"OPENAI_API_KEY={self.openai_api_key} streamlit run "+filepath
         environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
-        #python_path = subprocess.check_output("which python", shell=True).strip().decode('utf-8')
-        #process = subprocess.Popen([python_path,"-m","streamlit",filepath], env=environmental_variables)
-        #streamlit_path = subprocess.check_output("which streamlit", shell=True).strip().decode('utf-8')
         streamlit_path = shutil.which("streamlit")
         process = subprocess.Popen([streamlit_path,"run",filepath], env=environmental_variables)
-
         pid = process.pid
         return pid
 
