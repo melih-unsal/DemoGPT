@@ -1,4 +1,4 @@
-# 🚀🔮 DemoGPT
+# DemoGPT
 ⚡ Create quick demos by just using prompt. ⚡
 
 [![Release Notes](https://img.shields.io/github/release/melih-unsal/DemoGPT)](https://github.com/melih-unsal/DemoGPT/releases)
