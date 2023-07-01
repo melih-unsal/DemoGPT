@@ -18,7 +18,7 @@ st.markdown(
 )
 # Text input    
 
-openai_api_key = st.text_input('Enter your OpenAI API Key', placeholder='sk-...',type="password")
+openai_api_key = st.sidebar.text_input('OpenAI API Key', placeholder='sk-...',type="password")
 demo_title = st.text_input('Enter your demo title', placeholder='Type your demo title')
 
 st.write("Examples")
@@ -49,13 +49,13 @@ for col,example in zip(cols2,examples2):
 st.markdown('----')
 if st.session_state['current']:
     with st.container():
-        if not openai_api_key:
-            st.warning('Please enter your OpenAI API Key', icon="⚠️")
+        if not openai_api_key.startswith('sk-'):
+            st.warning('Please enter your OpenAI API key!', icon='⚠')
         else:
-            if pressed:
+            if pressed and openai_api_key.startswith('sk-'):
                 wait()
                 st.session_state['done'] = st.success('Done!')
             example2pages[st.session_state['current']](openai_api_key,demo_title)
 st.markdown('----')
 REPO_URL = "https://github.com/melih-unsal/DemoGPT"
-st.markdown(f"project [repo on github]({REPO_URL}) waiting for your :star:")
+st.markdown(f"Project [repo on github]({REPO_URL}) waiting for your :star:")
