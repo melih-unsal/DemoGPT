@@ -23,7 +23,7 @@ st.set_page_config(page_title=title)
 st.title(title)
 # Text input
 
-openai_api_key = st.text_input('Enter your OpenAI API Key', placeholder='sk-...',value=os.getenv('OPENAI_API_KEY',''),type="password")
+openai_api_key = st.sidebar.text_input('OpenAI API Key', placeholder='sk-...',value=os.getenv('OPENAI_API_KEY',''), type="password")
 demo_title = st.text_input('Enter your demo title', placeholder='Type your demo title')
 empty_idea = st.empty()
 demo_idea = empty_idea.text_area('Enter your LLM-based demo idea', placeholder = 'Type your demo idea here', height=100)
@@ -52,8 +52,8 @@ with st.form('a', clear_on_submit=True):
 
     if submitted or example_submitted:
 
-        if not openai_api_key:
-            st.warning('Please enter your OpenAI API Key', icon="⚠️")
+        if not openai_api_key.startswith('sk-'):
+            st.warning('Please enter your OpenAI API Key!', icon="⚠️")
         else:
             agent = LogicModel(openai_api_key=openai_api_key)
             streamlit_agent = StreamlitModel(openai_api_key=openai_api_key)
