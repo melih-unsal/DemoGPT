@@ -4,8 +4,8 @@
 [![GitHub star chart](https://img.shields.io/github/stars/melih-unsal/DemoGPT?style=social)](https://star-history.com/#melih-unsal/DemoGPT)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Twitter Follow](https://img.shields.io/twitter/follow/demo_gpt?style=social)](https://twitter.com/demo_gpt)
-[![GitHub issues open](https://img.shields.io/github/issues/melih-unsal/DemoGPT.svg?maxAge=259200000)]() 
-[![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/melih-unsal/DemoGPT.svg?maxAge=259200000)]()
+[![GitHub issues open](https://img.shields.io/github/issues/melih-unsal/DemoGPT.svg?maxAge=259200000)](https://github.com/melih-unsal/DemoGPT/issues?q=is%3Aopen+is%3Aissue) 
+[![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/melih-unsal/DemoGPT.svg?maxAge=259200000)](https://github.com/melih-unsal/DemoGPT/issues?q=is%3Aissue+is%3Aclosed)
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://demogpt.streamlit.app)
 [![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97-Spaces-yellow)](https://huggingface.co/spaces/melihunsal/demogpt)
