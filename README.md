@@ -16,7 +16,7 @@
 
 ## Demo
 
-For quick demo, you can visit [our site](https://demogpt.io)
+For quick demo, you can visit [our website](https://demogpt.io)
 
 https://github.com/melih-unsal/DemoGPT/assets/34304254/8991e296-b6fe-4817-bd08-4dab6d13020d
 
