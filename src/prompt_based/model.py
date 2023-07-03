@@ -13,17 +13,29 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
-class LogicModel:
+class BaseModel:
     def __init__(self,openai_api_key):
         self.openai_api_key = openai_api_key
         self.llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.0)
+
+    def refine_code(self,code):
+        if "```" in code: 
+            code = code.split("```")[1]
+            if code.startswith("python"):
+                code = code[len("python"):].strip()
+        return code
+
+class LogicModel(BaseModel):
+    
+    def __init__(self,openai_api_key):
+        super().__init__(openai_api_key)
         self.code_chain = LLMChain(llm=self.llm, prompt=code_prompt)
         self.test_chain = LLMChain(llm=self.llm, prompt=test_prompt)
         self.refine_chain = LLMChain(llm=self.llm,prompt=refine_chat_prompt)
         self.fix_chain = LLMChain(llm=self.llm,prompt=fix_chat_prompt)
         self.check_chain = LLMChain(llm=self.llm,prompt=check_chat_prompt)
         self.document = ""
-        for path in ["examples.txt"]:
+        for path in ["src/prompt_based/examples.txt"]:
             with open(path) as f:
                 self.document += f.read()
 
@@ -38,14 +50,6 @@ class LogicModel:
             process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
             output, err = process.communicate()
             return output.strip().decode('utf-8'), err.strip().decode('utf-8')
-        
-    def refine_code(self,code):
-        if "```" in code: 
-            code = code.split("```")[1]
-            if code.startswith("python"):
-                code = code[len("python"):].strip()
-        return code
-
     
     def __call__(self,topic,num_iterations=10):
         error = ""
@@ -110,30 +114,19 @@ class LogicModel:
         }
 
 
-class StreamlitModel:
+class StreamlitModel(BaseModel):
     def __init__(self,openai_api_key):
-        self.openai_api_key = openai_api_key
-        self.llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.0)
+        super().__init__(openai_api_key)
         self.streamlit_code_chain = LLMChain(llm=self.llm, prompt=streamlit_code_prompt)
  
     def run_code(self,code):
-        filepath = "~/code.py"
-        filepath = os.path.expanduser(filepath)
-        with open(filepath,"w") as tmp:
+        with tempfile.NamedTemporaryFile("w",suffix=".py",delete=False) as tmp:
             tmp.write(code)
             tmp.flush()
-        environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
-        streamlit_path = shutil.which("streamlit")
-        process = subprocess.Popen([streamlit_path,"run",filepath], env=environmental_variables)
-        pid = process.pid
-        return pid
-
-    def refine_code(self,code):
-        if "```" in code: 
-            code = code.split("```")[1]
-            if code.startswith("python"):
-                code = code[len("python"):].strip()
-        return code
+            environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
+            streamlit_path = shutil.which("streamlit")
+            process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
+            return process.pid
     
     def __call__(self,topic, title, code, test_code,progress_func,baloon_func):
         streamlit_code = self.streamlit_code_chain.run(topic=topic, title=title, logic_code=code, test_code=test_code)
@@ -141,5 +134,3 @@ class StreamlitModel:
         progress_func(100,"Redirecting to the demo page...")
         baloon_func()
         return self.run_code(refined_code)
-        
-

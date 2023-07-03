@@ -4,6 +4,7 @@ from model import LogicModel, StreamlitModel
 import webbrowser
 from time import sleep
 import os
+from termcolor import colored
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -38,7 +39,8 @@ cols = st.columns([1,1,1.2])
 
 examples = ["Language Translator 📝","Grammer Corrector 🛠","Blog post generator from title 📔"] 
 
-pid = None
+if 'pid' not in st.session_state:
+    st.session_state['pid'] = -1
 
 example_submitted = False
 
@@ -58,10 +60,10 @@ with st.form('a', clear_on_submit=True):
             agent = LogicModel(openai_api_key=openai_api_key)
             streamlit_agent = StreamlitModel(openai_api_key=openai_api_key)
 
-            if pid:
+            if st.session_state['pid'] != -1:
                 print("Terminating...")
-                os.kill(pid, signal.SIGTERM)
-                pid = None
+                os.kill(st.session_state['pid'], signal.SIGTERM)
+                st.session_state['pid'] = -1
             
             bar = st.progress(25, "Generating Code...")
             for data in generate_response(demo_idea):
@@ -75,7 +77,8 @@ with st.form('a', clear_on_submit=True):
                 if success:
                     bar.progress(75, text="Creating App...")
                     example_submitted = False
-                    pid = streamlit_agent(demo_idea,demo_title,code,test_code,bar.progress,st.balloons)
+                    st.session_state['pid'] = streamlit_agent(demo_idea,demo_title,code,test_code,bar.progress,st.balloons)
+                    print(colored(st.session_state['pid'],"green"))
                     sleep(5)
                     webbrowser.open('http://localhost:8502')
 
