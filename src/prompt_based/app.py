@@ -83,5 +83,4 @@ with st.form('a', clear_on_submit=True):
                     bar.progress(50, text="Refining Code...")
 
                 if success:
-                    #st.balloons()
                     break
