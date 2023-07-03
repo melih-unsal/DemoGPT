@@ -9,10 +9,6 @@ import subprocess
 import shutil
 import sys
 
-from dotenv import load_dotenv
-import os
-load_dotenv()
-
 class BaseModel:
     def __init__(self,openai_api_key):
         self.openai_api_key = openai_api_key

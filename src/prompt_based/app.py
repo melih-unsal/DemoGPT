@@ -35,7 +35,13 @@ st.write("Examples")
 
 cols = st.columns([1,1,1.2])
 
-
+PROGRESS_BAR_TEXTS = {
+    "start":colored("Generating Code...","blue"),
+    "refining":colored("Refining Code...","yellow"),
+    "creating":colored("Creating App...","green"),
+    "done":colored("Done","green"),
+    "failed":colored("Failed","red")
+}
 
 examples = ["Language Translator 📝","Grammer Corrector 🛠","Blog post generator from title 📔"] 
 
@@ -87,3 +93,5 @@ with st.form('a', clear_on_submit=True):
 
                 if success:
                     break
+            else:
+                bar.progress(100, text="Failed")
