@@ -76,7 +76,7 @@ with st.form('a', clear_on_submit=True):
                     bar.progress(75, text="Creating App...")
                     example_submitted = False
                     pid = streamlit_agent(demo_idea,demo_title,code,test_code,bar.progress,st.balloons)
-                    sleep(4)
+                    sleep(5)
                     webbrowser.open('http://localhost:8502')
 
                 else:

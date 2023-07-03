@@ -7,6 +7,7 @@ import tempfile
 from termcolor import colored
 import subprocess
 import shutil
+import sys
 
 from dotenv import load_dotenv
 import os
@@ -32,6 +33,8 @@ class LogicModel:
             tmp.flush()
             environmental_variables = {'OPENAI_API_KEY':self.openai_api_key}
             python_path = shutil.which("python")
+            if not python_path: # shows 'which' returns None
+                python_path = sys.executable 
             process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
             output, err = process.communicate()
             return output.strip().decode('utf-8'), err.strip().decode('utf-8')
@@ -112,18 +115,8 @@ class StreamlitModel:
         self.openai_api_key = openai_api_key
         self.llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.0)
         self.streamlit_code_chain = LLMChain(llm=self.llm, prompt=streamlit_code_prompt)
-
+ 
     def run_code(self,code):
-        with tempfile.NamedTemporaryFile("w",suffix=".py") as tmp:
-            tmp.write(code)
-            tmp.flush()
-            environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
-            streamlit_path = shutil.which("python")
-            process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
-            pid = process.pid
-            return pid
-        
-    def run_code_v2(self,code):
         filepath = "~/code.py"
         filepath = os.path.expanduser(filepath)
         with open(filepath,"w") as tmp:
@@ -147,6 +140,6 @@ class StreamlitModel:
         refined_code = self.refine_code(streamlit_code)
         progress_func(100,"Redirecting to the demo page...")
         baloon_func()
-        return self.run_code_v2(refined_code)
+        return self.run_code(refined_code)
         
 
