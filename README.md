@@ -1,5 +1,5 @@
 # ![favicon](./puzzle.png) DemoGPT
-⚡ Create quick demos by just using prompt. ⚡
+> _⚡ Create quick demos by just using prompt. ⚡_
 
 [![Release Notes](https://img.shields.io/github/release/melih-unsal/DemoGPT)](https://github.com/melih-unsal/DemoGPT/releases)
 [![Official Website](https://img.shields.io/badge/Official%20Website-demogpt.io-blue?style=flat&logo=world&logoColor=white)](https://demogpt.io)
@@ -14,11 +14,14 @@
 
 ![DemoGPT](demogpt_new_banner.jpeg)
 
+[![Documentation](https://img.shields.io/badge/Documentation-📘-blueviolet)](https://melih-unsal.github.io/DemoGPT-Docs/)
+
 ## 🔥 Demo
 
 For quick demo, you can visit [our website](https://demogpt.io)
 
 https://github.com/melih-unsal/DemoGPT/assets/34304254/8991e296-b6fe-4817-bd08-4dab6d13020d
+
 
 ## 📑 Table of Contents
 
@@ -41,26 +44,24 @@ The process is fully automated, with DemoGPT generating code, running tests, and
 
 ## 🔧 Installation
 
-To get started with DemoGPT, you'll first need to clone the repository:
-```
-git clone https://github.com/melih-unsal/DemoGPT.git
-```
-
-Next, navigate to the project directory:
-```
-cd DemoGPT
-```
-
-Then, install the necessary dependencies. 
-```
-pip install -r requirements.txt
-```
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/melih-unsal/DemoGPT.git
+    ```
+2. Navigate into the project directory:
+    ```sh
+    cd DemoGPT
+    ```
+3. Install the necessary dependencies: 
+    ```sh
+    pip install -r requirements.txt
+    ```
 
 ## 🎮 Usage
 
-To use DemoGPT, you can run the command below:
+Once installed, you can use DemoGPT by running the following command:
 
-```
+```sh
 streamlit run src/prompt_based/app.py
 ```
 

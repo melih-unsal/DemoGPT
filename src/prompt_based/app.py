@@ -4,12 +4,15 @@ from model import LogicModel, StreamlitModel
 import webbrowser
 from time import sleep
 import os
-from termcolor import colored
+import logging 
+
+logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
+
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except Exception as e:
-    print("dotenv import error but no needed")
+    logging.error("dotenv import error but no needed")
 
 num_of_iterations = 10
 
@@ -18,7 +21,7 @@ def generate_response(txt):
         yield data
     
 # Page title
-title = '🦜🔗 DemoGPT'
+title = '🧩 DemoGPT'
 
 st.set_page_config(page_title=title)
 st.title(title)
@@ -29,18 +32,15 @@ demo_title = st.text_input('Enter your demo title', placeholder='Type your demo 
 empty_idea = st.empty()
 demo_idea = empty_idea.text_area('Enter your LLM-based demo idea', placeholder = 'Type your demo idea here', height=100)
 
-
 st.write("Examples")
-
 
 cols = st.columns([1,1,1.2])
 
 PROGRESS_BAR_TEXTS = {
-    "start":colored("Generating Code...","blue"),
-    "refining":colored("Refining Code...","yellow"),
-    "creating":colored("Creating App...","green"),
-    "done":colored("Done","green"),
-    "failed":colored("Failed","red")
+    "start":"Generating Code...",
+    "creating":"Creating App...",
+    "refining":"Refining Code...",
+    "failed":"Failed"
 }
 
 examples = ["Language Translator 📝","Grammer Corrector 🛠","Blog post generator from title 📔"] 
@@ -56,7 +56,7 @@ with st.form('a', clear_on_submit=True):
         if col.button(example):
             example_submitted = True
             demo_idea = empty_idea.text_area('Enter your LLM-based demo idea', example, height=100)
-            print(demo_idea)
+            logging.info(f"Demo Idea:{demo_idea}")
 
     if submitted or example_submitted:
 
@@ -67,11 +67,11 @@ with st.form('a', clear_on_submit=True):
             streamlit_agent = StreamlitModel(openai_api_key=openai_api_key)
 
             if st.session_state['pid'] != -1:
-                print("Terminating...")
+                logging.info(f"Terminating the previous applicaton ...")
                 os.kill(st.session_state['pid'], signal.SIGTERM)
                 st.session_state['pid'] = -1
             
-            bar = st.progress(25, "Generating Code...")
+            bar = st.progress(25, PROGRESS_BAR_TEXTS["start"])
             for data in generate_response(demo_idea):
                 response = data["out"]
                 error = data["error"]
@@ -81,17 +81,16 @@ with st.form('a', clear_on_submit=True):
                 percentage = data["percentage"]
 
                 if success:
-                    bar.progress(75, text="Creating App...")
+                    bar.progress(75, text=PROGRESS_BAR_TEXTS["creating"])
                     example_submitted = False
                     st.session_state['pid'] = streamlit_agent(demo_idea,demo_title,code,test_code,bar.progress,st.balloons)
-                    print(colored(st.session_state['pid'],"green"))
                     sleep(5)
                     webbrowser.open('http://localhost:8502')
 
                 else:
-                    bar.progress(50, text="Refining Code...")
+                    bar.progress(50, text=PROGRESS_BAR_TEXTS["refining"])
 
                 if success:
                     break
             else:
-                bar.progress(100, text="Failed")
+                bar.progress(100, text=PROGRESS_BAR_TEXTS["failed"])

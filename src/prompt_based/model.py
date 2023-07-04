@@ -1,20 +1,44 @@
 from prompts import *
-from streamlit_prompts import *
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from subprocess import PIPE
 import tempfile
-from termcolor import colored
 import subprocess
 import shutil
 import sys
+import logging
 
 class BaseModel:
+    """
+    Base class for the LogicModel and StreamlitModel classes.
+
+    Methods:
+        - __init__(self, openai_api_key: str):
+            Initializes the BaseModel with the provided OpenAI API key.
+        
+        - refine_code(self, code: str) -> str:
+            Refines the provided code by removing unnecessary parts.
+    """
     def __init__(self,openai_api_key):
+        """
+        Initializes the BaseModel with the provided OpenAI API key.
+
+        Args:
+            openai_api_key (str): The OpenAI API key.
+        """
         self.openai_api_key = openai_api_key
         self.llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.0)
 
     def refine_code(self,code):
+        """
+        Refines the provided code by removing unnecessary parts.
+
+        Args:
+            code (str): The code to be refined.
+
+        Returns:
+            str: The refined code.
+        """
         if "```" in code: 
             code = code.split("```")[1]
             if code.startswith("python"):
@@ -22,20 +46,71 @@ class BaseModel:
         return code
 
 class LogicModel(BaseModel):
-    
+    """
+    Represents the logic model for generating Python code.
+
+    Methods:
+        - __init__(self, openai_api_key: str):
+            Initializes the LogicModel with the provided OpenAI API key.
+        
+        - addDocuments(self):
+            Adds documents to the logic model for generating Python code.
+
+        - decode_results(self, results) -> Generator[str, None, None]:
+            Decodes the results returned by the GPT-3.5-turbo model.
+
+        - run_python(self, code: str) -> Tuple[str, str, bool]:
+            Executes the Python code using the subprocess module.
+
+        - __call__(self, topic: str, num_iterations: int = 10) -> Generator[Dict[str, Any], None, None]:
+            Executes the logic model to generate Python code based on the given topic.
+    """
     def __init__(self,openai_api_key):
+        """
+        Initializes the LogicModel with the provided OpenAI API key.
+
+        Args:
+            openai_api_key (str): The OpenAI API key.
+        """
         super().__init__(openai_api_key)
         self.code_chain = LLMChain(llm=self.llm, prompt=code_prompt)
         self.test_chain = LLMChain(llm=self.llm, prompt=test_prompt)
         self.refine_chain = LLMChain(llm=self.llm,prompt=refine_chat_prompt)
         self.fix_chain = LLMChain(llm=self.llm,prompt=fix_chat_prompt)
         self.check_chain = LLMChain(llm=self.llm,prompt=check_chat_prompt)
+        self.addDocuments()
+
+    def addDocuments(self):
+        """
+        Adds documents to the logic model for generating Python code.
+        """ 
         self.document = ""
         for path in ["src/prompt_based/examples.txt"]:
             with open(path) as f:
                 self.document += f.read()
 
+    def decode_results(self, results):
+        """
+        Decodes the results returned by the executed python code
+
+        Args:
+            results: The results to be decoded.
+
+        Returns:
+            Tuple[str, str]: The decoded results.
+        """
+        return (res.strip().decode('utf-8') for res in results)
+
     def run_python(self,code):
+        """
+        Executes the Python code using the subprocess module.
+
+        Args:
+            code (str): The Python code to be executed.
+
+        Returns:
+            Tuple[str, str, bool]: The output, error, and success status of the execution.
+        """
         with tempfile.NamedTemporaryFile("w") as tmp:
             tmp.write(code)
             tmp.flush()
@@ -44,10 +119,21 @@ class LogicModel(BaseModel):
             if not python_path: # shows 'which' returns None
                 python_path = sys.executable 
             process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
-            output, err = process.communicate()
-            return output.strip().decode('utf-8'), err.strip().decode('utf-8')
+            output, err = self.decode_results(process.communicate())
+            success = len(err) == 0
+            return output, err, success
     
     def __call__(self,topic,num_iterations=10):
+        """
+        Executes the logic model to generate Python code based on the given topic.
+
+        Args:
+            topic (str): The topic or goal of the code generation.
+            num_iterations (int, optional): The maximum number of iterations. Defaults to 10.
+
+        Yields:
+            Generator[Dict[str, Any], None, None]: A dictionary containing information about each iteration.
+        """
         error = ""
         percentage = 0
         feedback = ""
@@ -58,8 +144,7 @@ class LogicModel(BaseModel):
             if error:
                 code = self.refine_chain.run(content=code,
                                              critics=feedback,
-                                             document=self.document,
-                                             instruction_hint="Fix the code snippet based on the error provided. Only provide the fixed code snippet between `` and nothing else.")
+                                             document=self.document)
             else:
                 code = self.code_chain.run(document=self.document,topic=topic)
             code = self.refine_code(code)
@@ -69,12 +154,10 @@ class LogicModel(BaseModel):
 
             total_code = code + "\n" + test_code
 
-            response, error = self.run_python(total_code)
+            response, error, success = self.run_python(total_code)
 
-            if len(error) > 0:
-                print("Iteration:",i,"error:",colored(error,"red"),colored(type(error),"red"))
-
-            success = len(response) > 0    
+            if not success:
+                logging.warning(f"Iteration:{i}:{error}")
 
             if success:
                 break
@@ -111,11 +194,40 @@ class LogicModel(BaseModel):
 
 
 class StreamlitModel(BaseModel):
+    """
+    Represents the Streamlit model for generating Streamlit applications.
+
+    Methods:
+        - __init__(self, openai_api_key: str):
+            Initializes the StreamlitModel with the provided OpenAI API key.
+        
+        - run_code(self, code: str) -> int:
+            Runs the provided code as a Streamlit application and returns the process ID.
+        
+        - __call__(self, topic: str, title: str, code: str, test_code: str, progress_func: Callable[[int, str]], success_func: Callable[[], None]) -> int:
+            Executes the Streamlit model to generate a Streamlit application.
+    """
+
     def __init__(self,openai_api_key):
+        """
+        Initializes the StreamlitModel with the provided OpenAI API key.
+
+        Args:
+            openai_api_key (str): The OpenAI API key.
+        """
         super().__init__(openai_api_key)
         self.streamlit_code_chain = LLMChain(llm=self.llm, prompt=streamlit_code_prompt)
  
     def run_code(self,code):
+        """
+        Runs the provided code as a Streamlit application and returns the process ID.
+
+        Args:
+            code (str): The code of the Streamlit application.
+
+        Returns:
+            int: The process ID of the Streamlit application.
+        """
         with tempfile.NamedTemporaryFile("w",suffix=".py",delete=False) as tmp:
             tmp.write(code)
             tmp.flush()
@@ -124,9 +236,23 @@ class StreamlitModel(BaseModel):
             process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
             return process.pid
     
-    def __call__(self,topic, title, code, test_code,progress_func,baloon_func):
+    def __call__(self,topic, title, code, test_code,progress_func,success_func):
+        """
+        Executes the Streamlit model to generate a Streamlit application.
+
+        Args:
+            topic (str): The topic or goal of the application.
+            title (str): The title of the Streamlit application.
+            code (str): The logic code of the application.
+            test_code (str): The test code of the application.
+            progress_func (Callable[[int, str]]): A function to update the progress of the application generation.
+            success_func (Callable[[], None]): A function to indicate the success of the application generation.
+
+        Returns:
+            int: The process ID of the Streamlit application.
+        """
         streamlit_code = self.streamlit_code_chain.run(topic=topic, title=title, logic_code=code, test_code=test_code)
         refined_code = self.refine_code(streamlit_code)
         progress_func(100,"Redirecting to the demo page...")
-        baloon_func()
+        success_func()
         return self.run_code(refined_code)
