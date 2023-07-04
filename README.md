@@ -22,6 +22,10 @@ For quick demo, you can visit [our website](https://demogpt.io)
 
 https://github.com/melih-unsal/DemoGPT/assets/34304254/8991e296-b6fe-4817-bd08-4dab6d13020d
 
+## 📚 Documentation
+
+See our documentation site [here](https://melih-unsal.github.io/DemoGPT-Docs/) for full how-to docs and guidelines
+
 
 ## 📑 Table of Contents
 
@@ -38,9 +42,9 @@ DemoGPT is an innovative open-source project designed to streamline the developm
 
 The process is fully automated, with DemoGPT generating code, running tests, and progressively developing the project step by step. Each piece of code is tested and evaluated by itself. If it passes the auto-generated tests, the development proceeds, allowing for efficient and error-free development.
 
-## ⚙️ Pipeline
-### DemoGPT Pipeline
-![DemoGPT Pipeline](demogpt_pipeline.png?raw=true "DemoGPT Pipeline")
+## ⚙️ Architecture
+### DemoGPT Architecture
+![DemoGPT Architecture](demogpt_pipeline.png?raw=true "DemoGPT Architecture")
 
 ## 🔧 Installation
 
