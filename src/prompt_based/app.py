@@ -17,6 +17,15 @@ except Exception as e:
 num_of_iterations = 10
 
 def generate_response(txt):
+    """
+    Generate response using the LogicModel.
+
+    Args:
+        txt (str): The input text.
+
+    Yields:
+        dict: A dictionary containing response information.
+    """
     for data in agent(txt,num_of_iterations):
         yield data
     
