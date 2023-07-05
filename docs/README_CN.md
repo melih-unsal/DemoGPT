@@ -59,7 +59,7 @@ DemoGPT 是一款创新的开源项目，旨在简化基于语言学习模型（
 
 ## ⚙️ 架构
 ### DemoGPT 架构
-![DemoGPT 架构](demogpt_pipeline.png?raw=true "DemoGPT Architecture")
+![DemoGPT 架构](../demogpt_pipeline.png?raw=true "DemoGPT Architecture")
 
 ## 🔧 安装
 
