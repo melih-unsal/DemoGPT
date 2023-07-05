@@ -1,36 +1,42 @@
 # ![favicon](../puzzle.png) DemoGPT：自动 LangChain 管道生成
 
 <p align="center">
-<a href=""><img src="../demogpt_new_banner.jpeg" alt="DemoGPT logo: 自动生成LangChain管道" width="350px"></a>
+<a href=""><img src="../demogpt_new_banner.jpeg" alt="DemoGPT logo：自动生成 LangChain 流程" width="350px"></a>
 </p>
 
 <p align="center">
-<b>⚡ 仅通过提示就能快速创建演示。 ⚡</b>
+<b>⚡ 仅使用提示即可快速创建演示。 ⚡</b>
 </p>
 
 <p align="center">
-<a href="docs/README_CN.md"><img src="https://img.shields.io/badge/文档-中文版-blue.svg" alt="CN doc"></a>
-<a href="README.md"><img src="https://img.shields.io/badge/document-English-blue.svg" alt="EN doc"></a>
-<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-<a href="https://twitter.com/demo_gpt"><img src="https://img.shields.io/twitter/follow/demo_gpt?style=social" alt="关注Twitter"></a>
-</p>
-
-<p align="center">
-<a href="https://github.com/melih-unsal/DemoGPT/releases"><img src="https://img.shields.io/github/release/melih-unsal/DemoGPT" alt="发行版"></a>
+<a href="https://github.com/melih-unsal/DemoGPT/releases"><img src="https://img.shields.io/github/release/melih-unsal/DemoGPT" alt="版本"></a>
 <a href="https://demogpt.io"><img src="https://img.shields.io/badge/官方网站-demogpt.io-blue?style=flat&logo=world&logoColor=white" alt="官方网站"></a>
 <a href="https://melih-unsal.github.io/DemoGPT-Docs/)"><img src="https://img.shields.io/badge/文档-📘-blueviolet" alt="DemoGPT文档"></a>
 </p>
 
 <p align="center">
-<a href="https://github.com/melih-unsal/DemoGPT/issues?q=is%3Aopen+is%3Aissue"><img src="https://img.shields.io/github/issues/melih-unsal/DemoGPT.svg?maxAge=2592000000000000" alt="开启问题"></a>
+<a href="docs/README_CN.md"><img src="https://img.shields.io/badge/文档-中文版-blue.svg" alt="CN doc"></a>
+<a href="README.md"><img src="https://img.shields.io/badge/document-English-blue.svg" alt="EN doc"></a>
+<a href="docs/ROADMAP_CN.md"><img src="https://img.shields.io/badge/ROADMAP-路线图-blue" alt="roadmap"></a>
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
+
+<p align="center">
+<a href="https://github.com/melih-unsal/DemoGPT/issues?q=is%3Aopen+is%3Aissue"><img src="https://img.shields.io/github/issues/melih-unsal/DemoGPT.svg?maxAge=2592000000000000" alt="打开一个问题"></a>
 <a href="https://github.com/melih-unsal/DemoGPT/issues?q=is%3Aissue+is%3Aclosed"><img src="https://img.shields.io/github/issues-closed-raw/melih-unsal/DemoGPT.svg?maxAge=25920000000000000000" alt="已关闭的问题"></a>
-<a href="https://star-history.com/#melih-unsal/DemoGPT"><img src="https://img.shields.io/github/stars/melih-unsal/DemoGPT?style=social" alt="DemoGPT 星级"></a>
+<a href="https://star-history.com/#melih-unsal/DemoGPT"><img src="https://img.shields.io/github/stars/melih-unsal/DemoGPT?style=social" alt="DemoGPT  星星"></a>
+</p>
+
+<p align="center">
+<a href="docs/resources/MetaGPT-WeChat-Personal.jpeg"><img src="https://img.shields.io/badge/WeChat-微信-blue" alt="roadmap"></a>
+<a href="https://twitter.com/demo_gpt"><img src="https://img.shields.io/twitter/follow/demo_gpt?style=social" alt="Twitter Follow"></a>
 </p>
 
 <p align="center">
 <a href="https://demogpt.streamlit.app"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Streamlit应用"></a>
 <a href="https://huggingface.co/spaces/melihunsal/demogpt"><img src="https://img.shields.io/badge/%F0%9F%A4%97-空间-yellow"></a>
 </p>
+
 
 ## 🔥 演示
 
