@@ -1,7 +1,7 @@
 # ![favicon](./puzzle.png) DemoGPT: Auto 🦜️🔗LangChain Pipeline Generator
 
 <p align="center">
-<a href=""><img src="demogpt_new_banner.jpeg" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="350px"></a>
+<a href=""><img src="banner_white.png" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="350px"></a>
 </p>
 
 <p align="center">
@@ -11,7 +11,7 @@
 <p align="center">
 <a href="https://github.com/melih-unsal/DemoGPT/releases"><img src="https://img.shields.io/github/release/melih-unsal/DemoGPT" alt="Releases"></a>
 <a href="https://demogpt.io"><img src="https://img.shields.io/badge/Official%20Website-demogpt.io-blue?style=flat&logo=world&logoColor=white" alt="Official Website"></a>
-<a href="https://melih-unsal.github.io/DemoGPT-Docs/)"><img src="https://img.shields.io/badge/Documentation-📘-blueviolet" alt="DemoGPT Documentation"></a>
+<a href="https://melih-unsal.github.io/DemoGPT-Docs/"><img src="https://img.shields.io/badge/Documentation-📘-blueviolet" alt="DemoGPT Documentation"></a>
 </p>
 
 <p align="center">
