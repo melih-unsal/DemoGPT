@@ -8,8 +8,6 @@
 <b>⚡ Create 🦜️🔗 LangChain apps by just using prompts. ⚡</b>
 </p>
 
-<br>
-
 <p align="center">
 <a href="https://github.com/melih-unsal/DemoGPT/releases"><img src="https://img.shields.io/github/release/melih-unsal/DemoGPT" alt="Releases"></a>
 <a href="https://demogpt.io"><img src="https://img.shields.io/badge/Official%20Website-demogpt.io-blue?style=flat&logo=world&logoColor=white" alt="Official Website"></a>
