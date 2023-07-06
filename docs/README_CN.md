@@ -1,7 +1,7 @@
 # ![favicon](../puzzle.png) DemoGPT：自动 LangChain 管道生成
 
 <p align="center">
-<a href=""><img src="../banner_white.png" alt="DemoGPT logo：自动生成 LangChain 流程" width="350px"></a>
+<a href=""><img src="../demogpt_banner_white.png" alt="DemoGPT logo：自动生成 LangChain 流程" width="350px"></a>
 </p>
 
 <p align="center">

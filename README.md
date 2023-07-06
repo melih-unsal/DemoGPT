@@ -1,7 +1,7 @@
 # ![favicon](./puzzle.png) DemoGPT: Auto 🦜️🔗LangChain Pipeline Generator
 
 <p align="center">
-<a href=""><img src="banner_white.png" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="350px"></a>
+<a href=""><img src="demogpt_banner_white.png" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="450px"></a>
 </p>
 
 <p align="center">
