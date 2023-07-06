@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-<b>⚡ Create quick demos by just using prompt. ⚡</b>
+<b>⚡ Create 🦜️🔗 LangChain apps by just using prompts. ⚡</b>
 </p>
 
 <p align="center">
