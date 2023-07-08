@@ -42,7 +42,7 @@
 
 [![Star History Chart](https://api.star-history.com/svg?repos=melih-unsal/DemoGPT&type=Timeline)](https://star-history.com/#melih-unsal/DemoGPT&Timeline)
 
-Consider starring us if you're using DemoGPT so more people hear about us!
+⭐ Consider starring us if you're using DemoGPT so more people hear about us!
 
 ## 🔥 Demo
 
