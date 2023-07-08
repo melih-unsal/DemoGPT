@@ -106,3 +106,9 @@ DemoGPT is an open-source project licensed under [MIT License](LICENSE).
 ---
 
 For any issues, questions, or comments, please feel free to contact us or open an issue. We appreciate your feedback to make DemoGPT better.
+
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=melih-unsal/DemoGPT&type=Date)](https://star-history.com/#melih-unsal/DemoGPT&Date)
+
+Consider starring us if you're using DemoGPT so more people hear about us!
