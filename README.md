@@ -109,6 +109,6 @@ For any issues, questions, or comments, please feel free to contact us or open a
 
 ## ⭐ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=melih-unsal/DemoGPT&type=Date)](https://star-history.com/#melih-unsal/DemoGPT&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=melih-unsal/DemoGPT&type=Timeline)](https://star-history.com/#melih-unsal/DemoGPT&Timeline)
 
 Consider starring us if you're using DemoGPT so more people hear about us!
