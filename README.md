@@ -38,6 +38,12 @@
 <a href="https://huggingface.co/spaces/melihunsal/demogpt"><img src="https://img.shields.io/badge/%F0%9F%A4%97-Spaces-yellow"></a>
 </p>
 
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=melih-unsal/DemoGPT&type=Timeline)](https://star-history.com/#melih-unsal/DemoGPT&Timeline)
+
+Consider starring us if you're using DemoGPT so more people hear about us!
+
 ## 🔥 Demo
 
 For quick demo, you can visit [our website](https://demogpt.io)
@@ -106,9 +112,3 @@ DemoGPT is an open-source project licensed under [MIT License](LICENSE).
 ---
 
 For any issues, questions, or comments, please feel free to contact us or open an issue. We appreciate your feedback to make DemoGPT better.
-
-## ⭐ Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=melih-unsal/DemoGPT&type=Timeline)](https://star-history.com/#melih-unsal/DemoGPT&Timeline)
-
-Consider starring us if you're using DemoGPT so more people hear about us!
