@@ -1,3 +1,5 @@
+src/test_runs/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -5,6 +7,25 @@ __pycache__/
 
 # C extensions
 *.so
+
+# db folders
+goals_db/
+db_tutorials/
+src/chain
+src/chain_exp/
+src/langchain_db_python/
+src/langchain_db
+
+
+quick_start.txt
+
+# docs
+src/docs/*
+src/docs_explanation/*
+src/docs_explanation_some/*
+src/docs_summary/*
+
+
 
 # Distribution / packaging
 .Python

@@ -12,6 +12,13 @@ import os
 from tqdm import tqdm
 from langchain.chains.summarize import load_summarize_chain
 from langchain.text_splitter import CharacterTextSplitter
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
 
 from langchain.schema import (
     AIMessage,
@@ -158,7 +165,7 @@ class Summarizer:
             length_function = len
             )
     def __call__(self,path):
-        out_path = path.replace("langchain/","langchain_summary/")
+        out_path = path.replace("docs/","docs_summary/")
         if os.path.exists(out_path):
             return 
         with open(path) as f:
@@ -168,6 +175,26 @@ class Summarizer:
         summary = self.chain.run(docs)
         with open(out_path,"w") as f:
             f.write(summary)
+
+class Explainer:
+    def __init__(self) -> None:
+        llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k",temperature=0)
+        template = "Create a concise tutorial to talk about the given document"
+        system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+        human_template = "{document}"
+        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+        chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+        self.chain = LLMChain(llm=llm, prompt=chat_prompt)
+
+    def __call__(self,path):
+        out_path = path.replace("docs/","docs_explanation/")
+        if os.path.exists(out_path):
+            return 
+        with open(path) as f:
+            document = f.read()
+        explanation = self.chain.run(document)
+        with open(out_path,"w") as f:
+            f.write(explanation)
 if __name__ == "__main__":
     model = Summarizer()
     path = "../documents/langchain/Vectara Text Generation.txt"

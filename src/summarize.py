@@ -1,9 +1,9 @@
-from model import Summarizer
+from model import Explainer
 import os
 from tqdm import tqdm
 
-ROOT = "../documents/langchain"
-summarizer = Summarizer()
+ROOT = "docs/"
+summarizer = Explainer()
 for filename in tqdm(os.listdir(ROOT)): 
     path = os.path.join(ROOT, filename)
     summarizer(path)

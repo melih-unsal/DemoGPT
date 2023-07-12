@@ -85,7 +85,7 @@ class LogicModel(BaseModel):
         Adds documents to the logic model for generating Python code.
         """ 
         self.document = ""
-        for path in ["src/prompt_based/examples.txt"]:
+        for path in ["src/prompt_based/prompts.txt"]:
             with open(path) as f:
                 self.document += f.read()
 

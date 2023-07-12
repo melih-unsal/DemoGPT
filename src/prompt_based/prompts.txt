@@ -1,0 +1,132 @@
+Chat models are a variation on language models. While chat models use language models under the hood, the interface they expose is a bit different: rather than expose a "text in, text out" API, they expose an interface where "chat messages" are the inputs and outputs.
+
+You can get chat completions by passing one or more messages to the chat model. The response will be a message. The types of messages currently supported in LangChain are AIMessage, HumanMessage, SystemMessage, and ChatMessage -- ChatMessage takes in an arbitrary role parameter. Most of the time, you'll just be dealing with HumanMessage, AIMessage, and SystemMessage.
+
+Most of the time, to use LangChain library, you need these imports below:
+
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+
+Here are the examples:
+================================================================================================================================
+Goal: Generate blog post from title. Generate at least 500 words
+---------
+Python Code:
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+def generate_blog_post(title):
+    chat = ChatOpenAI(temperature=0.1) # Here temperature is set a little bit higher to put some variation
+
+    template = "You are a helpful assistant that generates a blog post from the title: {title}. Please provide some content."
+    system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+    human_template = "{title}"
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(title=title)
+    return result # it will return string with at least 500 words.
+================================================================================================================================
+Goal: Implement language translation
+---------
+Python Code:
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+def generate_translation(input_language, output_language, text):
+    chat = ChatOpenAI(temperature=0) # Here temperature is set to 0 because translation should be concrete
+
+    template = "You are a helpful assistant that translates {input_language} to {output_language}."
+    system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+    human_template = "{text}"
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(input_language=input_language, output_language=output_language, text=text)
+    return result # it will return string
+================================================================
+Goal: Generate animal name from animal
+---------
+Python Code:
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+def generate_animal_name(animal):
+    chat = ChatOpenAI(temperature=0.1) # Here temperature is set a little bit higher to put some variation
+
+    template = "You are a helpful assistant that generates a name for an animal. You generate short answer."
+    system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+    human_template = "What is a good name for a {animal}?"
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(animal=animal)
+    return result # it will return string
+================================================================
+Goal: Generate programming related humor
+---------
+Python Code:
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+def generate_humor():
+    chat = ChatOpenAI(temperature=0.7) # Here temperature is set a little bit higher to put some creativity
+
+    template = "You are a helpful assistant that generates a humor related to {topic}."
+    system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(topic="programming") # Since here, the input is "programming", we directly give as an input because chain.run always need positional argument
+    return result # it will return string
+================================================================
+Goal: Generate random songs
+---------
+Python Code:
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+def generate_humor():
+    chat = ChatOpenAI(temperature=0.7) # Here temperature is set a little bit higher to put some creativity
+
+    template = "You are a helpful assistant that generate random {something}"
+    system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(something="song") # Since here, the input is "song", we directly give as an input because chain.run always need positional argument
+    return result # it will return string
