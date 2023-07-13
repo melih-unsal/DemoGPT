@@ -62,7 +62,6 @@ PROMPT = PromptTemplate(
 conversation_with_summary = ConversationChain(
     llm=llm, 
     prompt=PROMPT,
-    # We set a very low max_token_limit for the purposes of testing.
     memory=memory,
     verbose=True
 )

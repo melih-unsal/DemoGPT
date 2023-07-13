@@ -11,6 +11,8 @@ from langchain_expert import LangChainExpert
 
 from agent_prompts import *
 
+import sys
+
 import fire
 from tqdm import tqdm
 import tempfile
@@ -18,6 +20,7 @@ import subprocess
 import shutil
 from termcolor import colored
 from subprocess import PIPE
+from subprocess import TimeoutExpired
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -45,7 +48,7 @@ def refineCode(code):
             code = code[len("python"):].strip()
     return code
 
-def runPython(code):
+def runPython(code, timeout_sec=10):
     code = refineCode(code)
     with tempfile.NamedTemporaryFile("w") as tmp:
         tmp.write(code)
@@ -55,8 +58,13 @@ def runPython(code):
         if not python_path: # shows 'which' returns None
             python_path = sys.executable 
         process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
-        output, err = decodeResults(process.communicate())
-        success = len(err) == 0
+        try:
+            output, err = decodeResults(process.communicate(timeout=timeout_sec))
+            success = len(err) == 0
+        except TimeoutExpired:
+            process.kill()
+            success = True
+            output = err = ""
         return output, err, success
 
 persist_directory = "goals_db"
@@ -81,6 +89,10 @@ retriever.search_kwargs["distance_metric"] = "cos"
 retriever.search_kwargs["maximal_marginal_relevance"] = True
 retriever.search_kwargs["k"] = 4
 
+llm = ChatOpenAI(model="gpt-3.5-turbo-16k",temperature=0) 
+
+expert = LangChainExpert()
+
 def getSource(query):
     resulting_text = ""
     docs = retriever.get_relevant_documents(query)
@@ -90,9 +102,8 @@ def getSource(query):
     return resulting_text
 
 def getTasks(task):
-    system_message_prompt = SystemMessagePromptTemplate.from_template("""You are supposed to divide tasks into subtasks if they consist of more than one task otherwise, 
-                                                                     directly return the tasks itself""")
-    human_message_prompt = HumanMessagePromptTemplate.from_template(DIVIDE_TASKS_TEMPLATE)
+    system_message_prompt = SystemMessagePromptTemplate.from_template(DIVIDE_TASKS_SYSTEM_TEMPLATE)
+    human_message_prompt = HumanMessagePromptTemplate.from_template(DIVIDE_TASKS_HUMAN_TEMPLATE)
     chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt,human_message_prompt])
     chain = LLMChain(llm=llm, prompt=chat_prompt)
     instruction_list =  chain.run(task=task)
@@ -103,22 +114,15 @@ def getTasks(task):
     return [insruction.strip() for insruction in instruction_list.split(",")]
 
 def mergeTasks(task,examples):
-    system_message_prompt = SystemMessagePromptTemplate.from_template("""You are supposed to create a final code to accomplish final task 
-                                                                       by looking at the code block which are created to do the subtasks.
-                                                                      Please merge those codes to do the final task""")
-    human_message_prompt = HumanMessagePromptTemplate.from_template(MERGE_CODES_TEMPLATE)
+    system_message_prompt = SystemMessagePromptTemplate.from_template(MERGE_CODES_SYSTEM_TEMPLATE)
+    human_message_prompt = HumanMessagePromptTemplate.from_template(MERGE_CODES_HUMAN_TEMPLATE)
     chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt,human_message_prompt])
     chain = LLMChain(llm=llm, prompt=chat_prompt)
     merged_code = chain.run(task=task,examples=examples)
     merged_code = refineCode(merged_code)
     return merged_code
 
-llm = ChatOpenAI(model="gpt-3.5-turbo-16k",temperature=0) 
-
-expert = LangChainExpert()
-
 def getSubResult(query,iterations):
-
     doc = getSource(query)
     
     human_message_prompt = HumanMessagePromptTemplate.from_template(DOC_USE_TEMPLATE)
@@ -151,7 +155,7 @@ def getSubResult(query,iterations):
             return refineCode(draft_code)
     return None 
 
-def get(instruction="Create a translation system that converts English to French",iterations=10):
+def getLangChainCode(instruction,iterations):
     tasks = getTasks(instruction)
     print(tasks)
     examples = ""
@@ -165,10 +169,58 @@ def get(instruction="Create a translation system that converts English to French
 
             """
     if len(tasks) == 1:
-        return colored(code,"green")
+        return code
     final_code = mergeTasks(instruction,examples)
-    print(colored(final_code,"green"))
-    
+    return final_code
+
+def getStreamlitCode(instruction,langchain_code,title):
+    system_message_prompt = SystemMessagePromptTemplate.from_template(STREAMLIT_CODE_SYSTEM_TEMPLATE)
+    human_message_prompt = HumanMessagePromptTemplate.from_template(STREAMLIT_CODE_HUMAN_TEMPLATE)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt,human_message_prompt])
+    chain = LLMChain(llm=llm, prompt=chat_prompt)
+    merged_code = chain.run(instruction=instruction,langchain_code=langchain_code,title=title)
+    merged_code = refineCode(merged_code)
+    return merged_code
+
+def get(instruction="Create a translation system that converts English to French",title="my translator",iterations=10):
+    langchain_code = getLangChainCode(instruction,iterations=iterations)
+    print(colored(langchain_code,"green"))
+    return getStreamlitCode(instruction,langchain_code,title)   
+
+def streamlit_test():
+    langchain_code = """
+    from langchain.llms import OpenAI
+    from langchain.chains import ConversationChain
+    from langchain.memory import ConversationSummaryBufferMemory
+
+    llm = OpenAI()
+
+    psychologist = ConversationChain(
+        llm=llm,
+        memory=ConversationSummaryBufferMemory(llm=llm, max_token_limit=500),
+        verbose=True
+    )
+
+    print("Welcome to the Personal Psychologist!")
+    print("You can start by telling me about your problems or concerns.")
+
+    while True:
+        user_input = input("You: ")
+        response = psychologist.predict(input=user_input)
+        print("Psychologist:", response)
+    """
+
+    instruction = "Create a personal psychologist that can remember the conversation history"
+    title = "My Psychologist"
+
+    system_message_prompt = SystemMessagePromptTemplate.from_template(STREAMLIT_CODE_SYSTEM_TEMPLATE)
+    human_message_prompt = HumanMessagePromptTemplate.from_template(STREAMLIT_CODE_HUMAN_TEMPLATE)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt,human_message_prompt])
+    chain = LLMChain(llm=llm, prompt=chat_prompt)
+    merged_code = chain.run(instruction=instruction,langchain_code=langchain_code,title=title)
+    merged_code = refineCode(merged_code)
+    return merged_code
+
 
 if __name__ == "__main__":
     fire.Fire(get)

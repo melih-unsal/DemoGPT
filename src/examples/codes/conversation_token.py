@@ -8,7 +8,7 @@ from langchain.llms import OpenAI
 
 llm = OpenAI()
 
-memory = ConversationTokenBufferMemory(llm=llm, max_token_limit=10)
+memory = ConversationTokenBufferMemory(llm=llm, max_token_limit=500)
 memory.save_context({"input": "hi"}, {"output": "whats up"})
 memory.save_context({"input": "not much you"}, {"output": "not much"})
 
@@ -19,7 +19,7 @@ memory.load_memory_variables({})
 # We can also get the history as a list of messages (this is useful if you are using this with a chat model).
 
 memory = ConversationTokenBufferMemory(
-    llm=llm, max_token_limit=10, return_messages=True
+    llm=llm, max_token_limit=500, return_messages=True
 )
 memory.save_context({"input": "hi"}, {"output": "whats up"})
 memory.save_context({"input": "not much you"}, {"output": "not much"})
@@ -31,8 +31,7 @@ from langchain.chains import ConversationChain
 
 conversation_with_summary = ConversationChain(
     llm=llm,
-    # We set a very low max_token_limit for the purposes of testing.
-    memory=ConversationTokenBufferMemory(llm=OpenAI(), max_token_limit=60),
+    memory=ConversationTokenBufferMemory(llm=OpenAI(), max_token_limit=1000),
     verbose=True,
 )
 conversation_with_summary.predict(input="Hi, what's up?")
