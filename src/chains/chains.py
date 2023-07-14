@@ -1,0 +1,47 @@
+from langchain import LLMChain
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain.chat_models import ChatOpenAI
+from chains.prompts import *
+
+class Chains:
+    llm = ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
+
+    @classmethod
+    def set_llm(cls, model, temperature):
+        cls.llm = ChatOpenAI(model=model, temperature=temperature)
+
+    @classmethod
+    def getChain(cls,system_template="",human_template="",**kwargs):
+        prompts = []
+        if system_template:
+            prompts.append(SystemMessagePromptTemplate.from_template(system_template))
+        if human_template:
+            prompts.append(HumanMessagePromptTemplate.from_template(human_template))
+        chat_prompt = ChatPromptTemplate.from_messages(prompts)
+        return LLMChain(llm=cls.llm, prompt=chat_prompt).run(**kwargs)
+
+    @classmethod
+    def divide(cls,**kwargs):
+        return cls.getChain(system_template=DIVIDE_TASKS_SYSTEM_TEMPLATE,human_template=DIVIDE_TASKS_HUMAN_TEMPLATE,**kwargs)
+    
+    @classmethod
+    def merge(cls,**kwargs):
+        return cls.getChain(system_template=MERGE_CODES_SYSTEM_TEMPLATE,human_template=MERGE_CODES_HUMAN_TEMPLATE,**kwargs)
+    
+    @classmethod
+    def debug(cls,**kwargs):
+        return cls.getChain(human_template=APP_DEBUGGING_TEMPLATE,**kwargs)
+    
+    @classmethod
+    def draft(cls,**kwargs):
+        return cls.getChain(human_template=DOC_USE_TEMPLATE,**kwargs)
+    
+    @classmethod
+    def streamlit(cls,**kwargs):
+        return cls.getChain(system_template=STREAMLIT_CODE_SYSTEM_TEMPLATE,human_template=STREAMLIT_CODE_HUMAN_TEMPLATE,**kwargs)
+    
+    
