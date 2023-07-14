@@ -3,7 +3,6 @@ from langchain.vectorstores import Chroma
 from langchain.docstore.document import Document
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_expert import LangChainExpert
-from agent_prompts import *
 import sys
 import fire
 from tqdm import tqdm
