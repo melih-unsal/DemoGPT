@@ -1,6 +1,7 @@
 import shutil
 import os
 import tempfile
+import sys
 from subprocess import TimeoutExpired, Popen, PIPE
 from dotenv import load_dotenv
 load_dotenv()
@@ -33,3 +34,21 @@ def runPython(code, timeout_sec=10):
             success = True
             output = err = ""
         return output, err, success
+    
+def runStreamlit(code,openai_api_key):
+        """
+        Runs the provided code as a Streamlit application and returns the process ID.
+
+        Args:
+            code (str): The code of the Streamlit application.
+
+        Returns:
+            int: The process ID of the Streamlit application.
+        """
+        with tempfile.NamedTemporaryFile("w",suffix=".py",delete=False) as tmp:
+            tmp.write(code)
+            tmp.flush()
+            environmental_variables = {'OPENAI_API_KEY':openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
+            streamlit_path = shutil.which("streamlit")
+            process = Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
+            return process.pid

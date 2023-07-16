@@ -11,7 +11,7 @@ Proceed with your Python code below:
 """
 
 INIT_GENERATION_TEMPLATE = """
-As a Python developer, your task is to use the LangChain library to develop an application based on a user-provided idea. A document is provided to assist you, but it may or may not be relevant.
+As a Python developer, your task is to use the LangChain library to develop an llm-based application based on a user-provided idea. A document is provided to assist you, but it may or may not be relevant.
 
 If you find the document irrelevant to the application idea, respond with "Not relevant". If the document is useful, incorporate the information from it into your Python code for the application.
 
@@ -23,7 +23,7 @@ Proceed with your Python code below:
 """
 
 APP_GENERATION_TEMPLATE = """
-As a Python developer, your task is to create a new application with the LangChain library based on a user-specified idea. 
+As a Python developer, your task is to create a llm-based new application with the LangChain library based on a user-specified idea. 
 Reference successful examples in the library's repository, translate the user's idea into specific requirements, draft an architecture, develop the application, and validate your work against the examples.mber, due to the one-shot nature of the task, attention to detail in understanding the examples, meticulous planning, and precise execution are paramount for successful application generation.
 
 Possible answers:{possible_answers}
@@ -50,26 +50,29 @@ Feedback:{feedback}
 Refined Code:
 """
 
-DIVIDE_TASKS_SYSTEM_TEMPLATE = """You are supposed to divide tasks into subtasks if they consist of more than one task otherwise, 
-directly return the tasks itself"""
+DIVIDE_TASKS_SYSTEM_TEMPLATE = """You are an AI assistant to create task.
+"""
 
 DIVIDE_TASKS_HUMAN_TEMPLATE = """
 Think step by step.
 First decide if the instruction consists of a single task.
 if then directly return the task
-Otherwise divide the instruction into list of multiple subtasks
+Otherwise divide the instruction into chains of multiple subtasks
 
 Instruction: Generate a system which can generate a song from song title and give a score to that song out of 10
 Subinstructions: ["generate a song from song title", "generate score from a song out of 10"]
 
 Instruction: Create a translation system that converts English to French
-Subinstructions: ["generate a English to French translator"]
+Subinstructions: ["Create a translation system that converts English to French"]
 
 Instruction: Create a system that generates tweet from hashtags and given keywords
-Subinstructions: ["generate tweet from hashtags and keywords"]
+Subinstructions: ["Create a system that generates tweet from hashtags and given keywords"]
+
+Instruction: System that generates blog from title then generate keywords for the blog post and translates the keywords from English to French
+Subinstructions: ["generate a system that creates blog from title", "generate system that generates keywords from a blog post","generate system that translates keywords from English to French"]
 
 Instruction: {task}
-Subinstructions: 
+Subinstructions:
 """
 
 MERGE_CODES_SYSTEM_TEMPLATE = """You are supposed to create a final code to accomplish final task 
@@ -105,6 +108,7 @@ STREAMLIT_CODE_HUMAN_TEMPLATE = """Write a streamlit code and add the logic code
 Keep in mind that if the streamlit code includes a list which will be updated during the application, 
 use st.session_state because for each update, it needs to be stored. 
 Otherwise, the object will be resetted. 
+Don't define st.text_input inside of a while loop 
 
 GOAL: {instruction}
 --------- 

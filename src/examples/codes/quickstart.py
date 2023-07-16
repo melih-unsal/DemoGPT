@@ -183,13 +183,13 @@ conversation = ConversationChain(memory=memory, prompt=prompt, llm=llm)
 conversation.predict(input="Hi there!")
 
 
-Hello! How can I assist you today?
+#Hello! How can I assist you today?
 
 conversation.predict(input="I'm doing well! Just having a conversation with an AI.")
 
-That sounds like fun! I'm happy to chat with you. Is there anything specific you'd like to talk about?
+#That sounds like fun! I'm happy to chat with you. Is there anything specific you'd like to talk about?
 
 
 conversation.predict(input="Tell me about yourself.")
 
-Sure! I am an AI language model created by OpenAI. I was trained on a large dataset of text from the internet, which allows me to understand and generate human-like language. I can answer questions, provide information, and even have conversations like this one. Is there anything else you'd like to know about me?
+#Sure! I am an AI language model created by OpenAI. I was trained on a large dataset of text from the internet, which allows me to understand and generate human-like language. I can answer questions, provide information, and even have conversations like this one. Is there anything else you'd like to know about me?

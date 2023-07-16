@@ -1,5 +1,4 @@
 import langchain
-from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.docstore.document import Document
@@ -10,17 +9,19 @@ from tqdm import tqdm
 import logging
 import fire
 import utils
+from termcolor import colored
 
 class LangChainCoder:
     def __init__(self,
+                 openai_api_key = "sk-",
                  model_name="gpt-3.5-turbo-16k", 
                  persist_directory = "langchain_code",
                  device="cuda",
                  distance_metric="cos",
                  maximal_marginal_relevance=True,
-                 k=4):
+                 k=8):
          self.root_dir = "/".join(langchain.__file__.split('/')[:-1])
-         self.model_name = model_name
+         Chains.setLlm(model_name,openai_api_key)
          self.persist_directory = persist_directory
          self.device = device
          self.distance_metric = distance_metric
@@ -56,7 +57,6 @@ class LangChainCoder:
 
     def __initModels(self):
         self.__constructRetriever()
-        self.model = ChatOpenAI(model_name=self.model_name,temperature=0)
         self.expert = LangChainExpert()
 
     def __getSource(self,query):
@@ -80,45 +80,107 @@ class LangChainCoder:
         merged_code = utils.refineCode(merged_code)
         return merged_code
 
-    def __getSubResult(self,query,iterations):
-        doc = self.__getSource(query)
+    def __getSubResult(self,query,doc, index, iterations):
         draft_code = Chains.draft(document=doc, idea=query)
-        for _ in range(iterations):
+        for res in self.__solveBugs(draft_code,query,doc,index+1,iterations):
+            yield res
+            success = res["success"]
+            if success:
+                break
+        yield res
+        
+    def __solveBugs(self,draft_code,query,doc,index,iterations):
+        for i in range(iterations):
             _, error,success = utils.runPython(draft_code)
             if not success:
-                feedback = expert.debug(error)
+                feedback = self.expert.debug(error)
                 draft_code =  Chains.debug(draft_code=draft_code, idea=query, feedback=feedback,document=doc)
+                yield {
+                    "task_id":index,
+                    "progress":f"{i+1}/{iterations}",
+                    "success":False,
+                    "code":draft_code,
+                    "stage":"langchain"
+                }
             else:
-                return utils.refineCode(draft_code)
-        return None 
+                draft_code = utils.refineCode(draft_code)
+                yield {
+                    "task_id":index,
+                    "progress":f"{i+1}/{iterations}",
+                    "success":True,
+                    "code":draft_code,
+                    "stage":"langchain"
+                }
+                
+                break
+        else:
+            yield {
+                    "task_id":index+1,
+                    "progress":f"{iterations}/{iterations}",
+                    "success":False,
+                    "code":draft_code,
+                    "stage":"langchain"
+                }
+        
     
     def __getLangChainCode(self,instruction,iterations):
         tasks = self.__getTasks(instruction)
         print(tasks)
+        print(colored("Tasks have been generated","green"))
         examples = ""
         for i,task in enumerate(tasks):
-            code = self.__getSubResult(task,iterations=iterations)
-            if code:
-                examples += f"""
-                Subtask {i+1} : {task}
-                Code {i+1} : {code}
-                {'#'*40}
+            doc = self.__getSource(task)
+            for res in self.__getSubResult(task,doc,i,iterations=iterations):
+                text = f"Task[{res['task_id']}/{len(tasks)}]\nProgress: {res['progress']}\nSuccess: {res['success']}\n"
+                if res['success']:
+                    print(colored(text,"green"))
+                else:
+                    print(colored(text,"yellow"))
+                if res["success"]:
+                    code = res["code"]
+                    examples += f"""
+                    Subtask {i+1} : {task}
+                    Code {i+1} : {code}
+                    {'#'*40}
 
-                """
+                    """
+                    break
+                yield res
+
         if len(tasks) == 1:
-            return code
-        final_code = self.__mergeTasks(instruction,examples)
-        return final_code
+            yield res
+        else:
+            final_code = self.__mergeTasks(instruction,examples)
+            doc = self.__getSource(instruction)
+            for res in self.__solveBugs(final_code,instruction,doc,"merge",iterations):
+                success = res["success"]
+                text = f"Task[{res['task_id']}/{len(tasks)}]\nProgress: {res['progress']}\nSuccess: {res['success']}\n"
+                if success:
+                    print(colored(text,"green"))
+                else:
+                    print(colored(text,"yellow"))
+                if success:
+                    final_code = res["code"]
+                    break
+                yield res
+            print(colored("Tasks have been merged","green"))
     
     def __getStreamlitCode(self,instruction,langchain_code,title):
         merged_code = Chains.streamlit(instruction=instruction,langchain_code=langchain_code,title=title)
         merged_code = utils.refineCode(merged_code)
         return merged_code
-
-    def code(self,instruction="Create a translation system that converts English to French",title="my translator",iterations=10):
-        langchain_code = self.__getLangChainCode(instruction,iterations=iterations)
-        return self.__getStreamlitCode(instruction,langchain_code,title)  
-        
+    
+    def __call__(self,instruction="Create a translation system that converts English to French",title="my translator",iterations=10):
+        for res in self.__getLangChainCode(instruction,iterations=iterations):
+            yield res
+        langchain_code = res["code"]
+        streamlit_code = self.__getStreamlitCode(instruction,langchain_code,title)
+        return {
+            "code":streamlit_code,
+            "success":True,
+            "task_id":"final",
+            "stage":"streamlit"
+        }
         
 if __name__ == "__main__":
     coder = LangChainCoder()

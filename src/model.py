@@ -1,141 +1,125 @@
+import langchain
 from langchain.chat_models import ChatOpenAI
+from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.docstore.document import Document
-from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_expert import LangChainExpert
-import sys
-import fire
-from tqdm import tqdm
-import tempfile
-import subprocess
-import shutil
-from termcolor import colored
-from subprocess import PIPE
-from subprocess import TimeoutExpired
-import os
-from dotenv import load_dotenv
 from chains.chains import Chains
-load_dotenv()
+import os
+from tqdm import tqdm
+import logging
+import fire
+import utils
 
-def decodeResults(results):
-    return (res.strip().decode('utf-8') for res in results)
+class LangChainCoder:
+    def __init__(self,
+                 model_name="gpt-3.5-turbo-16k", 
+                 persist_directory = "langchain_code",
+                 device="cuda",
+                 distance_metric="cos",
+                 maximal_marginal_relevance=True,
+                 k=4):
+         self.root_dir = "/".join(langchain.__file__.split('/')[:-1])
+         self.model_name = model_name
+         self.persist_directory = persist_directory
+         self.device = device
+         self.distance_metric = distance_metric
+         self.maximal_marginal_relevance = maximal_marginal_relevance
+         self.k = k
+         self.embeddings = HuggingFaceEmbeddings(model_kwargs = {'device': device})
+         self.__initModels()
 
-def refineCode(code):
-    if "```" in code: 
-        code = code.split("```")[1]
-        if code.startswith("python"):
-            code = code[len("python"):].strip()
-    return code
-
-def runPython(code, timeout_sec=10):
-    code = refineCode(code)
-    with tempfile.NamedTemporaryFile("w") as tmp:
-        tmp.write(code)
-        tmp.flush()
-        environmental_variables = {'OPENAI_API_KEY':os.getenv('OPENAI_API_KEY')}
-        python_path = shutil.which("python")
-        if not python_path: # shows 'which' returns None
-            python_path = sys.executable 
-        process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
-        try:
-            output, err = decodeResults(process.communicate(timeout=timeout_sec))
-            success = len(err) == 0
-        except TimeoutExpired:
-            process.kill()
-            success = True
-            output = err = ""
-        return output, err, success
-
-persist_directory = "goals_db"
-embeddings = HuggingFaceEmbeddings(model_kwargs = {'device': "cuda"})
-if os.path.exists(persist_directory):
-    db = Chroma(persist_directory=persist_directory, embedding_function=embeddings)        
-else:
-    docs = []
-    for dirpath, dirnames, filenames in tqdm(os.walk("examples/goals/")):
-        for file in filenames:
-            if file.endswith(".md"):
-                filepath = os.path.join(dirpath, file)
-                source_path = filepath.replace("goals","codes/").replace(".md",".py")
-                with open(source_path) as sf:
-                    metadata = {"source":sf.read()}
-                with open(filepath) as f:
-                    docs.append(Document(page_content=f.read(), metadata=metadata))
-    db = Chroma.from_documents(docs, embeddings,persist_directory=persist_directory)
-
-retriever = db.as_retriever()
-retriever.search_kwargs["distance_metric"] = "cos"
-retriever.search_kwargs["maximal_marginal_relevance"] = True
-retriever.search_kwargs["k"] = 4
-
-llm = ChatOpenAI(model="gpt-3.5-turbo-16k",temperature=0) 
-
-expert = LangChainExpert()
-
-def getSource(query):
-    resulting_text = ""
-    docs = retriever.get_relevant_documents(query)
-    for doc in docs:
-        resulting_text += doc.metadata["source"]
-        resulting_text += "\n" + "#"*40
-    return resulting_text
-
-def getTasks(task):
-    instruction_list =  Chains.divide(task=task)
-    if instruction_list.startswith("["):
-        instruction_list = instruction_list[1:]
-    if instruction_list.endswith("]"):
-        instruction_list = instruction_list[:-1]
-    return [insruction.strip() for insruction in instruction_list.split(",")]
-
-def mergeTasks(task,examples):
-    merged_code = Chains.merge(task=task,examples=examples)
-    merged_code = refineCode(merged_code)
-    return merged_code
-
-def getSubResult(query,iterations):
-    doc = getSource(query)
-    draft_code = Chains.draft(document=doc, idea=query)
-    for _ in range(iterations):
-        print(colored(draft_code,"yellow"))
-        output, error,success = runPython(draft_code)
-        print(colored(output,"blue"))
-        print(colored(error,"red"))
-        if not success:
-            feedback = expert.debug(error)
-            print(colored(feedback,"blue"))
-            draft_code =  Chains.debug(draft_code=draft_code, idea=query, feedback=feedback,document=doc)
+    def __constructDB(self):             
+        if os.path.exists(self.persist_directory):
+            logging.info('DB has been found and fetched')
+            self.db = Chroma(persist_directory=self.persist_directory, embedding_function=self.embeddings)        
         else:
-            return refineCode(draft_code)
-    return None 
+            logging.info('DB not found, creation started...')
+            docs = []
+            for dirpath, _, filenames in tqdm(os.walk("examples/goals/")):
+                for file in filenames:
+                    if file.endswith(".md"):
+                        filepath = os.path.join(dirpath, file)
+                        source_path = filepath.replace("goals","codes/").replace(".md",".py")
+                        with open(source_path) as sf:
+                            metadata = {"source":sf.read()}
+                        with open(filepath) as f:
+                            docs.append(Document(page_content=f.read(), metadata=metadata))
+            self.db = Chroma.from_documents(docs, self.embeddings,persist_directory=self.persist_directory)    
+    def __constructRetriever(self):
+        self.__constructDB()
+        self.retriever = self.db.as_retriever()
+        self.retriever.search_kwargs["distance_metric"] = self.distance_metric
+        self.retriever.search_kwargs["maximal_marginal_relevance"] = self.maximal_marginal_relevance
+        self.retriever.search_kwargs["k"] = self.k
+        logging.info('Retriever has been succesfully constructed')
 
-def getLangChainCode(instruction,iterations):
-    tasks = getTasks(instruction)
-    print(tasks)
-    examples = ""
-    for i,task in enumerate(tasks):
-        code = getSubResult(task,iterations=iterations)
-        if code:
-            examples += f"""
-            Subtask {i+1} : {task}
-            Code {i+1} : {code}
-            {'#'*40}
+    def __initModels(self):
+        self.__constructRetriever()
+        self.model = ChatOpenAI(model_name=self.model_name,temperature=0)
+        self.expert = LangChainExpert()
 
-            """
-    if len(tasks) == 1:
-        return code
-    final_code = mergeTasks(instruction,examples)
-    return final_code
+    def __getSource(self,query):
+        resulting_text = ""
+        docs = self.retriever.get_relevant_documents(query)
+        for doc in docs:
+            resulting_text += doc.metadata["source"]
+            resulting_text += "\n" + "#"*40
+        return resulting_text
+    
+    def __getTasks(self,task):
+        instruction_list =  Chains.divide(task=task)
+        if instruction_list.startswith("["):
+            instruction_list = instruction_list[1:]
+        if instruction_list.endswith("]"):
+            instruction_list = instruction_list[:-1]
+        return [insruction.strip() for insruction in instruction_list.split(",")]
+    
+    def __mergeTasks(self,task,examples):
+        merged_code = Chains.merge(task=task,examples=examples)
+        merged_code = utils.refineCode(merged_code)
+        return merged_code
 
-def getStreamlitCode(instruction,langchain_code,title):
-    merged_code = Chains.streamlit(instruction=instruction,langchain_code=langchain_code,title=title)
-    merged_code = refineCode(merged_code)
-    return merged_code
+    def __getSubResult(self,query,iterations):
+        doc = self.__getSource(query)
+        draft_code = Chains.draft(document=doc, idea=query)
+        for _ in range(iterations):
+            _, error,success = utils.runPython(draft_code)
+            if not success:
+                feedback = self.expert.debug(error)
+                draft_code =  Chains.debug(draft_code=draft_code, idea=query, feedback=feedback,document=doc)
+            else:
+                return utils.refineCode(draft_code)
+        return None 
+    
+    def __getLangChainCode(self,instruction,iterations):
+        tasks = self.__getTasks(instruction)
+        print(tasks)
+        examples = ""
+        for i,task in enumerate(tasks):
+            code = self.__getSubResult(task,iterations=iterations)
+            if code:
+                examples += f"""
+                Subtask {i+1} : {task}
+                Code {i+1} : {code}
+                {'#'*40}
 
-def get(instruction="Create a translation system that converts English to French",title="my translator",iterations=10):
-    langchain_code = getLangChainCode(instruction,iterations=iterations)
-    print(colored(langchain_code,"green"))
-    return getStreamlitCode(instruction,langchain_code,title)   
+                """
+        if len(tasks) == 1:
+            return code
+        final_code = self.__mergeTasks(instruction,examples)
+        return final_code
+    
+    def __getStreamlitCode(self,instruction,langchain_code,title):
+        merged_code = Chains.streamlit(instruction=instruction,langchain_code=langchain_code,title=title)
+        merged_code = utils.refineCode(merged_code)
+        return merged_code
 
+    def code(self,instruction="Create a translation system that converts English to French",title="my translator",iterations=10):
+        langchain_code = self.__getLangChainCode(instruction,iterations=iterations)
+        return self.__getStreamlitCode(instruction,langchain_code,title)  
+        
+        
 if __name__ == "__main__":
-    fire.Fire(get)
+    coder = LangChainCoder()
+    fire.Fire(coder.code)

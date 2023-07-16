@@ -11,8 +11,8 @@ class Chains:
     llm = ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
 
     @classmethod
-    def set_llm(cls, model, temperature):
-        cls.llm = ChatOpenAI(model=model, temperature=temperature)
+    def setLlm(cls, model,openai_api_key, temperature=0):
+        cls.llm = ChatOpenAI(model=model, openai_api_key=openai_api_key, temperature=temperature)
 
     @classmethod
     def getChain(cls,system_template="",human_template="",**kwargs):
