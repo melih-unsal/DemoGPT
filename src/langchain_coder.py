@@ -175,7 +175,7 @@ class LangChainCoder:
             yield res
         langchain_code = res["code"]
         streamlit_code = self.__getStreamlitCode(instruction,langchain_code,title)
-        return {
+        yield {
             "code":streamlit_code,
             "success":True,
             "task_id":"final",

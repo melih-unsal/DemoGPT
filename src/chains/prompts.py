@@ -104,11 +104,15 @@ STREAMLIT_CODE_SYSTEM_TEMPLATE = """
     # You can use streamlit.session_state['any_key'] to store your objects which is supposed to store state variables
     """
 
-STREAMLIT_CODE_HUMAN_TEMPLATE = """Write a streamlit code and add the logic code based on langchain library inside of it to accomplish the GOAL with the given title. Also when the result is ready add st.balloons() to the code 
+STREAMLIT_CODE_HUMAN_TEMPLATE = """Convert the logic code based on langchain library to an interactive streamlit appplication to accomplish the GOAL with the given title. 
+Also when the final result is ready add st.balloons() to the code 
 Keep in mind that if the streamlit code includes a list which will be updated during the application, 
 use st.session_state because for each update, it needs to be stored. 
 Otherwise, the object will be resetted. 
 Don't define st.text_input inside of a while loop 
+Don't forget to use all the "import" statements in langchain code
+When memory related object is defined, please put it inside streamlit.session_state to preserve its content.
+
 
 GOAL: {instruction}
 --------- 
@@ -118,5 +122,5 @@ Langchain based Logic Code:
 Streamlit Application Title: {title}
 Add st.title({title}) to the app
 ---------
-Full Stremlit Code based on the langchain logic code:
+Stremlit Code:
 """

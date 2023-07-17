@@ -1,7 +1,7 @@
-# ![favicon](./puzzle.png) DemoGPT: Auto 🦜️🔗 LangChain Pipeline Generator
+# ![favicon](assets/puzzle.png) DemoGPT: Auto 🦜️🔗 LangChain Pipeline Generator
 
 <p align="center">
-<a href=""><img src="banner_small.png" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="450px"></a>
+<a href=""><img src="assets/banner_small.png" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="450px"></a>
 </p>
 
 <p align="center">
@@ -29,7 +29,7 @@
 </p>
 
 <p align="center">
-<a href="docs/resources/MetaGPT-WeChat-Personal.jpeg"><img src="https://img.shields.io/badge/WeChat-微信-blue" alt="WeChat"></a>
+<a href="docs/resources/WeChat.jpeg"><img src="https://img.shields.io/badge/WeChat-微信-blue" alt="WeChat"></a>
 <a href="https://twitter.com/demo_gpt"><img src="https://img.shields.io/twitter/follow/demo_gpt?style=social" alt="Twitter Follow"></a>
 </p>
 
@@ -48,7 +48,7 @@
 
 For quick demo, you can visit [our website](https://demogpt.io)
 
-![Humor Machine](./humor_machine.gif)
+![Humor Machine](assets/humor_machine.gif)
 
 https://github.com/melih-unsal/DemoGPT/assets/34304254/8991e296-b6fe-4817-bd08-4dab6d13020d
 
@@ -74,7 +74,7 @@ The process is fully automated, with DemoGPT generating code, running tests, and
 
 ## ⚙️ Architecture
 ### DemoGPT Architecture
-![DemoGPT Architecture](demogpt_pipeline.png?raw=true "DemoGPT Architecture")
+![DemoGPT Architecture](assets/demogpt_pipeline.png?raw=true "DemoGPT Architecture")
 
 ## 🔧 Installation
 

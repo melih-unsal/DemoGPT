@@ -7,7 +7,7 @@ from time import sleep
 import os
 import logging 
 
-logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
+#logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
 
 try:
     from dotenv import load_dotenv
@@ -17,7 +17,7 @@ except Exception as e:
 
 num_of_iterations = 10
 
-def generate_response(txt):
+def generate_response(txt, title):
     """
     Generate response using the LangChainCoder.
 
@@ -27,7 +27,7 @@ def generate_response(txt):
     Yields:
         dict: A dictionary containing response information.
     """
-    for data in agent(txt,num_of_iterations):
+    for data in agent(txt,title,num_of_iterations):
         yield data
     
 # Page title
@@ -46,12 +46,35 @@ st.write("Examples")
 
 cols = st.columns([1,1,1.2])
 
-PROGRESS_BAR_TEXTS = {
-    "start":"Generating Code...",
-    "creating":"Creating App...",
-    "refining":"Refining Code...",
-    "failed":"Failed"
+PROGRESS_BAR_INFO = {
+    "start":{
+        "text":"Generating Code...",
+        "percentage":25
+        },
+    "langchain":{
+        "text":"Transforming to streamlit code",
+        "percentage":35
+        },
+    "refining":{
+        "text":"Refining Code...",
+        "percentage":50
+        },
+    "streamlit":{
+        "text":"Creating App...",
+        "percentage":75
+        },
+    "failed":{
+        "text":"Failed",
+        "percentage":100
+        }
 }
+
+def progressBar(key,bar=None):
+    info = PROGRESS_BAR_INFO[key]
+    if bar:
+        bar.progress(info["percentage"], text=info["text"])
+    else:
+        return st.progress(info["percentage"], text=info["text"])
 
 examples = ["Language Translator 📝","Grammer Corrector 🛠","Blog post generator from title 📔"] 
 
@@ -80,8 +103,8 @@ with st.form('a', clear_on_submit=True):
                 os.kill(st.session_state['pid'], signal.SIGTERM)
                 st.session_state['pid'] = -1
             
-            bar = st.progress(25, PROGRESS_BAR_TEXTS["start"])
-            for data in generate_response(demo_idea):
+            bar = progressBar("start")
+            for data in generate_response(demo_idea,demo_title):
                 code = data["code"]
                 success = data["success"]
                 task_id = data["task_id"]
@@ -89,22 +112,16 @@ with st.form('a', clear_on_submit=True):
 
                 with st.expander("Code"):
                     st.code(code)
-
+                    
                 if success:
+                    progressBar(stage,bar)
                     if stage == "streamlit":
-                        bar.progress(75, text=PROGRESS_BAR_TEXTS["creating"])
                         example_submitted = False
                         st.session_state['pid'] = utils.runStreamlit(code,openai_api_key)
                         sleep(5)
                         webbrowser.open('http://localhost:8502')
-                    else:
-                        bar.progress(75, text="Transforming to streamlit code")
-
-
+                        break
                 else:
-                    bar.progress(50, text=PROGRESS_BAR_TEXTS["refining"])
-
-                if success:
-                    break
+                    progressBar("refining")
             else:
-                bar.progress(100, text=PROGRESS_BAR_TEXTS["failed"])
+                progressBar("failed")
