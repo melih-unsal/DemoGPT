@@ -1,7 +1,7 @@
-# ![favicon](../puzzle.png) DemoGPT：自动 LangChain 管道生成
+# ![favicon](../assets/puzzle.png) DemoGPT：自动 LangChain 管道生成
 
 <p align="center">
-<a href=""><img src="../banner_small.png" alt="DemoGPT logo：自动生成 LangChain 流程" width="350px"></a>
+<a href=""><img src="../assets/banner_small.png" alt="DemoGPT logo：自动生成 LangChain 流程" width="350px"></a>
 </p>
 
 <p align="center">
@@ -28,7 +28,7 @@
 </p>
 
 <p align="center">
-<a href="docs/resources/MetaGPT-WeChat-Personal.jpeg"><img src="https://img.shields.io/badge/WeChat-微信-blue" alt="roadmap"></a>
+<a href="./resources/WeChat.jpeg"><img src="https://img.shields.io/badge/WeChat-微信-blue" alt="roadmap"></a>
 <a href="https://twitter.com/demo_gpt"><img src="https://img.shields.io/twitter/follow/demo_gpt?style=social" alt="Twitter Follow"></a>
 </p>
 
@@ -65,7 +65,7 @@ DemoGPT 是一款创新的开源项目，旨在简化基于语言学习模型（
 
 ## ⚙️ 架构
 ### DemoGPT 架构
-![DemoGPT 架构](../demogpt_pipeline.png?raw=true "DemoGPT Architecture")
+![DemoGPT 架构](../assets/demogpt_pipeline.png?raw=true "DemoGPT Architecture")
 
 ## 🔧 安装
 
