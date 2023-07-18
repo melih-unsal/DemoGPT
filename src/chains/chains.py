@@ -44,4 +44,15 @@ class Chains:
     def streamlit(cls,**kwargs):
         return cls.getChain(system_template=STREAMLIT_CODE_SYSTEM_TEMPLATE,human_template=STREAMLIT_CODE_HUMAN_TEMPLATE,**kwargs)
     
+    @classmethod
+    def feedback(cls,**kwargs):
+        return cls.getChain(human_template=CODE_FEEDBACK_HUMAN_TEMPLATE,**kwargs)
+    
+    @classmethod
+    def refine(cls,**kwargs):
+        return cls.getChain(system_template=CODE_REFINE_SYSTEM_TEMPLATE, human_template=CODE_REFINE_HUMAN_TEMPLATE,**kwargs)
+    
+    @classmethod
+    def refine1(cls,**kwargs):
+        return cls.getChain(human_template=CODE_REFINE1_HUMAN_TEMPLATE,**kwargs)
     

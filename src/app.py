@@ -104,6 +104,7 @@ with st.form('a', clear_on_submit=True):
                 st.session_state['pid'] = -1
             
             bar = progressBar("start")
+            code_empty = st.empty()
             for data in generate_response(demo_idea,demo_title):
                 code = data["code"]
                 success = data["success"]
@@ -115,7 +116,7 @@ with st.form('a', clear_on_submit=True):
                     
                 if success:
                     progressBar(stage,bar)
-                    if stage == "streamlit":
+                    if stage == "streamlit" and task_id == "final":
                         example_submitted = False
                         st.session_state['pid'] = utils.runStreamlit(code,openai_api_key)
                         sleep(5)

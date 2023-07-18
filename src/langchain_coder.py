@@ -95,6 +95,7 @@ class LangChainCoder:
             if not success:
                 feedback = self.expert.debug(error)
                 draft_code =  Chains.debug(draft_code=draft_code, idea=query, feedback=feedback,document=doc)
+                draft_code = utils.refineCode(draft_code)
                 yield {
                     "task_id":index,
                     "progress":f"{i+1}/{iterations}",
@@ -122,7 +123,6 @@ class LangChainCoder:
                     "stage":"langchain"
                 }
         
-    
     def __getLangChainCode(self,instruction,iterations):
         tasks = self.__getTasks(instruction)
         print(tasks)
@@ -168,15 +168,33 @@ class LangChainCoder:
     def __getStreamlitCode(self,instruction,langchain_code,title):
         merged_code = Chains.streamlit(instruction=instruction,langchain_code=langchain_code,title=title)
         merged_code = utils.refineCode(merged_code)
-        return merged_code
+        return {
+            "code": merged_code,
+            "stage":"streamlit",
+            "success":True,
+            "task_id":"draft"
+        }
     
+    def __getFinalCode(self,instruction,code):
+        feedback = Chains.feedback(code=code)
+        code = Chains.refine(instruction=instruction, code=code, feedback=feedback)
+        return utils.refineCode(code)
+    
+    def __getFinalCode1(self,instruction,code):
+        code = Chains.refine1(code=code)
+        return utils.refineCode(code)
+
     def __call__(self,instruction="Create a translation system that converts English to French",title="my translator",iterations=10):
         for res in self.__getLangChainCode(instruction,iterations=iterations):
             yield res
         langchain_code = res["code"]
-        streamlit_code = self.__getStreamlitCode(instruction,langchain_code,title)
+        res = self.__getStreamlitCode(instruction,langchain_code,title)
+        yield res
+        streamlit_code = res["code"]
+        final_code = self.__getFinalCode1(instruction,streamlit_code)
+
         yield {
-            "code":streamlit_code,
+            "code":final_code,
             "success":True,
             "task_id":"final",
             "stage":"streamlit"

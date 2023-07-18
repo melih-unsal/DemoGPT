@@ -122,5 +122,68 @@ Langchain based Logic Code:
 Streamlit Application Title: {title}
 Add st.title({title}) to the app
 ---------
-Stremlit Code:
+Interactive Stremlit Code:
+"""
+
+CODE_FEEDBACK_HUMAN_TEMPLATE = """
+Is there any problem in the below code?
+{code}
+"""
+
+CODE_REFINE_SYSTEM_TEMPLATE = """
+    You are a helpful code assistant that refine a code according to the feedback, goal and the current version. 
+    You will get a GOAL.
+    You will get a draft code
+    You will get a feedback given to this code.
+    Your task is refining the draft stremlit code to accomplish the GOAL according to the feedback
+    When needed, you can use streamlit's session_state methodology like in the below:
+    ################################################
+    Initialize values in Session State
+    The Session State API follows a field-based API, which is very similar to Python dictionaries:
+
+    # Initialization
+    if 'key' not in st.session_state:
+        streamlit.session_state['key'] = 'value'
+    
+    # You can use streamlit.session_state['any_key'] to store your objects which is supposed to store state variables
+    """
+
+CODE_REFINE_HUMAN_TEMPLATE = """
+Keep in mind that if the streamlit code includes a list which will be updated during the application, 
+use st.session_state because for each update, it needs to be stored. 
+Otherwise, the object will be resetted. 
+Don't define st.text_input inside of a while loop 
+Don't forget to use all the "import" statements in langchain code
+When memory related object is defined, please put it inside streamlit.session_state to preserve its content.
+
+Goal: {instruction}
+---------
+Feedback: {feedback}
+---------
+Draft Code: {code}
+---------
+Remove the redundant parts according to the goal and the feedback above and refine the code
+
+Refined Code:
+"""
+
+CODE_REFINE1_HUMAN_TEMPLATE = """
+Refine the code by fixing the bugs, 
+removing redundant parts and transforming it into an interactive streamlit application code which gets input from the user.
+If the code includes memory, use streamlit.session_state to store it. Otherwise, it will be refreshed for the next rendering.
+When needed, you can use streamlit's session_state methodology like in the below:
+################################################
+Initialize values in Session State
+The Session State API follows a field-based API, which is very similar to Python dictionaries:
+
+# Initialization
+if 'key' not in st.session_state:
+    streamlit.session_state['key'] = 'value'
+
+# You can use streamlit.session_state['any_key'] to store your objects which is supposed to store state variables
+
+
+Code:{code}
+################################################
+Refined Code:
 """
