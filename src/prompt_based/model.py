@@ -10,6 +10,7 @@ import sys
 import os
 import logging
 import platform
+import threading
 
 class BaseModel:
     """
@@ -229,6 +230,10 @@ class StreamlitModel(BaseModel):
         """
         super().__init__(openai_api_key)
         self.streamlit_code_chain = LLMChain(llm=self.llm, prompt=streamlit_code_prompt)
+
+    def runThread(self,proc):
+        proc.communicate()
+
  
     def run_code(self,code):
         """
@@ -252,18 +257,14 @@ class StreamlitModel(BaseModel):
             env['STREAMLIT_SERVER_PORT'] = "8502"
             python_path = sys.executable
             process = subprocess.Popen([python_path,"-m","streamlit","run",tmp.name], env=env,stdout=PIPE, stderr=PIPE)
-            timer = Timer(5, process.kill)
-            try:
-                timer.start()
-                stdout, stderr = process.communicate()
-            finally:
-                timer.cancel()
+            threading.Thread(target=self.runThread, args=(process,)).start()
         else:
             process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
         try:
             tmp.close()
         except PermissionError:
             pass
+        
         return process.pid
     
     def __call__(self,topic, title, code, test_code,progress_func,success_func):
