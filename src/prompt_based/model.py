@@ -2,6 +2,7 @@ from prompts import *
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from subprocess import PIPE
+from threading import Timer
 import tempfile
 import subprocess
 import shutil
@@ -248,9 +249,17 @@ class StreamlitModel(BaseModel):
             env = os.environ.copy()
             env['PYTHONPATH'] = ''
             env['OPENAI_API_KEY'] = self.openai_api_key
-            process = subprocess.Popen([streamlit_path,"run",tmp.name], env=env,stdout=PIPE, stderr=PIPE)
+            env['STREAMLIT_SERVER_PORT'] = "8502"
+            python_path = sys.executable
+            process = subprocess.Popen([python_path,"-m","streamlit","run",tmp.name], env=env,stdout=PIPE, stderr=PIPE)
+            timer = Timer(5, process.kill)
+            try:
+                timer.start()
+                stdout, stderr = process.communicate()
+            finally:
+                timer.cancel()
         else:
-            process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
+            process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
         try:
             tmp.close()
         except PermissionError:
