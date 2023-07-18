@@ -6,7 +6,7 @@ from time import sleep
 import os
 import logging 
 
-logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
+#logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
 
 try:
     from dotenv import load_dotenv

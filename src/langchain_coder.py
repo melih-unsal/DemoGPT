@@ -94,6 +94,7 @@ class LangChainCoder:
             _, error,success = utils.runPython(draft_code)
             if not success:
                 feedback = self.expert.debug(error)
+                print(colored(feedback,"red"))
                 draft_code =  Chains.debug(draft_code=draft_code, idea=query, feedback=feedback,document=doc)
                 draft_code = utils.refineCode(draft_code)
                 yield {
