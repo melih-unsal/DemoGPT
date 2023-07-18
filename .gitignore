@@ -15,6 +15,7 @@ src/chain
 src/chain_exp/
 src/langchain_db_python/
 src/langchain_db
+src/langchain_code/**/*
 
 
 quick_start.txt

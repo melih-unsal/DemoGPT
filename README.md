@@ -1,4 +1,4 @@
-# ![favicon](assets/puzzle.png) DemoGPT: Auto 🦜️🔗 LangChain Pipeline Generator
+# ![favicon](assets/puzzle.png) DemoGPT: Auto Gen-AI App Generator
 
 <p align="center">
 <a href=""><img src="assets/banner_small.png" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="450px"></a>

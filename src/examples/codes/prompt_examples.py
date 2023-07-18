@@ -15,6 +15,13 @@ from langchain.prompts.chat import (
 # Here are the examples:
 
 # Goal: Generate blog post from title. Generate at least 500 words
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
 def generateBlogPost(title):
     chat = ChatOpenAI(temperature=0.1) # Here temperature is set a little bit higher to put some variation
 
@@ -31,8 +38,15 @@ def generateBlogPost(title):
 title = "Rise of AI"
 blog = generateBlogPost(title)
 print(blog)
-
+######################################################################################################################################
 # Goal: Implement language translation
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
 def generateTranslation(input_language, output_language, text):
     chat = ChatOpenAI(temperature=0) # Here temperature is set to 0 because translation should be concrete
 
@@ -51,8 +65,15 @@ output_language = "French"
 text = "How are you?"
 transalated_text = generateTranslation(input_language, output_language, text)
 print(transalated_text)
-
+######################################################################################################################################
 # Goal: Generate animal name from animal
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
 def generateAnimalName(animal):
     chat = ChatOpenAI(temperature=0.1) # Here temperature is set a little bit higher to put some variation
 
@@ -69,8 +90,15 @@ def generateAnimalName(animal):
 animal = "dog"
 animal_name = generateAnimalName(animal)
 print(animal_name)
-
+######################################################################################################################################
 # Goal: Generate programming related humor
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
 def generateHumor():
     chat = ChatOpenAI(temperature=0.7) # Here temperature is set a little bit higher to put some creativity
 
@@ -84,8 +112,15 @@ def generateHumor():
 
 humor = generateHumor()
 print(humor)
-
+######################################################################################################################################
 # Goal: Generate random songs
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
 def generateSong():
     chat = ChatOpenAI(temperature=0.7) # Here temperature is set a little bit higher to put some creativity
 

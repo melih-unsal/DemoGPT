@@ -96,6 +96,8 @@ with st.form('a', clear_on_submit=True):
         if not openai_api_key.startswith('sk-'):
             st.warning('Please enter your OpenAI API Key!', icon="⚠️")
         else:
+            bar = progressBar("start")
+
             agent = LangChainCoder(openai_api_key=openai_api_key)
 
             if st.session_state['pid'] != -1:
@@ -103,20 +105,18 @@ with st.form('a', clear_on_submit=True):
                 os.kill(st.session_state['pid'], signal.SIGTERM)
                 st.session_state['pid'] = -1
             
-            bar = progressBar("start")
             code_empty = st.empty()
             for data in generate_response(demo_idea,demo_title):
                 code = data["code"]
                 success = data["success"]
                 task_id = data["task_id"]
                 stage = data["stage"]
-
-                with st.expander("Code"):
-                    st.code(code)
                     
                 if success:
                     progressBar(stage,bar)
                     if stage == "streamlit" and task_id == "final":
+                        with st.expander("Code"):
+                            st.code(code)
                         example_submitted = False
                         st.session_state['pid'] = utils.runStreamlit(code,openai_api_key)
                         sleep(5)

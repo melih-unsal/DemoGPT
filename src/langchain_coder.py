@@ -19,7 +19,7 @@ class LangChainCoder:
                  device="cuda",
                  distance_metric="cos",
                  maximal_marginal_relevance=True,
-                 k=8):
+                 k=2):
          self.root_dir = "/".join(langchain.__file__.split('/')[:-1])
          Chains.setLlm(model_name,openai_api_key)
          self.persist_directory = persist_directory
@@ -191,6 +191,7 @@ class LangChainCoder:
         res = self.__getStreamlitCode(instruction,langchain_code,title)
         yield res
         streamlit_code = res["code"]
+        print(colored(streamlit_code,"light_green"))
         final_code = self.__getFinalCode1(instruction,streamlit_code)
 
         yield {
