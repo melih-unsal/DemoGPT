@@ -8,6 +8,7 @@ import shutil
 import sys
 import os
 import logging
+import platform
 
 class BaseModel:
     """
@@ -117,14 +118,14 @@ class LogicModel(BaseModel):
             tmp.flush()
             environmental_variables = {'OPENAI_API_KEY':self.openai_api_key}
             python_path = shutil.which("python")
-            if python_path:
-                process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
-            else:# shows 'which' returns None
+            if platform.system() == "Windows":
                 env = os.environ.copy()
                 env['PYTHONPATH'] = ''
                 env['OPENAI_API_KEY'] = self.openai_api_key
                 python_path = sys.executable 
                 process = subprocess.Popen([python_path,tmp.name], env=env,stdout=PIPE, stderr=PIPE)
+            else:
+                process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
             output, err = self.decode_results(process.communicate())
             success = len(err) == 0
             return output, err, success
