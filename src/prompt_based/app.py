@@ -59,6 +59,8 @@ if 'pid' not in st.session_state:
 
 example_submitted = False
 
+final_code_empty = st.empty()
+
 with st.form('a', clear_on_submit=True):
     submitted = st.form_submit_button('Submit')
     for col,example in zip(cols,examples):
@@ -92,7 +94,9 @@ with st.form('a', clear_on_submit=True):
                 if success:
                     bar.progress(75, text=PROGRESS_BAR_TEXTS["creating"])
                     example_submitted = False
-                    st.session_state['pid'] = streamlit_agent(demo_idea,demo_title,code,test_code,bar.progress,st.balloons)
+                    st.session_state['pid'], streamlit_code = streamlit_agent(demo_idea,demo_title,code,test_code,bar.progress,st.balloons)
+                    with st.expander("Code"):
+                        st.code(streamlit_code)
                     sleep(5)
                     webbrowser.open('http://localhost:8502')
 

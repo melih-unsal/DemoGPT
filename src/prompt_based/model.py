@@ -286,4 +286,4 @@ class StreamlitModel(BaseModel):
         refined_code = self.refine_code(streamlit_code)
         progress_func(100,"Redirecting to the demo page...")
         success_func()
-        return self.run_code(refined_code)
+        return self.run_code(refined_code), refined_code
