@@ -113,22 +113,26 @@ class LogicModel(BaseModel):
         Returns:
             Tuple[str, str, bool]: The output, error, and success status of the execution.
         """
-        with tempfile.NamedTemporaryFile("w") as tmp:
-            tmp.write(code)
-            tmp.flush()
-            environmental_variables = {'OPENAI_API_KEY':self.openai_api_key}
-            python_path = shutil.which("python")
-            if platform.system() == "Windows":
-                env = os.environ.copy()
-                env['PYTHONPATH'] = ''
-                env['OPENAI_API_KEY'] = self.openai_api_key
-                python_path = sys.executable 
-                process = subprocess.Popen([python_path,tmp.name], env=env,stdout=PIPE, stderr=PIPE)
-            else:
-                process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
-            output, err = self.decode_results(process.communicate())
-            success = len(err) == 0
-            return output, err, success
+        tmp = tempfile.NamedTemporaryFile("w",suffix=".py",delete=False)
+        tmp.write(code)
+        tmp.flush()
+        environmental_variables = {'OPENAI_API_KEY':self.openai_api_key}
+        python_path = shutil.which("python")
+        if platform.system() == "Windows":
+            env = os.environ.copy()
+            env['PYTHONPATH'] = ''
+            env['OPENAI_API_KEY'] = self.openai_api_key
+            python_path = sys.executable 
+            process = subprocess.Popen([python_path,tmp.name], env=env,stdout=PIPE, stderr=PIPE)
+        else:
+            process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
+        try:
+            tmp.close()
+        except PermissionError:
+            pass
+        output, err = self.decode_results(process.communicate())
+        success = len(err) == 0
+        return output, err, success
     
     def __call__(self,topic,num_iterations=10):
         """
@@ -235,13 +239,17 @@ class StreamlitModel(BaseModel):
         Returns:
             int: The process ID of the Streamlit application.
         """
-        with tempfile.NamedTemporaryFile("w",suffix=".py",delete=False) as tmp:
-            tmp.write(code)
-            tmp.flush()
-            environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
-            streamlit_path = shutil.which("streamlit")
-            process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
-            return process.pid
+        tmp = tempfile.NamedTemporaryFile("w",suffix=".py",delete=False)
+        tmp.write(code)
+        tmp.flush()
+        environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
+        streamlit_path = shutil.which("streamlit")
+        process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
+        try:
+            tmp.close()
+        except PermissionError:
+            pass
+        return process.pid
     
     def __call__(self,topic, title, code, test_code,progress_func,success_func):
         """
