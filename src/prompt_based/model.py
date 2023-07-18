@@ -101,7 +101,7 @@ class LogicModel(BaseModel):
         Returns:
             Tuple[str, str]: The decoded results.
         """
-        return (res.strip().decode('utf-8') for res in results)
+        return (res.strip().decode('utf-8',errors="ignore") for res in results)
 
     def run_python(self,code):
         """
@@ -244,7 +244,13 @@ class StreamlitModel(BaseModel):
         tmp.flush()
         environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
         streamlit_path = shutil.which("streamlit")
-        process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
+        if platform.system() == "Windows":
+            env = os.environ.copy()
+            env['PYTHONPATH'] = ''
+            env['OPENAI_API_KEY'] = self.openai_api_key
+            process = subprocess.Popen([streamlit_path,"run",tmp.name], env=env,stdout=PIPE, stderr=PIPE)
+        else:
+            process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables)
         try:
             tmp.close()
         except PermissionError:
