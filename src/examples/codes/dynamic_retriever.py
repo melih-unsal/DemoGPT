@@ -8,11 +8,11 @@ from langchain.document_loaders import TextLoader
 from langchain.vectorstores import FAISS
 
 # Loading and splitting documents for the State of the Union retriever
-sou_docs = TextLoader('../../state_of_the_union.txt').load_and_split()
+sou_docs = TextLoader("../../state_of_the_union.txt").load_and_split()
 sou_retriever = FAISS.from_documents(sou_docs, OpenAIEmbeddings()).as_retriever()
 
 # Loading and splitting documents for the Paul Graham essay retriever
-pg_docs = TextLoader('../../paul_graham_essay.txt').load_and_split()
+pg_docs = TextLoader("../../paul_graham_essay.txt").load_and_split()
 pg_retriever = FAISS.from_documents(pg_docs, OpenAIEmbeddings()).as_retriever()
 
 # Creating a list of personal texts
@@ -30,20 +30,20 @@ personal_retriever = FAISS.from_texts(personal_texts, OpenAIEmbeddings()).as_ret
 # Creating a list of retriever information
 retriever_infos = [
     {
-        "name": "state of the union", 
-        "description": "Good for answering questions about the 2023 State of the Union address", 
-        "retriever": sou_retriever
+        "name": "state of the union",
+        "description": "Good for answering questions about the 2023 State of the Union address",
+        "retriever": sou_retriever,
     },
     {
-        "name": "pg essay", 
-        "description": "Good for answering questions about Paul Graham's essay on his career", 
-        "retriever": pg_retriever
+        "name": "pg essay",
+        "description": "Good for answering questions about Paul Graham's essay on his career",
+        "retriever": pg_retriever,
     },
     {
-        "name": "personal", 
-        "description": "Good for answering questions about me", 
-        "retriever": personal_retriever
-    }
+        "name": "personal",
+        "description": "Good for answering questions about me",
+        "retriever": personal_retriever,
+    },
 ]
 
 # Creating a MultiRetrievalQAChain from the retrievers

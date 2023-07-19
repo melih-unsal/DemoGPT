@@ -18,7 +18,9 @@ texts = text_splitter.split_text(state_of_the_union)
 
 embeddings = OpenAIEmbeddings()
 
-docsearch = Chroma.from_texts(texts, embeddings, metadatas=[{"source": str(i)} for i in range(len(texts))]).as_retriever()
+docsearch = Chroma.from_texts(
+    texts, embeddings, metadatas=[{"source": str(i)} for i in range(len(texts))]
+).as_retriever()
 
 # Running Chroma using direct local API.
 # Using DuckDB in-memory for database. Data will be transient.
@@ -82,7 +84,9 @@ chain({"input_documents": docs, "question": query}, return_only_outputs=True)
 
 # We can also return the intermediate steps for map_reduce chains, should we want to inspect them. This is done with the return_map_steps variable.
 
-chain = load_qa_chain(OpenAI(temperature=0), chain_type="map_reduce", return_map_steps=True)
+chain = load_qa_chain(
+    OpenAI(temperature=0), chain_type="map_reduce", return_map_steps=True
+)
 
 chain({"input_documents": docs, "question": query}, return_only_outputs=True)
 
@@ -116,7 +120,13 @@ Answer in Italian:"""
 COMBINE_PROMPT = PromptTemplate(
     template=combine_prompt_template, input_variables=["summaries", "question"]
 )
-chain = load_qa_chain(OpenAI(temperature=0), chain_type="map_reduce", return_map_steps=True, question_prompt=QUESTION_PROMPT, combine_prompt=COMBINE_PROMPT)
+chain = load_qa_chain(
+    OpenAI(temperature=0),
+    chain_type="map_reduce",
+    return_map_steps=True,
+    question_prompt=QUESTION_PROMPT,
+    combine_prompt=COMBINE_PROMPT,
+)
 chain({"input_documents": docs, "question": query}, return_only_outputs=True)
 
 # {'intermediate_steps': ["\nStasera vorrei onorare qualcuno che ha dedicato la sua vita a servire questo paese: il giustizia Stephen Breyer - un veterano dell'esercito, uno studioso costituzionale e un giustizia in uscita della Corte Suprema degli Stati Uniti. Giustizia Breyer, grazie per il tuo servizio.",
@@ -145,7 +155,9 @@ chain({"input_documents": docs, "question": query}, return_only_outputs=True)
 
 # We can also return the intermediate steps for refine chains, should we want to inspect them. This is done with the return_refine_steps variable.
 
-chain = load_qa_chain(OpenAI(temperature=0), chain_type="refine", return_refine_steps=True)
+chain = load_qa_chain(
+    OpenAI(temperature=0), chain_type="refine", return_refine_steps=True
+)
 
 chain({"input_documents": docs, "question": query}, return_only_outputs=True)
 
@@ -188,8 +200,13 @@ initial_qa_template = (
 initial_qa_prompt = PromptTemplate(
     input_variables=["context_str", "question"], template=initial_qa_template
 )
-chain = load_qa_chain(OpenAI(temperature=0), chain_type="refine", return_refine_steps=True,
-                     question_prompt=initial_qa_prompt, refine_prompt=refine_prompt)
+chain = load_qa_chain(
+    OpenAI(temperature=0),
+    chain_type="refine",
+    return_refine_steps=True,
+    question_prompt=initial_qa_prompt,
+    refine_prompt=refine_prompt,
+)
 chain({"input_documents": docs, "question": query}, return_only_outputs=True)
 
 # {'intermediate_steps': ['\nIl presidente ha detto che Justice Breyer ha dedicato la sua vita al servizio di questo paese e ha reso omaggio al suo servizio.',
@@ -201,7 +218,9 @@ chain({"input_documents": docs, "question": query}, return_only_outputs=True)
 # The map-rerank Chain
 # This sections shows results of using the map-rerank Chain to do question answering with sources.
 
-chain = load_qa_chain(OpenAI(temperature=0), chain_type="map_rerank", return_intermediate_steps=True)
+chain = load_qa_chain(
+    OpenAI(temperature=0), chain_type="map_rerank", return_intermediate_steps=True
+)
 
 query = "What did the president say about Justice Breyer"
 results = chain({"input_documents": docs, "question": query}, return_only_outputs=True)
@@ -251,7 +270,12 @@ PROMPT = PromptTemplate(
     output_parser=output_parser,
 )
 
-chain = load_qa_chain(OpenAI(temperature=0), chain_type="map_rerank", return_intermediate_steps=True, prompt=PROMPT)
+chain = load_qa_chain(
+    OpenAI(temperature=0),
+    chain_type="map_rerank",
+    return_intermediate_steps=True,
+    prompt=PROMPT,
+)
 query = "What did the president say about Justice Breyer"
 chain({"input_documents": docs, "question": query}, return_only_outputs=True)
 
@@ -266,7 +290,9 @@ chain({"input_documents": docs, "question": query}, return_only_outputs=True)
 # Document QA with sources
 # We can also perform document QA and return the sources that were used to answer the question. To do this we'll just need to make sure each document has a "source" key in the metadata, and we'll use the load_qa_with_sources helper to construct our chain:
 
-docsearch = Chroma.from_texts(texts, embeddings, metadatas=[{"source": str(i)} for i in range(len(texts))])
+docsearch = Chroma.from_texts(
+    texts, embeddings, metadatas=[{"source": str(i)} for i in range(len(texts))]
+)
 query = "What did the president say about Justice Breyer"
 docs = docsearch.similarity_search(query)
 

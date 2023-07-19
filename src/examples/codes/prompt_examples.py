@@ -22,18 +22,25 @@ from langchain.prompts.chat import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
+
+
 def generateBlogPost(title):
-    chat = ChatOpenAI(temperature=0.1) # Here temperature is set a little bit higher to put some variation
+    chat = ChatOpenAI(
+        temperature=0.1
+    )  # Here temperature is set a little bit higher to put some variation
 
     template = "You are a helpful assistant that generates a blog post from the title: {title}. Please provide some content."
     system_message_prompt = SystemMessagePromptTemplate.from_template(template)
     human_template = "{title}"
     human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    chat_prompt = ChatPromptTemplate.from_messages(
+        [system_message_prompt, human_message_prompt]
+    )
 
     chain = LLMChain(llm=chat, prompt=chat_prompt)
     result = chain.run(title=title)
-    return result # it will return string with at least 500 words.
+    return result  # it will return string with at least 500 words.
+
 
 title = "Rise of AI"
 blog = generateBlogPost(title)
@@ -47,18 +54,27 @@ from langchain.prompts.chat import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
+
+
 def generateTranslation(input_language, output_language, text):
-    chat = ChatOpenAI(temperature=0) # Here temperature is set to 0 because translation should be concrete
+    chat = ChatOpenAI(
+        temperature=0
+    )  # Here temperature is set to 0 because translation should be concrete
 
     template = "You are a helpful assistant that translates {input_language} to {output_language}."
     system_message_prompt = SystemMessagePromptTemplate.from_template(template)
     human_template = "{text}"
     human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    chat_prompt = ChatPromptTemplate.from_messages(
+        [system_message_prompt, human_message_prompt]
+    )
 
     chain = LLMChain(llm=chat, prompt=chat_prompt)
-    result = chain.run(input_language=input_language, output_language=output_language, text=text)
-    return result # it will return string
+    result = chain.run(
+        input_language=input_language, output_language=output_language, text=text
+    )
+    return result  # it will return string
+
 
 input_language = "English"
 output_language = "French"
@@ -74,18 +90,25 @@ from langchain.prompts.chat import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
+
+
 def generateAnimalName(animal):
-    chat = ChatOpenAI(temperature=0.1) # Here temperature is set a little bit higher to put some variation
+    chat = ChatOpenAI(
+        temperature=0.1
+    )  # Here temperature is set a little bit higher to put some variation
 
     template = "You are a helpful assistant that generates a name for an animal. You generate short answer."
     system_message_prompt = SystemMessagePromptTemplate.from_template(template)
     human_template = "What is a good name for a {animal}?"
     human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    chat_prompt = ChatPromptTemplate.from_messages(
+        [system_message_prompt, human_message_prompt]
+    )
 
     chain = LLMChain(llm=chat, prompt=chat_prompt)
     result = chain.run(animal=animal)
-    return result # it will return string
+    return result  # it will return string
+
 
 animal = "dog"
 animal_name = generateAnimalName(animal)
@@ -99,16 +122,25 @@ from langchain.prompts.chat import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-def generateHumor():
-    chat = ChatOpenAI(temperature=0.7) # Here temperature is set a little bit higher to put some creativity
 
-    template = "You are a helpful assistant that generates a humor related to programming."
+
+def generateHumor():
+    chat = ChatOpenAI(
+        temperature=0.7
+    )  # Here temperature is set a little bit higher to put some creativity
+
+    template = (
+        "You are a helpful assistant that generates a humor related to programming."
+    )
     system_message_prompt = SystemMessagePromptTemplate.from_template(template)
     chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
 
     chain = LLMChain(llm=chat, prompt=chat_prompt)
-    result = chain.run({}) #We don't need argument, what's why we needed to put an empty dictionary. Otherwise, it will give an error
-    return result # it will return string
+    result = chain.run(
+        {}
+    )  # We don't need argument, what's why we needed to put an empty dictionary. Otherwise, it will give an error
+    return result  # it will return string
+
 
 humor = generateHumor()
 print(humor)
@@ -121,16 +153,23 @@ from langchain.prompts.chat import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
+
+
 def generateSong():
-    chat = ChatOpenAI(temperature=0.7) # Here temperature is set a little bit higher to put some creativity
+    chat = ChatOpenAI(
+        temperature=0.7
+    )  # Here temperature is set a little bit higher to put some creativity
 
     template = "You are a helpful assistant that generate random song"
     system_message_prompt = SystemMessagePromptTemplate.from_template(template)
     chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
 
     chain = LLMChain(llm=chat, prompt=chat_prompt)
-    result = chain.run({}) #We don't need argument, what's why we needed to put an empty dictionary. Otherwise, it will give an error
-    return result # it will return string
+    result = chain.run(
+        {}
+    )  # We don't need argument, what's why we needed to put an empty dictionary. Otherwise, it will give an error
+    return result  # it will return string
+
 
 song = generateSong()
 print(song)

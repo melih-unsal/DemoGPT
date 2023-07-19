@@ -46,7 +46,9 @@ history.add_user_message("hi")
 history.add_ai_message("hi there!")
 
 # Create an instance of ConversationSummaryMemory using the ChatMessageHistory
-memory = ConversationSummaryMemory.from_messages(llm=OpenAI(temperature=0), chat_memory=history, return_messages=True)
+memory = ConversationSummaryMemory.from_messages(
+    llm=OpenAI(temperature=0), chat_memory=history, return_messages=True
+)
 
 # Print the conversation history
 print(memory.buffer)
@@ -60,9 +62,7 @@ llm = OpenAI(temperature=0)
 
 # Create a ConversationChain with ConversationSummaryMemory
 conversation_with_summary = ConversationChain(
-    llm=llm, 
-    memory=ConversationSummaryMemory(llm=OpenAI()),
-    verbose=True
+    llm=llm, memory=ConversationSummaryMemory(llm=OpenAI()), verbose=True
 )
 
 # Predict the response for the input
@@ -78,7 +78,9 @@ response = conversation_with_summary.predict(input="Tell me more about it!")
 print(response)
 
 # Predict the response for the input
-response = conversation_with_summary.predict(input="Very cool -- what is the scope of the project?")
+response = conversation_with_summary.predict(
+    input="Very cool -- what is the scope of the project?"
+)
 
 # Print the response
 print(response)

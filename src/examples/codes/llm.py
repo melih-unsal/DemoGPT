@@ -10,10 +10,7 @@ prompt_template = "What is a good name for a company that makes {product}?"
 llm = OpenAI(temperature=0)
 
 # Create an instance of LLMChain
-llm_chain = LLMChain(
-    llm=llm,
-    prompt=PromptTemplate.from_template(prompt_template)
-)
+llm_chain = LLMChain(llm=llm, prompt=PromptTemplate.from_template(prompt_template))
 
 # Call the LLMChain with an input
 output = llm_chain("colorful socks")
@@ -22,11 +19,7 @@ print(output)
 # Additional ways of running LLM Chain
 
 # Apply the chain logic to a list of inputs
-input_list = [
-    {"product": "socks"},
-    {"product": "computer"},
-    {"product": "shoes"}
-]
+input_list = [{"product": "socks"}, {"product": "computer"}, {"product": "shoes"}]
 output_list = llm_chain.apply(input_list)
 print(output_list)
 
@@ -50,7 +43,9 @@ from langchain.output_parsers import CommaSeparatedListOutputParser
 
 output_parser = CommaSeparatedListOutputParser()
 template = """List all the colors in a rainbow"""
-prompt = PromptTemplate(template=template, input_variables=[], output_parser=output_parser)
+prompt = PromptTemplate(
+    template=template, input_variables=[], output_parser=output_parser
+)
 llm_chain = LLMChain(prompt=prompt, llm=llm)
 output_parsed = llm_chain.predict()
 print(output_parsed)

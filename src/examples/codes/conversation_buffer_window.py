@@ -27,7 +27,9 @@ memory.save_context({"input": "not much you"}, {"output": "not much"})
 memory.load_memory_variables({})
 
 # Print the history as a list of messages
-print(memory.history)  # Output: [HumanMessage(content='not much you', additional_kwargs={}), AIMessage(content='not much', additional_kwargs={})]
+print(
+    memory.history
+)  # Output: [HumanMessage(content='not much you', additional_kwargs={}), AIMessage(content='not much', additional_kwargs={})]
 
 # Import the required modules
 from langchain.llms import OpenAI
@@ -35,9 +37,7 @@ from langchain.chains import ConversationChain
 
 # Create an instance of ConversationChain with ConversationBufferWindowMemory
 conversation_with_summary = ConversationChain(
-    llm=OpenAI(temperature=0),
-    memory=ConversationBufferWindowMemory(k=2),
-    verbose=True
+    llm=OpenAI(temperature=0), memory=ConversationBufferWindowMemory(k=2), verbose=True
 )
 
 # Predict the response for the input "Hi, what's up?"

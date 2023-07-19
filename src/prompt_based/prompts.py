@@ -22,7 +22,9 @@ Python Code:
 
 human_message_prompt1 = HumanMessagePromptTemplate.from_template(human_template1)
 
-code_prompt = ChatPromptTemplate.from_messages([system_message_prompt1, human_message_prompt1])
+code_prompt = ChatPromptTemplate.from_messages(
+    [system_message_prompt1, human_message_prompt1]
+)
 
 template2 = """
     You are a helpful code assistant that can teach a junior developer how to code. Your language of choice is Python. You will get a python code and add function test.
@@ -79,7 +81,9 @@ Function Test:
 
 human_message_prompt2 = HumanMessagePromptTemplate.from_template(human_template2)
 
-test_prompt = ChatPromptTemplate.from_messages([system_message_prompt2, human_message_prompt2])
+test_prompt = ChatPromptTemplate.from_messages(
+    [system_message_prompt2, human_message_prompt2]
+)
 
 
 refine_remplate = """
@@ -144,7 +148,9 @@ streamlit_code_template = """
     Test code includes the test part which tests the logic code
     Your tasks is generating a stremlit code which does the same thing that the test code does to accomplish the GOAL.
     """
-streamlit_code_system_message_prompt = SystemMessagePromptTemplate.from_template(streamlit_code_template)
+streamlit_code_system_message_prompt = SystemMessagePromptTemplate.from_template(
+    streamlit_code_template
+)
 
 streamlit_code_human_template = """Write a streamlit code by looking at the logic code and test code to accomplish the GOAL with the given title. Also when the result is ready add st.balloons() to the code 
 
@@ -162,8 +168,19 @@ Add st.title({title}) to the app
 Stremlit Code:
 """
 
-streamlit_code_human_message_prompt = HumanMessagePromptTemplate.from_template(streamlit_code_human_template)
+streamlit_code_human_message_prompt = HumanMessagePromptTemplate.from_template(
+    streamlit_code_human_template
+)
 
-streamlit_code_prompt = ChatPromptTemplate.from_messages([streamlit_code_system_message_prompt, streamlit_code_human_message_prompt])
+streamlit_code_prompt = ChatPromptTemplate.from_messages(
+    [streamlit_code_system_message_prompt, streamlit_code_human_message_prompt]
+)
 
-__all__ = ['code_prompt','test_prompt','refine_chat_prompt','fix_chat_prompt','check_chat_prompt','streamlit_code_prompt']
+__all__ = [
+    "code_prompt",
+    "test_prompt",
+    "refine_chat_prompt",
+    "fix_chat_prompt",
+    "check_chat_prompt",
+    "streamlit_code_prompt",
+]

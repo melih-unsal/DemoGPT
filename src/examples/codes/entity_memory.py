@@ -5,6 +5,7 @@
 
 from langchain.llms import OpenAI
 from langchain.memory import ConversationEntityMemory
+
 llm = OpenAI(temperature=0)
 
 memory = ConversationEntityMemory(llm=llm)
@@ -12,10 +13,12 @@ _input = {"input": "Deven & Sam are working on a hackathon project"}
 memory.load_memory_variables(_input)
 memory.save_context(
     _input,
-    {"output": " That sounds like a great project! What kind of project are they working on?"}
+    {
+        "output": " That sounds like a great project! What kind of project are they working on?"
+    },
 )
 
-memory.load_memory_variables({"input": 'who is Sam'})
+memory.load_memory_variables({"input": "who is Sam"})
 
 # {'history': 'Human: Deven & Sam are working on a hackathon project\nAI:  That sounds like a great project! What kind of project are they working on?',
 #  'entities': {'Sam': 'Sam is working on a hackathon project with Deven.'}}
@@ -25,10 +28,12 @@ _input = {"input": "Deven & Sam are working on a hackathon project"}
 memory.load_memory_variables(_input)
 memory.save_context(
     _input,
-    {"output": " That sounds like a great project! What kind of project are they working on?"}
+    {
+        "output": " That sounds like a great project! What kind of project are they working on?"
+    },
 )
 
-memory.load_memory_variables({"input": 'who is Sam'})
+memory.load_memory_variables({"input": "who is Sam"})
 
 # {'history': [HumanMessage(content='Deven & Sam are working on a hackathon project', additional_kwargs={}),
 #   AIMessage(content=' That sounds like a great project! What kind of project are they working on?', additional_kwargs={})],
@@ -44,10 +49,10 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 
 conversation = ConversationChain(
-    llm=llm, 
+    llm=llm,
     verbose=True,
     prompt=ENTITY_MEMORY_CONVERSATION_TEMPLATE,
-    memory=ConversationEntityMemory(llm=llm)
+    memory=ConversationEntityMemory(llm=llm),
 )
 
 conversation.predict(input="Deven & Sam are working on a hackathon project")
@@ -80,7 +85,9 @@ conversation.memory.entity_store.store
 # {'Deven': 'Deven is working on a hackathon project with Sam, which they are entering into a hackathon.',
 #  'Sam': 'Sam is working on a hackathon project with Deven.'}
 
-conversation.predict(input="They are trying to add more complex memory structures to Langchain")
+conversation.predict(
+    input="They are trying to add more complex memory structures to Langchain"
+)
 
 # > Entering new ConversationChain chain...
 # Prompt after formatting:
@@ -106,7 +113,9 @@ conversation.predict(input="They are trying to add more complex memory structure
 
 # ' That sounds like an interesting project! What kind of memory structures are they trying to add?'
 
-conversation.predict(input="They are adding in a key-value store for entities mentioned so far in the conversation.")
+conversation.predict(
+    input="They are adding in a key-value store for entities mentioned so far in the conversation."
+)
 
 # > Entering new ConversationChain chain...
 # Prompt after formatting:
@@ -168,6 +177,7 @@ conversation.predict(input="What do you know about Deven & Sam?")
 # We can also inspect the memory store directly. In the following examaples, we look at it directly, and then go through some examples of adding information and watch how it changes.
 
 from pprint import pprint
+
 pprint(conversation.memory.entity_store.store)
 
 # {'Daimon': 'Daimon is a company founded by Sam, a successful entrepreneur.',
@@ -209,7 +219,7 @@ conversation.predict(input="Sam is the founder of a company called Daimon.")
 # Human: What do you know about Deven & Sam?
 # AI:  Deven and Sam are working on a hackathon project together, trying to add more complex memory structures to Langchain, including a key-value store for entities mentioned so far in the conversation. They seem to be working hard on this project and have a great idea for how the key-value store can help.
 # Human: Sam is the founder of a company called Daimon.
-# AI: 
+# AI:
 # That's impressive! It sounds like Sam is a very successful entrepreneur. What kind of company is Daimon?
 # Last line:
 # Human: Sam is the founder of a company called Daimon.
@@ -220,6 +230,7 @@ conversation.predict(input="Sam is the founder of a company called Daimon.")
 # " That's impressive! It sounds like Sam is a very successful entrepreneur. What kind of company is Daimon?"
 
 from pprint import pprint
+
 pprint(conversation.memory.entity_store.store)
 
 # {'Daimon': 'Daimon is a company founded by Sam, a successful entrepreneur, who '
@@ -261,7 +272,7 @@ conversation.predict(input="What do you know about Sam?")
 # Human: What do you know about Deven & Sam?
 # AI:  Deven and Sam are working on a hackathon project together, trying to add more complex memory structures to Langchain, including a key-value store for entities mentioned so far in the conversation. They seem to be working hard on this project and have a great idea for how the key-value store can help.
 # Human: Sam is the founder of a company called Daimon.
-# AI: 
+# AI:
 # That's impressive! It sounds like Sam is a very successful entrepreneur. What kind of company is Daimon?
 # Human: Sam is the founder of a company called Daimon.
 # AI:  That's impressive! It sounds like Sam is a very successful entrepreneur. What kind of company is Daimon?

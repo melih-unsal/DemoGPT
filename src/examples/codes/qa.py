@@ -30,6 +30,9 @@ qa_chain = load_qa_chain(llm, chain_type="map_reduce")
 
 qa_document_chain = AnalyzeDocumentChain(combine_docs_chain=qa_chain)
 
-qa_document_chain.run(input_document=state_of_the_union, question="what did the president say about justice breyer?")
+qa_document_chain.run(
+    input_document=state_of_the_union,
+    question="what did the president say about justice breyer?",
+)
 
 # ' The president thanked Justice Breyer for his service.'

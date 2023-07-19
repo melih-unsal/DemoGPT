@@ -71,7 +71,9 @@ chain.run(docs)
 
 # We can also return the intermediate steps for map_reduce chains, should we want to inspect them. This is done with the return_map_steps variable.
 
-chain = load_summarize_chain(OpenAI(temperature=0), chain_type="map_reduce", return_intermediate_steps=True)
+chain = load_summarize_chain(
+    OpenAI(temperature=0), chain_type="map_reduce", return_intermediate_steps=True
+)
 
 chain({"input_documents": docs}, return_only_outputs=True)
 
@@ -92,7 +94,13 @@ prompt_template = """Write a concise summary of the following:
 
 CONCISE SUMMARY IN ITALIAN:"""
 PROMPT = PromptTemplate(template=prompt_template, input_variables=["text"])
-chain = load_summarize_chain(OpenAI(temperature=0), chain_type="map_reduce", return_intermediate_steps=True, map_prompt=PROMPT, combine_prompt=PROMPT)
+chain = load_summarize_chain(
+    OpenAI(temperature=0),
+    chain_type="map_reduce",
+    return_intermediate_steps=True,
+    map_prompt=PROMPT,
+    combine_prompt=PROMPT,
+)
 chain({"input_documents": docs}, return_only_outputs=True)
 
 # {'intermediate_steps': ["\n\nQuesta sera, ci incontriamo come democratici, repubblicani e indipendenti, ma soprattutto come americani. La Russia di Putin ha cercato di scuotere le fondamenta del mondo libero, ma ha sottovalutato la forza della gente ucraina. Gli Stati Uniti e i loro alleati stanno ora imponendo sanzioni economiche a Putin e stanno tagliando l'accesso della Russia alla tecnologia. Il Dipartimento di Giustizia degli Stati Uniti sta anche creando una task force dedicata per andare dopo i crimini degli oligarchi russi.",
@@ -113,7 +121,9 @@ chain.run(docs)
 
 # We can also return the intermediate steps for refine chains, should we want to inspect them. This is done with the return_refine_steps variable.
 
-chain = load_summarize_chain(OpenAI(temperature=0), chain_type="refine", return_intermediate_steps=True)
+chain = load_summarize_chain(
+    OpenAI(temperature=0), chain_type="refine", return_intermediate_steps=True
+)
 
 chain({"input_documents": docs}, return_only_outputs=True)
 
@@ -149,13 +159,19 @@ refine_prompt = PromptTemplate(
     input_variables=["existing_answer", "text"],
     template=refine_template,
 )
-chain = load_summarize_chain(OpenAI(temperature=0), chain_type="refine", return_intermediate_steps=True, question_prompt=PROMPT, refine_prompt=refine_prompt)
+chain = load_summarize_chain(
+    OpenAI(temperature=0),
+    chain_type="refine",
+    return_intermediate_steps=True,
+    question_prompt=PROMPT,
+    refine_prompt=refine_prompt,
+)
 chain({"input_documents": docs}, return_only_outputs=True)
 
 # {'intermediate_steps': ["\n\nQuesta sera, ci incontriamo come democratici, repubblicani e indipendenti, ma soprattutto come americani. La Russia di Putin ha cercato di scuotere le fondamenta del mondo libero, ma ha sottovalutato la forza della gente ucraina. Insieme ai nostri alleati, stiamo imponendo sanzioni economiche, tagliando l'accesso della Russia alla tecnologia e bloccando i suoi più grandi istituti bancari dal sistema finanziario internazionale. Il Dipartimento di Giustizia degli Stati Uniti sta anche assemblando una task force dedicata per andare dopo i crimini degli oligarchi russi.",
-  "\n\nQuesta sera, ci incontriamo come democratici, repubblicani e indipendenti, ma soprattutto come americani. La Russia di Putin ha cercato di scuotere le fondamenta del mondo libero, ma ha sottovalutato la forza della gente ucraina. Insieme ai nostri alleati, stiamo imponendo sanzioni economiche, tagliando l'accesso della Russia alla tecnologia, bloccando i suoi più grandi istituti bancari dal sistema finanziario internazionale e chiudendo lo spazio aereo americano a tutti i voli russi. Il Dipartimento di Giustizia degli Stati Uniti sta anche assemblando una task force dedicata per andare dopo i crimini degli oligarchi russi. Stiamo fornendo più di un miliardo di dollari in assistenza diretta all'Ucraina e fornendo assistenza militare,",
-  "\n\nQuesta sera, ci incontriamo come democratici, repubblicani e indipendenti, ma soprattutto come americani. La Russia di Putin ha cercato di scuotere le fondamenta del mondo libero, ma ha sottovalutato la forza della gente ucraina. Insieme ai nostri alleati, stiamo imponendo sanzioni economiche, tagliando l'accesso della Russia alla tecnologia, bloccando i suoi più grandi istituti bancari dal sistema finanziario internazionale e chiudendo lo spazio aereo americano a tutti i voli russi. Il Dipartimento di Giustizia degli Stati Uniti sta anche assemblando una task force dedicata per andare dopo i crimini degli oligarchi russi. Stiamo fornendo più di un miliardo di dollari in assistenza diretta all'Ucraina e fornendo assistenza militare."],
- 'output_text': "\n\nQuesta sera, ci incontriamo come democratici, repubblicani e indipendenti, ma soprattutto come americani. La Russia di Putin ha cercato di scuotere le fondamenta del mondo libero, ma ha sottovalutato la forza della gente ucraina. Insieme ai nostri alleati, stiamo imponendo sanzioni economiche, tagliando l'accesso della Russia alla tecnologia, bloccando i suoi più grandi istituti bancari dal sistema finanziario internazionale e chiudendo lo spazio aereo americano a tutti i voli russi. Il Dipartimento di Giustizia degli Stati Uniti sta anche assemblando una task force dedicata per andare dopo i crimini degli oligarchi russi. Stiamo fornendo più di un miliardo di dollari in assistenza diretta all'Ucraina e fornendo assistenza militare."}
+#  "\n\nQuesta sera, ci incontriamo come democratici, repubblicani e indipendenti, ma soprattutto come americani. La Russia di Putin ha cercato di scuotere le fondamenta del mondo libero, ma ha sottovalutato la forza della gente ucraina. Insieme ai nostri alleati, stiamo imponendo sanzioni economiche, tagliando l'accesso della Russia alla tecnologia, bloccando i suoi più grandi istituti bancari dal sistema finanziario internazionale e chiudendo lo spazio aereo americano a tutti i voli russi. Il Dipartimento di Giustizia degli Stati Uniti sta anche assemblando una task force dedicata per andare dopo i crimini degli oligarchi russi. Stiamo fornendo più di un miliardo di dollari in assistenza diretta all'Ucraina e fornendo assistenza militare,",
+#  "\n\nQuesta sera, ci incontriamo come democratici, repubblicani e indipendenti, ma soprattutto come americani. La Russia di Putin ha cercato di scuotere le fondamenta del mondo libero, ma ha sottovalutato la forza della gente ucraina. Insieme ai nostri alleati, stiamo imponendo sanzioni economiche, tagliando l'accesso della Russia alla tecnologia, bloccando i suoi più grandi istituti bancari dal sistema finanziario internazionale e chiudendo lo spazio aereo americano a tutti i voli russi. Il Dipartimento di Giustizia degli Stati Uniti sta anche assemblando una task force dedicata per andare dopo i crimini degli oligarchi russi. Stiamo fornendo più di un miliardo di dollari in assistenza diretta all'Ucraina e fornendo assistenza militare."],
+# 'output_text': "\n\nQuesta sera, ci incontriamo come democratici, repubblicani e indipendenti, ma soprattutto come americani. La Russia di Putin ha cercato di scuotere le fondamenta del mondo libero, ma ha sottovalutato la forza della gente ucraina. Insieme ai nostri alleati, stiamo imponendo sanzioni economiche, tagliando l'accesso della Russia alla tecnologia, bloccando i suoi più grandi istituti bancari dal sistema finanziario internazionale e chiudendo lo spazio aereo americano a tutti i voli russi. Il Dipartimento di Giustizia degli Stati Uniti sta anche assemblando una task force dedicata per andare dopo i crimini degli oligarchi russi. Stiamo fornendo più di un miliardo di dollari in assistenza diretta all'Ucraina e fornendo assistenza militare."}
 
 # The custom MapReduceChain
 # Multi input prompt
@@ -181,7 +197,9 @@ Answer:
 """
 
 MAP_PROMPT = PromptTemplate(input_variables=["code"], template=map_template_string)
-REDUCE_PROMPT = PromptTemplate(input_variables=["code_description", "question"], template=reduce_template_string)
+REDUCE_PROMPT = PromptTemplate(
+    input_variables=["code_description", "question"], template=reduce_template_string
+)
 
 llm = OpenAI()
 
@@ -201,7 +219,9 @@ combine_documents = MapReduceDocumentsChain(
 
 map_reduce = MapReduceChain(
     combine_documents_chain=combine_documents,
-    text_splitter=CharacterTextSplitter(separator="\n##\n", chunk_size=100, chunk_overlap=0),
+    text_splitter=CharacterTextSplitter(
+        separator="\n##\n", chunk_size=100, chunk_overlap=0
+    ),
 )
 
 

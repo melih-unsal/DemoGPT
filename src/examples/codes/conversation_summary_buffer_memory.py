@@ -82,7 +82,7 @@ conversation_with_summary.predict(input="For LangChain! Have you heard of it?")
 # The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know.
 #
 # Current conversation:
-# System: 
+# System:
 # The human asked the AI what it was up to and the AI responded that it was learning about the latest developments in AI technology.
 # Human: Just working on writing some documentation!
 # AI:  That sounds like a great use of your time. Do you have experience with writing documentation?
@@ -103,7 +103,7 @@ conversation_with_summary.predict(
 # The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know.
 #
 # Current conversation:
-# System: 
+# System:
 # The human asked the AI what it was up to and the AI responded that it was learning about the latest developments in AI technology. The human then mentioned they were writing documentation, to which the AI responded that it sounded like a great use of their time and asked if they had experience with writing documentation.
 # Human: For LangChain! Have you heard of it?
 # AI:  No, I haven't heard of LangChain. Can you tell me more about it?

@@ -14,7 +14,9 @@ llm = OpenAI(temperature=0.9)
 
 # And now we can pass in text and get predictions!
 
-llm.predict("What would be a good company name for a company that makes colorful socks?")
+llm.predict(
+    "What would be a good company name for a company that makes colorful socks?"
+)
 # >> Feetful of Fun
 
 # Chat models
@@ -23,14 +25,16 @@ llm.predict("What would be a good company name for a company that makes colorful
 # You can get chat completions by passing one or more messages to the chat model. The response will be a message. The types of messages currently supported in LangChain are AIMessage, HumanMessage, SystemMessage, and ChatMessage -- ChatMessage takes in an arbitrary role parameter. Most of the time, you'll just be dealing with HumanMessage, AIMessage, and SystemMessage.
 
 from langchain.chat_models import ChatOpenAI
-from langchain.schema import (
-    AIMessage,
-    HumanMessage,
-    SystemMessage
-)
+from langchain.schema import AIMessage, HumanMessage, SystemMessage
 
 chat = ChatOpenAI(temperature=0)
-chat.predict_messages([HumanMessage(content="Translate this sentence from English to French. I love programming.")])
+chat.predict_messages(
+    [
+        HumanMessage(
+            content="Translate this sentence from English to French. I love programming."
+        )
+    ]
+)
 # >> AIMessage(content="J'aime programmer.", additional_kwargs={})
 
 
@@ -50,7 +54,9 @@ chat.predict("Translate this sentence from English to French. I love programming
 
 from langchain.prompts import PromptTemplate
 
-prompt = PromptTemplate.from_template("What is a good name for a company that makes {product}?")
+prompt = PromptTemplate.from_template(
+    "What is a good name for a company that makes {product}?"
+)
 prompt.format(product="colorful socks")
 
 # What is a good name for a company that makes colorful socks?
@@ -65,19 +71,28 @@ from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
 )
 
-template = "You are a helpful assistant that translates {input_language} to {output_language}."
+template = (
+    "You are a helpful assistant that translates {input_language} to {output_language}."
+)
 system_message_prompt = SystemMessagePromptTemplate.from_template(template)
 human_template = "{text}"
 human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
 
-chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+chat_prompt = ChatPromptTemplate.from_messages(
+    [system_message_prompt, human_message_prompt]
+)
 
-chat_prompt.format_messages(input_language="English", output_language="French", text="I love programming.")
+chat_prompt.format_messages(
+    input_language="English", output_language="French", text="I love programming."
+)
 
 
 [
-    SystemMessage(content="You are a helpful assistant that translates English to French.", additional_kwargs={}),
-    HumanMessage(content="I love programming.")
+    SystemMessage(
+        content="You are a helpful assistant that translates English to French.",
+        additional_kwargs={},
+    ),
+    HumanMessage(content="I love programming."),
 ]
 
 # Chains
@@ -112,14 +127,20 @@ from langchain.prompts.chat import (
 
 chat = ChatOpenAI(temperature=0)
 
-template = "You are a helpful assistant that translates {input_language} to {output_language}."
+template = (
+    "You are a helpful assistant that translates {input_language} to {output_language}."
+)
 system_message_prompt = SystemMessagePromptTemplate.from_template(template)
 human_template = "{text}"
 human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+chat_prompt = ChatPromptTemplate.from_messages(
+    [system_message_prompt, human_message_prompt]
+)
 
 chain = LLMChain(llm=chat, prompt=chat_prompt)
-chain.run(input_language="English", output_language="French", text="I love programming.")
+chain.run(
+    input_language="English", output_language="French", text="I love programming."
+)
 
 # J'aime programmer.
 
@@ -160,21 +181,23 @@ from langchain.prompts import (
     ChatPromptTemplate,
     MessagesPlaceholder,
     SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate
+    HumanMessagePromptTemplate,
 )
 from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 
-prompt = ChatPromptTemplate.from_messages([
-    SystemMessagePromptTemplate.from_template(
-        "The following is a friendly conversation between a human and an AI. The AI is talkative and "
-        "provides lots of specific details from its context. If the AI does not know the answer to a "
-        "question, it truthfully says it does not know."
-    ),
-    MessagesPlaceholder(variable_name="history"),
-    HumanMessagePromptTemplate.from_template("{input}")
-])
+prompt = ChatPromptTemplate.from_messages(
+    [
+        SystemMessagePromptTemplate.from_template(
+            "The following is a friendly conversation between a human and an AI. The AI is talkative and "
+            "provides lots of specific details from its context. If the AI does not know the answer to a "
+            "question, it truthfully says it does not know."
+        ),
+        MessagesPlaceholder(variable_name="history"),
+        HumanMessagePromptTemplate.from_template("{input}"),
+    ]
+)
 
 llm = ChatOpenAI(temperature=0)
 memory = ConversationBufferMemory(return_messages=True)
@@ -183,13 +206,13 @@ conversation = ConversationChain(memory=memory, prompt=prompt, llm=llm)
 conversation.predict(input="Hi there!")
 
 
-#Hello! How can I assist you today?
+# Hello! How can I assist you today?
 
 conversation.predict(input="I'm doing well! Just having a conversation with an AI.")
 
-#That sounds like fun! I'm happy to chat with you. Is there anything specific you'd like to talk about?
+# That sounds like fun! I'm happy to chat with you. Is there anything specific you'd like to talk about?
 
 
 conversation.predict(input="Tell me about yourself.")
 
-#Sure! I am an AI language model created by OpenAI. I was trained on a large dataset of text from the internet, which allows me to understand and generate human-like language. I can answer questions, provide information, and even have conversations like this one. Is there anything else you'd like to know about me?
+# Sure! I am an AI language model created by OpenAI. I was trained on a large dataset of text from the internet, which allows me to understand and generate human-like language. I can answer questions, provide information, and even have conversations like this one. Is there anything else you'd like to know about me?

@@ -36,7 +36,7 @@ llm_chain.predict(human_input="Hi there my friend")
 
 # > Finished LLMChain chain.
 
-' Hi there, how are you doing today?'
+" Hi there, how are you doing today?"
 
 llm_chain.predict(human_input="Not too bad - how are you?")
 

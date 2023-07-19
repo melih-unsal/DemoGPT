@@ -7,15 +7,18 @@ from langchain.prompts.chat import (
 from langchain.chat_models import ChatOpenAI
 from chains.prompts import *
 
+
 class Chains:
     llm = ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
 
     @classmethod
-    def setLlm(cls, model,openai_api_key, temperature=0):
-        cls.llm = ChatOpenAI(model=model, openai_api_key=openai_api_key, temperature=temperature)
+    def setLlm(cls, model, openai_api_key, temperature=0):
+        cls.llm = ChatOpenAI(
+            model=model, openai_api_key=openai_api_key, temperature=temperature
+        )
 
     @classmethod
-    def getChain(cls,system_template="",human_template="",**kwargs):
+    def getChain(cls, system_template="", human_template="", **kwargs):
         prompts = []
         if system_template:
             prompts.append(SystemMessagePromptTemplate.from_template(system_template))
@@ -25,34 +28,49 @@ class Chains:
         return LLMChain(llm=cls.llm, prompt=chat_prompt).run(**kwargs)
 
     @classmethod
-    def divide(cls,**kwargs):
-        return cls.getChain(system_template=DIVIDE_TASKS_SYSTEM_TEMPLATE,human_template=DIVIDE_TASKS_HUMAN_TEMPLATE,**kwargs)
-    
+    def divide(cls, **kwargs):
+        return cls.getChain(
+            system_template=DIVIDE_TASKS_SYSTEM_TEMPLATE,
+            human_template=DIVIDE_TASKS_HUMAN_TEMPLATE,
+            **kwargs
+        )
+
     @classmethod
-    def merge(cls,**kwargs):
-        return cls.getChain(system_template=MERGE_CODES_SYSTEM_TEMPLATE,human_template=MERGE_CODES_HUMAN_TEMPLATE,**kwargs)
-    
+    def merge(cls, **kwargs):
+        return cls.getChain(
+            system_template=MERGE_CODES_SYSTEM_TEMPLATE,
+            human_template=MERGE_CODES_HUMAN_TEMPLATE,
+            **kwargs
+        )
+
     @classmethod
-    def debug(cls,**kwargs):
-        return cls.getChain(human_template=APP_DEBUGGING_TEMPLATE,**kwargs)
-    
+    def debug(cls, **kwargs):
+        return cls.getChain(human_template=APP_DEBUGGING_TEMPLATE, **kwargs)
+
     @classmethod
-    def draft(cls,**kwargs):
-        return cls.getChain(human_template=DOC_USE_TEMPLATE,**kwargs)
-    
+    def draft(cls, **kwargs):
+        return cls.getChain(human_template=DOC_USE_TEMPLATE, **kwargs)
+
     @classmethod
-    def streamlit(cls,**kwargs):
-        return cls.getChain(system_template=STREAMLIT_CODE_SYSTEM_TEMPLATE,human_template=STREAMLIT_CODE_HUMAN_TEMPLATE,**kwargs)
-    
+    def streamlit(cls, **kwargs):
+        return cls.getChain(
+            system_template=STREAMLIT_CODE_SYSTEM_TEMPLATE,
+            human_template=STREAMLIT_CODE_HUMAN_TEMPLATE,
+            **kwargs
+        )
+
     @classmethod
-    def feedback(cls,**kwargs):
-        return cls.getChain(human_template=CODE_FEEDBACK_HUMAN_TEMPLATE,**kwargs)
-    
+    def feedback(cls, **kwargs):
+        return cls.getChain(human_template=CODE_FEEDBACK_HUMAN_TEMPLATE, **kwargs)
+
     @classmethod
-    def refine(cls,**kwargs):
-        return cls.getChain(system_template=CODE_REFINE_SYSTEM_TEMPLATE, human_template=CODE_REFINE_HUMAN_TEMPLATE,**kwargs)
-    
+    def refine(cls, **kwargs):
+        return cls.getChain(
+            system_template=CODE_REFINE_SYSTEM_TEMPLATE,
+            human_template=CODE_REFINE_HUMAN_TEMPLATE,
+            **kwargs
+        )
+
     @classmethod
-    def refine1(cls,**kwargs):
-        return cls.getChain(human_template=CODE_REFINE1_HUMAN_TEMPLATE,**kwargs)
-    
+    def refine1(cls, **kwargs):
+        return cls.getChain(human_template=CODE_REFINE1_HUMAN_TEMPLATE, **kwargs)

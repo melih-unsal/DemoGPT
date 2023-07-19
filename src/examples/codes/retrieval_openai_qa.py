@@ -32,7 +32,7 @@ texts = text_splitter.split_documents(documents)
 
 # Add metadata to each chunk
 for i, text in enumerate(texts):
-    text.metadata['source'] = f"{i}-pl"
+    text.metadata["source"] = f"{i}-pl"
 
 # Create OpenAI embeddings
 embeddings = OpenAIEmbeddings()
@@ -54,15 +54,14 @@ doc_prompt = PromptTemplate(
 
 # Create final QA chain with document context
 final_qa_chain = StuffDocumentsChain(
-    llm_chain=qa_chain, 
-    document_variable_name='context',
+    llm_chain=qa_chain,
+    document_variable_name="context",
     document_prompt=doc_prompt,
 )
 
 # Create retrieval QA chain
 retrieval_qa = RetrievalQA(
-    retriever=docsearch.as_retriever(),
-    combine_documents_chain=final_qa_chain
+    retriever=docsearch.as_retriever(), combine_documents_chain=final_qa_chain
 )
 
 # Query
@@ -79,15 +78,14 @@ qa_chain_pydantic = create_qa_with_sources_chain(llm, output_parser="pydantic")
 
 # Create final QA chain with document context and Pydantic output
 final_qa_chain_pydantic = StuffDocumentsChain(
-    llm_chain=qa_chain_pydantic, 
-    document_variable_name='context',
+    llm_chain=qa_chain_pydantic,
+    document_variable_name="context",
     document_prompt=doc_prompt,
 )
 
 # Create retrieval QA chain with Pydantic output
 retrieval_qa_pydantic = RetrievalQA(
-    retriever=docsearch.as_retriever(),
-    combine_documents_chain=final_qa_chain_pydantic
+    retriever=docsearch.as_retriever(), combine_documents_chain=final_qa_chain_pydantic
 )
 
 # Run retrieval QA with Pydantic output
@@ -117,10 +115,10 @@ condense_question_chain = LLMChain(
 
 # Create ConversationalRetrievalChain
 qa = ConversationalRetrievalChain(
-    question_generator=condense_question_chain, 
+    question_generator=condense_question_chain,
     retriever=docsearch.as_retriever(),
-    memory=memory, 
-    combine_docs_chain=final_qa_chain
+    memory=memory,
+    combine_docs_chain=final_qa_chain,
 )
 
 # Query
@@ -147,10 +145,13 @@ class CustomResponseSchema(BaseModel):
     """An answer to the question being asked, with sources."""
 
     answer: str = Field(..., description="Answer to the question that was asked")
-    countries_referenced: List[str] = Field(..., description="All of the countries mentioned in the sources")
+    countries_referenced: List[str] = Field(
+        ..., description="All of the countries mentioned in the sources"
+    )
     sources: List[str] = Field(
         ..., description="List of sources used to answer the question"
     )
+
 
 # Create prompt messages for custom response schema
 prompt_messages = [
@@ -163,26 +164,29 @@ prompt_messages = [
     HumanMessage(content="Answer question using the following context"),
     HumanMessagePromptTemplate.from_template("{context}"),
     HumanMessagePromptTemplate.from_template("Question: {question}"),
-    HumanMessage(content="Tips: Make sure to answer in the correct format. Return all of the countries mentioned in the sources in uppercase characters."),
+    HumanMessage(
+        content="Tips: Make sure to answer in the correct format. Return all of the countries mentioned in the sources in uppercase characters."
+    ),
 ]
 
 # Create prompt template for chain
 chain_prompt = ChatPromptTemplate(messages=prompt_messages)
 
 # Create QA chain with custom response schema
-qa_chain_pydantic = create_qa_with_structure_chain(llm, CustomResponseSchema, output_parser="pydantic", prompt=chain_prompt)
+qa_chain_pydantic = create_qa_with_structure_chain(
+    llm, CustomResponseSchema, output_parser="pydantic", prompt=chain_prompt
+)
 
 # Create final QA chain with document context and custom response schema
 final_qa_chain_pydantic = StuffDocumentsChain(
     llm_chain=qa_chain_pydantic,
-    document_variable_name='context',
+    document_variable_name="context",
     document_prompt=doc_prompt,
 )
 
 # Create retrieval QA chain with custom response schema
 retrieval_qa_pydantic = RetrievalQA(
-    retriever=docsearch.as_retriever(),
-    combine_documents_chain=final_qa_chain_pydantic
+    retriever=docsearch.as_retriever(), combine_documents_chain=final_qa_chain_pydantic
 )
 
 # Query
