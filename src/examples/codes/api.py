@@ -1,11 +1,11 @@
 # API chains
 # APIChain enables using LLMs to interact with APIs to retrieve relevant information. Construct the chain by providing a question relevant to the provided API documentation.
 
+from langchain.chains import APIChain
 # Import necessary modules
 from langchain.chains.api.prompt import API_RESPONSE_PROMPT
-from langchain.chains import APIChain
-from langchain.prompts.prompt import PromptTemplate
 from langchain.llms import OpenAI
+from langchain.prompts.prompt import PromptTemplate
 
 # Create an instance of the OpenAI language model
 llm = OpenAI(temperature=0)

@@ -26,9 +26,8 @@ memory.load_memory_variables({})
 # Using in a chain
 # Finally, let's take a look at using this in a chain (setting verbose=True so we can see the prompt).
 
-from langchain.llms import OpenAI
 from langchain.chains import ConversationChain
-
+from langchain.llms import OpenAI
 
 llm = OpenAI(temperature=0)
 conversation = ConversationChain(

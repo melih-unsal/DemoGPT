@@ -7,7 +7,7 @@ This notebook showcases using a generic transformation chain.
 As an example, we will create a dummy transformation that takes in a super long text, filters the text to only the first 3 paragraphs, and then passes that into an LLMChain to summarize those.
 """
 
-from langchain.chains import TransformChain, LLMChain, SimpleSequentialChain
+from langchain.chains import LLMChain, SimpleSequentialChain, TransformChain
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 

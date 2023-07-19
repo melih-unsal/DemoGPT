@@ -2,12 +2,12 @@
 
 # Most memory objects assume a single input. In this notebook, we go over how to add memory to a chain that has multiple inputs. As an example of such a chain, we will add memory to a question/answering chain. This chain takes as inputs both related documents and a user question.
 
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.embeddings.cohere import CohereEmbeddings
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores.elastic_vector_search import ElasticVectorSearch
-from langchain.vectorstores import Chroma
 from langchain.docstore.document import Document
+from langchain.embeddings.cohere import CohereEmbeddings
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.vectorstores.elastic_vector_search import ElasticVectorSearch
 
 with open("../../state_of_the_union.txt") as f:
     state_of_the_union = f.read()
@@ -28,8 +28,8 @@ docs = docsearch.similarity_search(query)
 
 from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
-from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
+from langchain.prompts import PromptTemplate
 
 template = """You are a chatbot having a conversation with a human.
 

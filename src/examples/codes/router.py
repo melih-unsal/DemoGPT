@@ -5,11 +5,11 @@
 # - The RouterChain itself (responsible for selecting the next chain to call)
 # - destination_chains: chains that the router chain can route to
 
+from langchain.chains import ConversationChain
+from langchain.chains.llm import LLMChain
 # Import necessary modules
 from langchain.chains.router import MultiPromptChain
 from langchain.llms import OpenAI
-from langchain.chains import ConversationChain
-from langchain.chains.llm import LLMChain
 from langchain.prompts import PromptTemplate
 
 # Define the physics and math templates
@@ -60,8 +60,10 @@ default_chain = ConversationChain(llm=llm, output_key="text")
 # This chain uses an LLM to determine how to route things.
 
 # Import necessary modules
-from langchain.chains.router.llm_router import LLMRouterChain, RouterOutputParser
-from langchain.chains.router.multi_prompt_prompt import MULTI_PROMPT_ROUTER_TEMPLATE
+from langchain.chains.router.llm_router import (LLMRouterChain,
+                                                RouterOutputParser)
+from langchain.chains.router.multi_prompt_prompt import \
+    MULTI_PROMPT_ROUTER_TEMPLATE
 
 # Create the destinations string
 destinations = [f"{p['name']}: {p['description']}" for p in prompt_infos]

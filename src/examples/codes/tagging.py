@@ -3,8 +3,9 @@
 # This helps us make sure that the model outputs exactly tags that we want, with their appropriate types.
 # The tagging chain is to be used when we want to tag a passage with a specific attribute (i.e. what is the sentiment of this message?)
 
+from langchain.chains import (create_tagging_chain,
+                              create_tagging_chain_pydantic)
 from langchain.chat_models import ChatOpenAI
-from langchain.chains import create_tagging_chain, create_tagging_chain_pydantic
 from langchain.prompts import ChatPromptTemplate
 
 llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-0613")
@@ -90,6 +91,7 @@ chain.run(inp)
 # In this way, we can specify our schema in the same manner that we would a new class or function in Python - with purely Pythonic types.
 
 from enum import Enum
+
 from pydantic import BaseModel, Field
 
 

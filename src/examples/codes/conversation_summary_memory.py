@@ -1,6 +1,6 @@
 # Import necessary modules
-from langchain.memory import ConversationSummaryMemory, ChatMessageHistory
 from langchain.llms import OpenAI
+from langchain.memory import ChatMessageHistory, ConversationSummaryMemory
 
 # Create an instance of ConversationSummaryMemory
 memory = ConversationSummaryMemory(llm=OpenAI(temperature=0))
@@ -53,9 +53,9 @@ memory = ConversationSummaryMemory.from_messages(
 # Print the conversation history
 print(memory.buffer)
 
+from langchain.chains import ConversationChain
 # Import necessary modules
 from langchain.llms import OpenAI
-from langchain.chains import ConversationChain
 
 # Create an instance of OpenAI language model
 llm = OpenAI(temperature=0)

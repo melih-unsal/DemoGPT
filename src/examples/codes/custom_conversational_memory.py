@@ -1,8 +1,8 @@
 # How to customize conversational memory
 
 # Import necessary modules
-from langchain.llms import OpenAI
 from langchain.chains import ConversationChain
+from langchain.llms import OpenAI
 from langchain.memory import ConversationBufferMemory
 
 # Create an instance of OpenAI

@@ -1,8 +1,8 @@
 # Program-aided language model (PAL) chain
 # Implements Program-Aided Language Models, as in https://arxiv.org/pdf/2211.10435.pdf.
 
-from langchain.chains import PALChain
 from langchain import OpenAI
+from langchain.chains import PALChain
 
 llm = OpenAI(temperature=0, max_tokens=512)
 

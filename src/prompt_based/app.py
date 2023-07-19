@@ -1,10 +1,12 @@
-import streamlit as st
+import logging
+import os
 import signal
-from model import LogicModel, StreamlitModel
 import webbrowser
 from time import sleep
-import os
-import logging
+
+import streamlit as st
+
+from model import LogicModel, StreamlitModel
 
 # logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
 

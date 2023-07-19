@@ -4,23 +4,23 @@
 
 # In this notebook we show how to use an LLM chain which uses OpenAI functions as part of an overall retrieval pipeline.
 
-from langchain.chains import RetrievalQA
+from typing import List
+
+from langchain.chains import (ConversationalRetrievalChain, LLMChain,
+                              RetrievalQA, create_qa_with_sources_chain)
+from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from langchain.chains.openai_functions import create_qa_with_structure_chain
+from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import TextLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.memory import ConversationBufferMemory
+from langchain.prompts import PromptTemplate
+from langchain.prompts.chat import (ChatPromptTemplate,
+                                    HumanMessagePromptTemplate)
+from langchain.schema import HumanMessage, SystemMessage
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma
-from langchain.chat_models import ChatOpenAI
-from langchain.chains.combine_documents.stuff import StuffDocumentsChain
-from langchain.prompts import PromptTemplate
-from langchain.chains import create_qa_with_sources_chain
-from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import LLMChain
-from typing import List
 from pydantic import BaseModel, Field
-from langchain.chains.openai_functions import create_qa_with_structure_chain
-from langchain.prompts.chat import ChatPromptTemplate, HumanMessagePromptTemplate
-from langchain.schema import SystemMessage, HumanMessage
 
 # Load documents
 loader = TextLoader("../../state_of_the_union.txt", encoding="utf-8")
