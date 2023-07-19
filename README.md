@@ -56,6 +56,8 @@ https://github.com/melih-unsal/DemoGPT/assets/34304254/8991e296-b6fe-4817-bd08-4
 
 See our documentation site [here](https://melih-unsal.github.io/DemoGPT-Docs/) for full how-to docs and guidelines
 
+⚡ The new release with the power of **Llama 2** is on the way. ⚡
+
 
 ## 📑 Table of Contents
 
