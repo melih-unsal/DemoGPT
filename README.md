@@ -82,7 +82,7 @@ In summary, DemoGPT isn't just a project; it is a forward-thinking approach, red
 
 ## ⚙️ Architecture
 ### DemoGPT Architecture
-![DemoGPT Architecture](assets/demogpt_pipeline.png?raw=true "DemoGPT Architecture")
+![DemoGPT Architecture](assets/demogpt_new_pipeline.jpeg?raw=true "DemoGPT Architecture")
 
 ## 🔧 Installation
 
