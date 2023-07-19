@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-<b>⚡ Create 🦜️🔗 LangChain apps by just using prompts. ⚡</b>
+<b>⚡ Create 🦜️🔗 LangChain-based Streamlit applications by just using prompts. ⚡</b>
 </p>
 
 <p align="center">
@@ -68,9 +68,19 @@ See our documentation site [here](https://melih-unsal.github.io/DemoGPT-Docs/) f
 
 ## 📌 Introduction
 
-DemoGPT is an innovative open-source project designed to streamline the development of Large Language Model (LLM) based applications. It leverages the capabilities of GPT-3.5-turbo to auto-generate LangChain code using a 'Tree of Thoughts' (ToT) approach. LangChain is traditionally used for creating pipelines for LLM-based applications, and with DemoGPT, we are transforming the way we handle these pipelines. 
+## 📌 Introduction
 
-The process is fully automated, with DemoGPT generating code, running tests, and progressively developing the project step by step. Each piece of code is tested and evaluated by itself. If it passes the auto-generated tests, the development proceeds, allowing for efficient and error-free development.
+Welcome to DemoGPT, a ground-breaking open-source initiative aimed at optimizing and democratizing the development of Large Language Model (LLM) based applications. 
+
+At the heart of DemoGPT lies the potent GPT-3.5-turbo, which enables the auto-generation of LangChain code. This process is fueled by a unique self-refining strategy that seamlessly blends document understanding from the LangChain documentation tree with user prompts. The outcome is a piece of code that doesn't just work, but is inherently robust, adhering to best coding practices while maintaining a deep-rooted alignment with the LangChain library.
+
+The LangChain code, once generated, is not a final product but an intermediate stage. The code is further transformed into a user-friendly Streamlit application, adding an interactive layer to the logic produced.
+
+Alongside this, DemoGPT embraces an iterative development process, wherein each code segment is individually tested. This approach, coupled with the self-refining strategy, enables an efficient and error-minimized workflow, pushing the envelope in traditional code development.
+
+By making software development accessible through simple prompts, DemoGPT is laying the groundwork for a paradigm shift in how we create, refine, and customize LLM-based applications. The end goal is a broader, more inclusive ecosystem where users, regardless of their coding proficiency, can contribute to the continuous evolution of products. 
+
+In summary, DemoGPT isn't just a project; it is a forward-thinking approach, redefining the boundaries of LLM-based application development.
 
 ## ⚙️ Architecture
 ### DemoGPT Architecture
