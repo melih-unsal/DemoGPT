@@ -82,7 +82,7 @@ By making software development accessible through simple prompts, DemoGPT is lay
 
 In summary, DemoGPT isn't just a project; it is a forward-thinking approach, redefining the boundaries of LLM-based application development.
 
-In the next release, we are gonna add Llama 2 inside of DemoGPT to make the whole system runnable completely locally.
+In the next release, we are gonna add **Llama 2** inside of DemoGPT to make the whole system runnable completely locally.
 
 ## ⚙️ Architecture
 ### DemoGPT Architecture
