@@ -1,20 +1,18 @@
+import logging
+import os
+
+import fire
 import langchain
-from langchain.chat_models import ChatOpenAI
+from dotenv import load_dotenv
 from langchain.chains import ConversationalRetrievalChain
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.text_splitter import (
-    RecursiveCharacterTextSplitter,
-    Language,
-)
+from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import TextLoader
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
 from langchain.schema import HumanMessage
-import os
+from langchain.text_splitter import (CharacterTextSplitter, Language,
+                                     RecursiveCharacterTextSplitter)
+from langchain.vectorstores import Chroma
 from tqdm import tqdm
-import logging
-import fire
-from dotenv import load_dotenv
 
 load_dotenv()
 

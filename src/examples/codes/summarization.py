@@ -4,11 +4,11 @@
 # Prepare Data
 # First we prepare the data. For this example we create multiple documents from one long one, but these documents could be fetched in any manner (the point of this notebook to highlight what to do AFTER you fetch the documents).
 
-from langchain import OpenAI, PromptTemplate, LLMChain
-from langchain.text_splitter import CharacterTextSplitter
+from langchain import LLMChain, OpenAI, PromptTemplate
 from langchain.chains.mapreduce import MapReduceChain
-from langchain.prompts import PromptTemplate
 from langchain.docstore.document import Document
+from langchain.prompts import PromptTemplate
+from langchain.text_splitter import CharacterTextSplitter
 
 llm = OpenAI(temperature=0)
 
@@ -178,7 +178,8 @@ chain({"input_documents": docs}, return_only_outputs=True)
 
 # You can also use prompt with multi input. In this example, we will use a MapReduce chain to answer specific question about our code.
 
-from langchain.chains.combine_documents.map_reduce import MapReduceDocumentsChain
+from langchain.chains.combine_documents.map_reduce import \
+    MapReduceDocumentsChain
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 
 map_template_string = """Give the following python code information, generate a description that explains what the code does and also mention the time complexity.

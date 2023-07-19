@@ -7,8 +7,8 @@
 # SimpleSequentialChain: The simplest form of sequential chains, where each step has a singular input/output, and the output of one step is the input to the next.
 # SequentialChain: A more general form of sequential chains, allowing for multiple inputs/outputs.
 
-from langchain.llms import OpenAI
 from langchain.chains import LLMChain
+from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 
 # This is an LLMChain to write a synopsis given a title of a play.

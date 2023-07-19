@@ -101,8 +101,8 @@ docsearch = Chroma.from_texts(
     texts, embeddings, metadatas=[{"source": f"{i}-pl"} for i in range(len(texts))]
 )
 
-from langchain.chains import RetrievalQAWithSourcesChain
 from langchain import OpenAI
+from langchain.chains import RetrievalQAWithSourcesChain
 
 chain = RetrievalQAWithSourcesChain.from_chain_type(
     OpenAI(temperature=0), chain_type="stuff", retriever=docsearch.as_retriever()

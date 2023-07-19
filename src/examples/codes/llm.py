@@ -1,7 +1,7 @@
 # LLMChain Python Code
 
 # Import necessary modules
-from langchain import PromptTemplate, OpenAI, LLMChain
+from langchain import LLMChain, OpenAI, PromptTemplate
 
 # Define the prompt template
 prompt_template = "What is a good name for a company that makes {product}?"

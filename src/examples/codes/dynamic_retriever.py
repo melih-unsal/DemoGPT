@@ -2,9 +2,9 @@
 
 # Importing necessary libraries
 from langchain.chains.router import MultiRetrievalQAChain
-from langchain.llms import OpenAI
-from langchain.embeddings import OpenAIEmbeddings
 from langchain.document_loaders import TextLoader
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.llms import OpenAI
 from langchain.vectorstores import FAISS
 
 # Loading and splitting documents for the State of the Union retriever

@@ -2,8 +2,8 @@
 
 # This notebook goes over how to use the Memory class with an LLMChain. For the purposes of this walkthrough, we will add the ConversationBufferMemory class, although this can be any memory class.
 
+from langchain import LLMChain, OpenAI, PromptTemplate
 from langchain.memory import ConversationBufferMemory
-from langchain import OpenAI, LLMChain, PromptTemplate
 
 # The most important step is setting up the prompt correctly. In the below prompt, we have two input keys: one for the actual input, another for the input from the Memory class. Importantly, we make sure the keys in the PromptTemplate and the ConversationBufferMemory match up (chat_history).
 

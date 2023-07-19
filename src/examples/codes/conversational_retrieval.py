@@ -6,15 +6,15 @@
 
 # To create one, you will need a retriever. In the below example, we will create one from a vector store, which can be created from embeddings.
 
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.llms import OpenAI
 from langchain.chains import ConversationalRetrievalChain
+from langchain.document_loaders import TextLoader
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.llms import OpenAI
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.vectorstores import Chroma
 
 # Load in documents. You can replace this with a loader for whatever type of data you want
 
-from langchain.document_loaders import TextLoader
 
 loader = TextLoader("../../state_of_the_union.txt")
 documents = loader.load()
@@ -147,8 +147,9 @@ result = qa(
 # We can also use different types of combine document chains with the ConversationalRetrievalChain chain.
 
 from langchain.chains import LLMChain
+from langchain.chains.conversational_retrieval.prompts import \
+    CONDENSE_QUESTION_PROMPT
 from langchain.chains.question_answering import load_qa_chain
-from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT
 
 llm = OpenAI(temperature=0)
 question_generator = LLMChain(llm=llm, prompt=CONDENSE_QUESTION_PROMPT)
@@ -196,12 +197,10 @@ result["answer"]
 # ConversationalRetrievalChain with streaming to stdout
 # Output from the chain will be streamed to stdout token by token in this example.
 
-from langchain.chains.llm import LLMChain
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains.conversational_retrieval.prompts import (
-    CONDENSE_QUESTION_PROMPT,
-    QA_PROMPT,
-)
+    CONDENSE_QUESTION_PROMPT, QA_PROMPT)
+from langchain.chains.llm import LLMChain
 from langchain.chains.question_answering import load_qa_chain
 
 # Construct a ConversationalRetrievalChain with a streaming llm for combine docs

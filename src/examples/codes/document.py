@@ -4,12 +4,12 @@
 # Prepare Data
 # First we prepare the data. For this example we do similarity search over a vector database, but these documents could be fetched in any manner (the point of this notebook to highlight what to do AFTER you fetch the documents).
 
+from langchain.docstore.document import Document
 from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.indexes.vectorstore import VectorstoreIndexCreator
+from langchain.prompts import PromptTemplate
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma
-from langchain.docstore.document import Document
-from langchain.prompts import PromptTemplate
-from langchain.indexes.vectorstore import VectorstoreIndexCreator
 
 with open("../../state_of_the_union.txt") as f:
     state_of_the_union = f.read()

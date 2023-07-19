@@ -1,13 +1,7 @@
-from langchain.chat_models import ChatOpenAI
-from langchain.schema import (
-    AIMessage,
-    HumanMessage,
-    SystemMessage,
-)
-
-
-from tqdm import tqdm
 from dotenv import load_dotenv
+from langchain.chat_models import ChatOpenAI
+from langchain.schema import AIMessage, HumanMessage, SystemMessage
+from tqdm import tqdm
 
 load_dotenv()
 

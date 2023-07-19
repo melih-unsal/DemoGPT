@@ -5,19 +5,20 @@
 # In this case, the "docs" are previous conversation snippets. This can be useful to refer to relevant pieces of information that the AI was told earlier in the conversation.
 
 from datetime import datetime
+
+import faiss
+from langchain.chains import ConversationChain
+from langchain.docstore import InMemoryDocstore
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.llms import OpenAI
 from langchain.memory import VectorStoreRetrieverMemory
-from langchain.chains import ConversationChain
 from langchain.prompts import PromptTemplate
+from langchain.vectorstores import FAISS
 
 # Initialize your VectorStore
 # Depending on the store you choose, this step may look different. Consult the relevant VectorStore documentation for more details.
 
-import faiss
 
-from langchain.docstore import InMemoryDocstore
-from langchain.vectorstores import FAISS
 
 
 embedding_size = 1536  # Dimensions of the OpenAIEmbeddings

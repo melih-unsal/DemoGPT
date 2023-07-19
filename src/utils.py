@@ -1,8 +1,9 @@
-import shutil
 import os
-import tempfile
+import shutil
 import sys
-from subprocess import TimeoutExpired, Popen, PIPE
+import tempfile
+from subprocess import PIPE, Popen, TimeoutExpired
+
 from dotenv import load_dotenv
 
 load_dotenv()

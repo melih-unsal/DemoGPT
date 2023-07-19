@@ -3,8 +3,8 @@
 
 # Let's first walk through how to use the utilities
 
-from langchain.memory import ConversationTokenBufferMemory
 from langchain.llms import OpenAI
+from langchain.memory import ConversationTokenBufferMemory
 
 llm = OpenAI()
 

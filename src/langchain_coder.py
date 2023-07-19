@@ -1,15 +1,17 @@
+import logging
+import os
+
+import fire
 import langchain
+from langchain.docstore.document import Document
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
-from langchain.docstore.document import Document
-from langchain_expert import LangChainExpert
-from chains.chains import Chains
-import os
-from tqdm import tqdm
-import logging
-import fire
-import utils
 from termcolor import colored
+from tqdm import tqdm
+
+import utils
+from chains.chains import Chains
+from langchain_expert import LangChainExpert
 
 
 class LangChainCoder:
