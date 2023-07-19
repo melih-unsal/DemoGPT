@@ -1,11 +1,11 @@
 # Python code
 
-'''
+"""
 Transformation
 This notebook showcases using a generic transformation chain.
 
 As an example, we will create a dummy transformation that takes in a super long text, filters the text to only the first 3 paragraphs, and then passes that into an LLMChain to summarize those.
-'''
+"""
 
 from langchain.chains import TransformChain, LLMChain, SimpleSequentialChain
 from langchain.llms import OpenAI
@@ -14,10 +14,12 @@ from langchain.prompts import PromptTemplate
 with open("../../state_of_the_union.txt") as f:
     state_of_the_union = f.read()
 
+
 def transform_func(inputs: dict) -> dict:
     text = inputs["text"]
     shortened_text = "\n\n".join(text.split("\n\n")[:3])
     return {"output_text": shortened_text}
+
 
 transform_chain = TransformChain(
     input_variables=["text"], output_variables=["output_text"], transform=transform_func

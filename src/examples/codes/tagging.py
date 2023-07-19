@@ -1,5 +1,5 @@
 # Tagging
-# The tagging chain uses the OpenAI functions parameter to specify a schema to tag a document with. 
+# The tagging chain uses the OpenAI functions parameter to specify a schema to tag a document with.
 # This helps us make sure that the model outputs exactly tags that we want, with their appropriate types.
 # The tagging chain is to be used when we want to tag a passage with a specific attribute (i.e. what is the sentiment of this message?)
 
@@ -41,7 +41,7 @@ chain.run(inp)
 # {'sentiment': 'positive', 'aggressiveness': 0, 'language': 'English'}
 
 # More control
-# By being smart about how we define our schema we can have more control over the model's output. 
+# By being smart about how we define our schema we can have more control over the model's output.
 # Specifically we can define:
 # - possible values for each property
 # - description to make sure that the model understands the property
@@ -84,13 +84,14 @@ chain.run(inp)
 # {'sentiment': 'neutral', 'aggressiveness': 0, 'language': 'english'}
 
 # Specifying schema with Pydantic
-# We can also use a Pydantic schema to specify the required properties and types. 
+# We can also use a Pydantic schema to specify the required properties and types.
 # We can also send other arguments, such as 'enum' or 'description' as can be seen in the example below.
 # By using the create_tagging_chain_pydantic function, we can send a Pydantic schema as input and the output will be an instantiated object that respects our desired schema.
 # In this way, we can specify our schema in the same manner that we would a new class or function in Python - with purely Pythonic types.
 
 from enum import Enum
 from pydantic import BaseModel, Field
+
 
 class Tags(BaseModel):
     sentiment: str = Field(..., enum=["happy", "neutral", "sad"])
@@ -102,6 +103,7 @@ class Tags(BaseModel):
     language: str = Field(
         ..., enum=["spanish", "english", "french", "german", "italian"]
     )
+
 
 chain = create_tagging_chain_pydantic(Tags, llm)
 

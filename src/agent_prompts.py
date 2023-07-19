@@ -75,7 +75,7 @@ Subinstructions:
 MERGE_CODES_SYSTEM_TEMPLATE = """You are supposed to create a final code to accomplish final task 
 by looking at the code block which are created to do the subtasks.
 Please merge those codes to do the final task"""
-                                                                      
+
 
 MERGE_CODES_HUMAN_TEMPLATE = """
 {examples}

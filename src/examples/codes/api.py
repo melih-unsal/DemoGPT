@@ -14,8 +14,12 @@ llm = OpenAI(temperature=0)
 from langchain.chains.api import open_meteo_docs
 
 # Create an APIChain using the OpenMeteo API documentation
-chain_new = APIChain.from_llm_and_api_docs(llm, open_meteo_docs.OPEN_METEO_DOCS, verbose=True)
+chain_new = APIChain.from_llm_and_api_docs(
+    llm, open_meteo_docs.OPEN_METEO_DOCS, verbose=True
+)
 
 # Run the APIChain with a specific question
-result = chain_new.run('What is the weather like right now in Munich, Germany in degrees Fahrenheit?')
+result = chain_new.run(
+    "What is the weather like right now in Munich, Germany in degrees Fahrenheit?"
+)
 print(result)

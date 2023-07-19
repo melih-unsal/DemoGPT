@@ -12,6 +12,7 @@ import logging
 import platform
 import threading
 
+
 class BaseModel:
     """
     Base class for the LogicModel and StreamlitModel classes.
@@ -19,11 +20,12 @@ class BaseModel:
     Methods:
         - __init__(self, openai_api_key: str):
             Initializes the BaseModel with the provided OpenAI API key.
-        
+
         - refine_code(self, code: str) -> str:
             Refines the provided code by removing unnecessary parts.
     """
-    def __init__(self,openai_api_key):
+
+    def __init__(self, openai_api_key):
         """
         Initializes the BaseModel with the provided OpenAI API key.
 
@@ -33,7 +35,7 @@ class BaseModel:
         self.openai_api_key = openai_api_key
         self.llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.0)
 
-    def refine_code(self,code):
+    def refine_code(self, code):
         """
         Refines the provided code by removing unnecessary parts.
 
@@ -43,11 +45,12 @@ class BaseModel:
         Returns:
             str: The refined code.
         """
-        if "```" in code: 
+        if "```" in code:
             code = code.split("```")[1]
             if code.startswith("python"):
-                code = code[len("python"):].strip()
+                code = code[len("python") :].strip()
         return code
+
 
 class LogicModel(BaseModel):
     """
@@ -56,7 +59,7 @@ class LogicModel(BaseModel):
     Methods:
         - __init__(self, openai_api_key: str):
             Initializes the LogicModel with the provided OpenAI API key.
-        
+
         - addDocuments(self):
             Adds documents to the logic model for generating Python code.
 
@@ -69,7 +72,8 @@ class LogicModel(BaseModel):
         - __call__(self, topic: str, num_iterations: int = 10) -> Generator[Dict[str, Any], None, None]:
             Executes the logic model to generate Python code based on the given topic.
     """
-    def __init__(self,openai_api_key):
+
+    def __init__(self, openai_api_key):
         """
         Initializes the LogicModel with the provided OpenAI API key.
 
@@ -79,15 +83,15 @@ class LogicModel(BaseModel):
         super().__init__(openai_api_key)
         self.code_chain = LLMChain(llm=self.llm, prompt=code_prompt)
         self.test_chain = LLMChain(llm=self.llm, prompt=test_prompt)
-        self.refine_chain = LLMChain(llm=self.llm,prompt=refine_chat_prompt)
-        self.fix_chain = LLMChain(llm=self.llm,prompt=fix_chat_prompt)
-        self.check_chain = LLMChain(llm=self.llm,prompt=check_chat_prompt)
+        self.refine_chain = LLMChain(llm=self.llm, prompt=refine_chat_prompt)
+        self.fix_chain = LLMChain(llm=self.llm, prompt=fix_chat_prompt)
+        self.check_chain = LLMChain(llm=self.llm, prompt=check_chat_prompt)
         self.addDocuments()
 
     def addDocuments(self):
         """
         Adds documents to the logic model for generating Python code.
-        """ 
+        """
         self.document = ""
         for path in ["src/prompt_based/prompts.txt"]:
             with open(path) as f:
@@ -103,9 +107,9 @@ class LogicModel(BaseModel):
         Returns:
             Tuple[str, str]: The decoded results.
         """
-        return (res.strip().decode('utf-8',errors="ignore") for res in results)
+        return (res.strip().decode("utf-8", errors="ignore") for res in results)
 
-    def run_python(self,code):
+    def run_python(self, code):
         """
         Executes the Python code using the subprocess module.
 
@@ -115,19 +119,26 @@ class LogicModel(BaseModel):
         Returns:
             Tuple[str, str, bool]: The output, error, and success status of the execution.
         """
-        tmp = tempfile.NamedTemporaryFile("w",suffix=".py",delete=False)
+        tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False)
         tmp.write(code)
         tmp.flush()
-        environmental_variables = {'OPENAI_API_KEY':self.openai_api_key}
+        environmental_variables = {"OPENAI_API_KEY": self.openai_api_key}
         python_path = shutil.which("python")
         if platform.system() == "Windows":
             env = os.environ.copy()
-            env['PYTHONPATH'] = ''
-            env['OPENAI_API_KEY'] = self.openai_api_key
-            python_path = sys.executable 
-            process = subprocess.Popen([python_path,tmp.name], env=env,stdout=PIPE, stderr=PIPE)
+            env["PYTHONPATH"] = ""
+            env["OPENAI_API_KEY"] = self.openai_api_key
+            python_path = sys.executable
+            process = subprocess.Popen(
+                [python_path, tmp.name], env=env, stdout=PIPE, stderr=PIPE
+            )
         else:
-            process = subprocess.Popen([python_path,tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
+            process = subprocess.Popen(
+                [python_path, tmp.name],
+                env=environmental_variables,
+                stdout=PIPE,
+                stderr=PIPE,
+            )
         try:
             tmp.close()
         except PermissionError:
@@ -135,8 +146,8 @@ class LogicModel(BaseModel):
         output, err = self.decode_results(process.communicate())
         success = len(err) == 0
         return output, err, success
-    
-    def __call__(self,topic,num_iterations=10):
+
+    def __call__(self, topic, num_iterations=10):
         """
         Executes the logic model to generate Python code based on the given topic.
 
@@ -150,19 +161,19 @@ class LogicModel(BaseModel):
         error = ""
         percentage = 0
         feedback = ""
-        total_code=""
-        refined_code=""
+        total_code = ""
+        refined_code = ""
 
         for i in range(num_iterations):
             if error:
-                code = self.refine_chain.run(content=code,
-                                             critics=feedback,
-                                             document=self.document)
+                code = self.refine_chain.run(
+                    content=code, critics=feedback, document=self.document
+                )
             else:
-                code = self.code_chain.run(document=self.document,topic=topic)
+                code = self.code_chain.run(document=self.document, topic=topic)
             code = self.refine_code(code)
 
-            test_code = self.test_chain.run(code=code, topic=topic,feedback=feedback)
+            test_code = self.test_chain.run(code=code, topic=topic, feedback=feedback)
             test_code = self.refine_code(test_code)
 
             total_code = code + "\n" + test_code
@@ -177,32 +188,32 @@ class LogicModel(BaseModel):
 
             response = error
 
-            feedback = self.fix_chain.run(code=total_code,error=error)
+            feedback = self.fix_chain.run(code=total_code, error=error)
 
             percentage += 100 // num_iterations
 
             yield {
-                "code":code,
-                "total_code":total_code,
-                "success":success,
-                "out":response,
-                "error":error,
-                "feedback":feedback,
-                "test_code":test_code,
-                "refined_code":refined_code,
-                "percentage":min(100,percentage)
-                }
+                "code": code,
+                "total_code": total_code,
+                "success": success,
+                "out": response,
+                "error": error,
+                "feedback": feedback,
+                "test_code": test_code,
+                "refined_code": refined_code,
+                "percentage": min(100, percentage),
+            }
 
         yield {
-            "code":code,
-            "total_code":total_code,
-            "success":success,
-            "out":response,
-            "error":error,
-            "feedback":feedback,
-            "test_code":test_code,
-            "refined_code":refined_code,
-            "percentage":100
+            "code": code,
+            "total_code": total_code,
+            "success": success,
+            "out": response,
+            "error": error,
+            "feedback": feedback,
+            "test_code": test_code,
+            "refined_code": refined_code,
+            "percentage": 100,
         }
 
 
@@ -213,15 +224,15 @@ class StreamlitModel(BaseModel):
     Methods:
         - __init__(self, openai_api_key: str):
             Initializes the StreamlitModel with the provided OpenAI API key.
-        
+
         - run_code(self, code: str) -> int:
             Runs the provided code as a Streamlit application and returns the process ID.
-        
+
         - __call__(self, topic: str, title: str, code: str, test_code: str, progress_func: Callable[[int, str]], success_func: Callable[[], None]) -> int:
             Executes the Streamlit model to generate a Streamlit application.
     """
 
-    def __init__(self,openai_api_key):
+    def __init__(self, openai_api_key):
         """
         Initializes the StreamlitModel with the provided OpenAI API key.
 
@@ -231,11 +242,10 @@ class StreamlitModel(BaseModel):
         super().__init__(openai_api_key)
         self.streamlit_code_chain = LLMChain(llm=self.llm, prompt=streamlit_code_prompt)
 
-    def runThread(self,proc):
+    def runThread(self, proc):
         proc.communicate()
 
- 
-    def run_code(self,code):
+    def run_code(self, code):
         """
         Runs the provided code as a Streamlit application and returns the process ID.
 
@@ -245,29 +255,42 @@ class StreamlitModel(BaseModel):
         Returns:
             int: The process ID of the Streamlit application.
         """
-        tmp = tempfile.NamedTemporaryFile("w",suffix=".py",delete=False)
+        tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False)
         tmp.write(code)
         tmp.flush()
-        environmental_variables = {'OPENAI_API_KEY':self.openai_api_key,"STREAMLIT_SERVER_PORT":"8502"}
+        environmental_variables = {
+            "OPENAI_API_KEY": self.openai_api_key,
+            "STREAMLIT_SERVER_PORT": "8502",
+        }
         streamlit_path = shutil.which("streamlit")
         if platform.system() == "Windows":
             env = os.environ.copy()
-            env['PYTHONPATH'] = ''
-            env['OPENAI_API_KEY'] = self.openai_api_key
-            env['STREAMLIT_SERVER_PORT'] = "8502"
+            env["PYTHONPATH"] = ""
+            env["OPENAI_API_KEY"] = self.openai_api_key
+            env["STREAMLIT_SERVER_PORT"] = "8502"
             python_path = sys.executable
-            process = subprocess.Popen([python_path,"-m","streamlit","run",tmp.name], env=env,stdout=PIPE, stderr=PIPE)
+            process = subprocess.Popen(
+                [python_path, "-m", "streamlit", "run", tmp.name],
+                env=env,
+                stdout=PIPE,
+                stderr=PIPE,
+            )
             threading.Thread(target=self.runThread, args=(process,)).start()
         else:
-            process = subprocess.Popen([streamlit_path,"run",tmp.name], env=environmental_variables,stdout=PIPE, stderr=PIPE)
+            process = subprocess.Popen(
+                [streamlit_path, "run", tmp.name],
+                env=environmental_variables,
+                stdout=PIPE,
+                stderr=PIPE,
+            )
         try:
             tmp.close()
         except PermissionError:
             pass
-        
+
         return process.pid
-    
-    def __call__(self,topic, title, code, test_code,progress_func,success_func):
+
+    def __call__(self, topic, title, code, test_code, progress_func, success_func):
         """
         Executes the Streamlit model to generate a Streamlit application.
 
@@ -282,8 +305,10 @@ class StreamlitModel(BaseModel):
         Returns:
             int: The process ID of the Streamlit application.
         """
-        streamlit_code = self.streamlit_code_chain.run(topic=topic, title=title, logic_code=code, test_code=test_code)
+        streamlit_code = self.streamlit_code_chain.run(
+            topic=topic, title=title, logic_code=code, test_code=test_code
+        )
         refined_code = self.refine_code(streamlit_code)
-        progress_func(100,"Redirecting to the demo page...")
+        progress_func(100, "Redirecting to the demo page...")
         success_func()
         return self.run_code(refined_code), refined_code

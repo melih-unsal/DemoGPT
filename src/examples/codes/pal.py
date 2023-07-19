@@ -23,9 +23,10 @@ def solution():
     result = total_pets
     return result
 
+
 # Finished chain.
 
-'28'
+"28"
 
 # Colored Objects
 pal_chain = PALChain.from_colored_object_prompt(llm, verbose=True)
@@ -37,20 +38,20 @@ pal_chain.run(question)
 # Entering new PALChain chain...
 # Put objects into a list to record ordering
 objects = []
-objects += [('booklet', 'blue')] * 2
-objects += [('booklet', 'purple')] * 2
-objects += [('sunglasses', 'yellow')] * 2
+objects += [("booklet", "blue")] * 2
+objects += [("booklet", "purple")] * 2
+objects += [("sunglasses", "yellow")] * 2
 
 # Remove all pairs of sunglasses
-objects = [object for object in objects if object[0] != 'sunglasses']
+objects = [object for object in objects if object[0] != "sunglasses"]
 
 # Count number of purple objects
-num_purple = len([object for object in objects if object[1] == 'purple'])
+num_purple = len([object for object in objects if object[1] == "purple"])
 answer = num_purple
 
 # Finished PALChain chain.
 
-'2'
+"2"
 
 # Intermediate Steps
 # You can also use the intermediate steps flag to return the code executed that generates the answer.
@@ -66,15 +67,15 @@ result = pal_chain({"question": question})
 # Entering new PALChain chain...
 # Put objects into a list to record ordering
 objects = []
-objects += [('booklet', 'blue')] * 2
-objects += [('booklet', 'purple')] * 2
-objects += [('sunglasses', 'yellow')] * 2
+objects += [("booklet", "blue")] * 2
+objects += [("booklet", "purple")] * 2
+objects += [("sunglasses", "yellow")] * 2
 
 # Remove all pairs of sunglasses
-objects = [object for object in objects if object[0] != 'sunglasses']
+objects = [object for object in objects if object[0] != "sunglasses"]
 
 # Count number of purple objects
-num_purple = len([object for object in objects if object[1] == 'purple'])
+num_purple = len([object for object in objects if object[1] == "purple"])
 answer = num_purple
 
 # Finished chain.

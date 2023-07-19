@@ -21,15 +21,15 @@ Here is a question:
 
 prompt_infos = [
     {
-        "name": "physics", 
-        "description": "Good for answering questions about physics", 
-        "prompt_template": physics_template
+        "name": "physics",
+        "description": "Good for answering questions about physics",
+        "prompt_template": physics_template,
     },
     {
-        "name": "math", 
-        "description": "Good for answering math questions", 
-        "prompt_template": math_template
-    }
+        "name": "math",
+        "description": "Good for answering math questions",
+        "prompt_template": math_template,
+    },
 ]
 
 chain = MultiPromptChain.from_prompts(OpenAI(), prompt_infos, verbose=True)

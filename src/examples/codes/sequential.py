@@ -12,7 +12,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
 # This is an LLMChain to write a synopsis given a title of a play.
-llm = OpenAI(temperature=.7)
+llm = OpenAI(temperature=0.7)
 template = """You are a playwright. Given the title of play, it is your job to write a synopsis for that title.
 
 Title: {title}
@@ -22,7 +22,7 @@ synopsis_chain = LLMChain(llm=llm, prompt=prompt_template)
 
 
 # This is an LLMChain to write a review of a play given a synopsis.
-llm = OpenAI(temperature=.7)
+llm = OpenAI(temperature=0.7)
 template = """You are a play critic from the New York Times. Given the synopsis of play, it is your job to write a review for that play.
 
 Play Synopsis:
@@ -34,7 +34,10 @@ review_chain = LLMChain(llm=llm, prompt=prompt_template)
 
 # This is the overall chain where we run these two chains in sequence.
 from langchain.chains import SimpleSequentialChain
-overall_chain = SimpleSequentialChain(chains=[synopsis_chain, review_chain], verbose=True)
+
+overall_chain = SimpleSequentialChain(
+    chains=[synopsis_chain, review_chain], verbose=True
+)
 
 review = overall_chain.run("Tragedy at sunset on the beach")
 
@@ -47,7 +50,7 @@ print(review)
 # Of particular importance is how we name the input/output variable names. In the above example we didn't have to think about that because we were just passing the output of one chain directly as input to the next, but here we do have worry about that because we have multiple inputs.
 
 # This is an LLMChain to write a synopsis given a title of a play and the era it is set in.
-llm = OpenAI(temperature=.7)
+llm = OpenAI(temperature=0.7)
 template = """You are a playwright. Given the title of play and the era it is set in, it is your job to write a synopsis for that title.
 
 Title: {title}
@@ -58,7 +61,7 @@ synopsis_chain = LLMChain(llm=llm, prompt=prompt_template, output_key="synopsis"
 
 
 # This is an LLMChain to write a review of a play given a synopsis.
-llm = OpenAI(temperature=.7)
+llm = OpenAI(temperature=0.7)
 template = """You are a play critic from the New York Times. Given the synopsis of play, it is your job to write a review for that play.
 
 Play Synopsis:
@@ -70,14 +73,16 @@ review_chain = LLMChain(llm=llm, prompt=prompt_template, output_key="review")
 
 # This is the overall chain where we run these two chains in sequence.
 from langchain.chains import SequentialChain
+
 overall_chain = SequentialChain(
     chains=[synopsis_chain, review_chain],
     input_variables=["era", "title"],
     # Here we return multiple variables
     output_variables=["synopsis", "review"],
-    verbose=True)
+    verbose=True,
+)
 
-overall_chain({"title":"Tragedy at sunset on the beach", "era": "Victorian England"})
+overall_chain({"title": "Tragedy at sunset on the beach", "era": "Victorian England"})
 
 print(overall_chain)
 
@@ -90,7 +95,7 @@ print(overall_chain)
 from langchain.chains import SequentialChain
 from langchain.memory import SimpleMemory
 
-llm = OpenAI(temperature=.7)
+llm = OpenAI(temperature=0.7)
 template = """You are a social media manager for a theater company.  Given the title of play, the era it is set in, the date,time and location, the synopsis of the play, and the review of the play, it is your job to write a social media post for that play.
 
 Here is some context about the time and location of the play:
@@ -104,17 +109,22 @@ Review from a New York Times play critic of the above play:
 
 Social Media Post:
 """
-prompt_template = PromptTemplate(input_variables=["synopsis", "review", "time", "location"], template=template)
+prompt_template = PromptTemplate(
+    input_variables=["synopsis", "review", "time", "location"], template=template
+)
 social_chain = LLMChain(llm=llm, prompt=prompt_template, output_key="social_post_text")
 
 overall_chain = SequentialChain(
-    memory=SimpleMemory(memories={"time": "December 25th, 8pm PST", "location": "Theater in the Park"}),
+    memory=SimpleMemory(
+        memories={"time": "December 25th, 8pm PST", "location": "Theater in the Park"}
+    ),
     chains=[synopsis_chain, review_chain, social_chain],
     input_variables=["era", "title"],
     # Here we return multiple variables
     output_variables=["social_post_text"],
-    verbose=True)
+    verbose=True,
+)
 
-overall_chain({"title":"Tragedy at sunset on the beach", "era": "Victorian England"})
+overall_chain({"title": "Tragedy at sunset on the beach", "era": "Victorian England"})
 
 print(overall_chain)

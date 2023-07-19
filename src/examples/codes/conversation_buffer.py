@@ -32,9 +32,7 @@ from langchain.chains import ConversationChain
 
 llm = OpenAI(temperature=0)
 conversation = ConversationChain(
-    llm=llm, 
-    verbose=True, 
-    memory=ConversationBufferMemory()
+    llm=llm, verbose=True, memory=ConversationBufferMemory()
 )
 
 conversation.predict(input="Hi there!")
