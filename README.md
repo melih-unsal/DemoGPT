@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-<b>⚡ Create 🦜️🔗 LangChain-based Streamlit applications by just using prompts. ⚡</b>
+<b>⚡ With just a prompt, you can create interactive Streamlit apps via 🦜️🔗 LangChain's transformative capabilities & Llama 2.⚡</b>
 </p>
 
 <p align="center">
