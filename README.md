@@ -1,4 +1,4 @@
-# ![favicon](assets/puzzle.png) DemoGPT: Auto Gen-AI App Generator
+# ![favicon](assets/puzzle.png) DemoGPT: Auto Gen-AI App Generator with the Power of Llama 2
 
 <p align="center">
 <a href=""><img src="assets/banner_small.png" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="450px"></a>
@@ -79,6 +79,8 @@ Alongside this, DemoGPT embraces an iterative development process, wherein each 
 By making software development accessible through simple prompts, DemoGPT is laying the groundwork for a paradigm shift in how we create, refine, and customize LLM-based applications. The end goal is a broader, more inclusive ecosystem where users, regardless of their coding proficiency, can contribute to the continuous evolution of products. 
 
 In summary, DemoGPT isn't just a project; it is a forward-thinking approach, redefining the boundaries of LLM-based application development.
+
+In the next release, we are gonna add Llama 2 inside of DemoGPT to make the whole system runnable completely locally.
 
 ## ⚙️ Architecture
 ### DemoGPT Architecture
