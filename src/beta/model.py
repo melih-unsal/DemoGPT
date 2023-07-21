@@ -3,15 +3,14 @@ import os
 
 import fire
 import langchain
+import utils
+from chains.chains import Chains
 from langchain.chat_models import ChatOpenAI
 from langchain.docstore.document import Document
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
-from tqdm import tqdm
-
-import utils
-from chains.chains import Chains
 from langchain_expert import LangChainExpert
+from tqdm import tqdm
 
 
 class LangChainCoder:

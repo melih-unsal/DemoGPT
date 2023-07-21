@@ -6,23 +6,24 @@ import tempfile
 from subprocess import PIPE, TimeoutExpired
 
 import fire
+from agent_prompts import *
 from dotenv import load_dotenv
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.docstore.document import Document
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
+from langchain_expert import LangChainExpert
 from termcolor import colored
 from tqdm import tqdm
 
-from agent_prompts import *
-from langchain_expert import LangChainExpert
-
 load_dotenv()
 
-from langchain.prompts.chat import (ChatPromptTemplate,
-                                    HumanMessagePromptTemplate,
-                                    SystemMessagePromptTemplate)
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+)
 
 
 def decodeResults(results):

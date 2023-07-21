@@ -11,7 +11,6 @@ from threading import Timer
 
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
-
 from prompts import *
 
 
@@ -121,7 +120,9 @@ class LogicModel(BaseModel):
         Returns:
             Tuple[str, str, bool]: The output, error, and success status of the execution.
         """
-        tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False)
+        tmp = tempfile.NamedTemporaryFile(
+            "w", suffix=".py", delete=False, encoding="utf-8"
+        )
         tmp.write(code)
         tmp.flush()
         environmental_variables = {"OPENAI_API_KEY": self.openai_api_key}
@@ -257,7 +258,9 @@ class StreamlitModel(BaseModel):
         Returns:
             int: The process ID of the Streamlit application.
         """
-        tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False)
+        tmp = tempfile.NamedTemporaryFile(
+            "w", suffix=".py", delete=False, encoding="utf-8"
+        )
         tmp.write(code)
         tmp.flush()
         environmental_variables = {

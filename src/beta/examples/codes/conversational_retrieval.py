@@ -147,8 +147,7 @@ result = qa(
 # We can also use different types of combine document chains with the ConversationalRetrievalChain chain.
 
 from langchain.chains import LLMChain
-from langchain.chains.conversational_retrieval.prompts import \
-    CONDENSE_QUESTION_PROMPT
+from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT
 from langchain.chains.question_answering import load_qa_chain
 
 llm = OpenAI(temperature=0)
@@ -199,7 +198,9 @@ result["answer"]
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains.conversational_retrieval.prompts import (
-    CONDENSE_QUESTION_PROMPT, QA_PROMPT)
+    CONDENSE_QUESTION_PROMPT,
+    QA_PROMPT,
+)
 from langchain.chains.llm import LLMChain
 from langchain.chains.question_answering import load_qa_chain
 

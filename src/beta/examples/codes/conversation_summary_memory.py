@@ -54,6 +54,7 @@ memory = ConversationSummaryMemory.from_messages(
 print(memory.buffer)
 
 from langchain.chains import ConversationChain
+
 # Import necessary modules
 from langchain.llms import OpenAI
 

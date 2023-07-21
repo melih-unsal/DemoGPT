@@ -1,6 +1,8 @@
-from langchain.prompts.chat import (ChatPromptTemplate,
-                                    HumanMessagePromptTemplate,
-                                    SystemMessagePromptTemplate)
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+)
 
 template1 = """
     You are a helpful code assistant that can teach a junior developer how to code. Your language of choice is Python. You use langchain library. You are good at using PromptTemplate to give appropriate prompt to accomplish the task.

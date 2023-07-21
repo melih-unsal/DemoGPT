@@ -178,8 +178,7 @@ chain({"input_documents": docs}, return_only_outputs=True)
 
 # You can also use prompt with multi input. In this example, we will use a MapReduce chain to answer specific question about our code.
 
-from langchain.chains.combine_documents.map_reduce import \
-    MapReduceDocumentsChain
+from langchain.chains.combine_documents.map_reduce import MapReduceDocumentsChain
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 
 map_template_string = """Give the following python code information, generate a description that explains what the code does and also mention the time complexity.
