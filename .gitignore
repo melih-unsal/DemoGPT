@@ -9,13 +9,10 @@ __pycache__/
 *.so
 
 # db folders
-goals_db/
+src/beta/goals_db/
 db_tutorials/
-src/chain
-src/chain_exp/
-src/langchain_db_python/
-src/langchain_db
-src/langchain_code/**/*
+src/beta/langchain_db_python/
+src/beta/langchain_code/
 
 
 quick_start.txt
