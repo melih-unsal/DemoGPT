@@ -104,6 +104,17 @@ In the next release, we are gonna add **Llama 2** inside of DemoGPT to make the 
 
 ## 🔧 Installation
 
+### For the Package Version
+
+You can install the DemoGPT package by running the following command:
+
+```sh
+pip install demogpt
+```
+
+### For the Source Code Version
+
+
 1. Clone the repository:
     ```sh
     git clone https://github.com/melih-unsal/DemoGPT.git
@@ -119,7 +130,17 @@ In the next release, we are gonna add **Llama 2** inside of DemoGPT to make the 
 
 ## 🎮 Usage
 
-Once installed, you can use DemoGPT by running the following command:
+### For the Package Version
+
+Once the DemoGPT package is installed, you can use it by running the following command in your terminal:
+
+```sh
+demogpt
+```
+
+### For the Source Code Version
+
+If you have cloned the repository and wish to run the source code version, you can use DemoGPT by running the following command:
 
 ```sh
 streamlit run src/prompt_based/app.py
