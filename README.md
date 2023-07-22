@@ -58,6 +58,20 @@ See our documentation site [here](https://melih-unsal.github.io/DemoGPT-Docs/) f
 
 ⚡ The new release with the power of **Llama 2** is within a week. ⚡
 
+## 📦 Using DemoGPT Package
+
+The DemoGPT package is now available and can be installed using pip. Run the following command to install the package:
+
+```sh
+pip install demogpt
+```
+
+To use the DemoGPT application, simply type "demogpt" into your terminal:
+
+```sh
+demogpt
+```
+
 
 ## 📑 Table of Contents
 
