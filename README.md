@@ -8,7 +8,7 @@
 <b>⚡ With just a prompt, you can create interactive Streamlit apps via 🦜️🔗 LangChain's transformative capabilities & Llama 2.⚡</b>
 </p>
 <p align="center">
-<a href="https://pepy.tech/project/demogpt"><img src="https://static.pepy.tech/badge/demogpt/week" alt="Releases"></a>
+<a href="#"><img src="https://img.shields.io/pypi/dw/demogpt?logo=python" alt="Downloads"></a>
 <a href="https://github.com/melih-unsal/DemoGPT/releases"><img src="https://img.shields.io/github/release/melih-unsal/DemoGPT" alt="Releases"></a>
 <a href="https://demogpt.io"><img src="https://img.shields.io/badge/Official%20Website-demogpt.io-blue?style=flat&logo=world&logoColor=white" alt="Official Website"></a>
 <a href="https://melih-unsal.github.io/DemoGPT-Docs/"><img src="https://img.shields.io/badge/Documentation-📘-blueviolet" alt="DemoGPT Documentation"></a>
