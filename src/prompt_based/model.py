@@ -52,8 +52,8 @@ class BaseModel:
             if code.startswith("python"):
                 code = code[len("python") :].strip()
         return code
-    
-    def normalize(self,code):
+
+    def normalize(self, code):
         """Fix Unicode related problems
 
         Args:
@@ -62,7 +62,11 @@ class BaseModel:
         Returns:
             str: refined version of the code
         """
-        return unicodedata.normalize('NFKD', code).encode('ascii', 'ignore').decode('utf-8')
+        return (
+            unicodedata.normalize("NFKD", code)
+            .encode("ascii", "ignore")
+            .decode("utf-8")
+        )
 
 
 class LogicModel(BaseModel):
@@ -273,7 +277,31 @@ class StreamlitModel(BaseModel):
         tmp = tempfile.NamedTemporaryFile(
             "w", suffix=".py", delete=False, encoding="utf-8"
         )
-        tmp.write(self.normalize(code))
+
+        trubrics_feedback_code = """
+from trubrics.integrations.streamlit import FeedbackCollector
+
+email = st.secrets.get("TRUBRICS_EMAIL")
+password = st.secrets.get("TRUBRICS_PASSWORD")
+
+model = 'OpenAI'
+collector = FeedbackCollector(
+        component_name="default",
+        email=email,
+        password=password,
+                        )
+
+feedback_generated_code = collector.st_feedback(
+                            feedback_type="thumbs",
+                            model=model,
+                            open_feedback_label="[Optional] Provide additional feedback",
+                            metadata={"response": 'result', "prompt": 'prompt'},
+                            tags=["generated_code"],
+                        
+)
+    """
+        tmp.write(self.normalize(code + trubrics_feedback_code))
+
         tmp.flush()
         environmental_variables = {
             "OPENAI_API_KEY": self.openai_api_key,
@@ -328,4 +356,5 @@ class StreamlitModel(BaseModel):
         refined_code = self.refine_code(streamlit_code)
         progress_func(100, "Redirecting to the demo page...")
         success_func()
+
         return self.run_code(refined_code), refined_code

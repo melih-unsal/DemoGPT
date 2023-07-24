@@ -5,6 +5,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# .secrets
+.streamlit/secrets.toml
 # C extensions
 *.so
 
@@ -23,7 +25,8 @@ src/docs_explanation/*
 src/docs_explanation_some/*
 src/docs_summary/*
 
-
+# environment
+demo_gpt/*
 
 # Distribution / packaging
 .Python
