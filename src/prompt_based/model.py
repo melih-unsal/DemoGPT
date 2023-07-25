@@ -53,20 +53,16 @@ class BaseModel:
                 code = code[len("python") :].strip()
         return code
 
-    def normalize(self, code):
-        """Fix Unicode related problems
+    def normalize(self,code):
+            """Fix Unicode related problems
 
-        Args:
-            code (str): The code to be refined.
+            Args:
+                code (str): The code to be refined.
 
-        Returns:
-            str: refined version of the code
-        """
-        return (
-            unicodedata.normalize("NFKD", code)
-            .encode("ascii", "ignore")
-            .decode("utf-8")
-        )
+            Returns:
+                str: refined version of the code
+            """
+            return unicodedata.normalize('NFKD', code).encode('ascii', 'ignore').decode('utf-8')
 
 
 class LogicModel(BaseModel):
@@ -356,5 +352,4 @@ feedback_generated_code = collector.st_feedback(
         refined_code = self.refine_code(streamlit_code)
         progress_func(100, "Redirecting to the demo page...")
         success_func()
-
         return self.run_code(refined_code), refined_code

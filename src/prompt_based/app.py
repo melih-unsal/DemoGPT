@@ -38,10 +38,7 @@ if "success" not in st.session_state:
     st.session_state["success"] = False
 
 if "streamlit_code" not in st.session_state:
-    st.session_state["success"] = ""
-
-if "example_submitted" not in st.session_state:
-    st.session_state["example_submitted"] = True
+    st.session_state["streamlit_code"] = ""
 
 # Page title
 title = "🧩 DemoGPT"
