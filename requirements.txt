@@ -3,3 +3,4 @@ langchain
 openai
 tiktoken
 python-dotenv
+trubrics
