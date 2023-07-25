@@ -36,7 +36,7 @@ class BaseModel:
         """
         self.openai_api_key = openai_api_key
         self.llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.0)
-
+        
     def refine_code(self, code):
         """
         Refines the provided code by removing unnecessary parts.
@@ -54,15 +54,15 @@ class BaseModel:
         return code
 
     def normalize(self,code):
-            """Fix Unicode related problems
+        """Fix Unicode related problems
 
-            Args:
-                code (str): The code to be refined.
+        Args:
+            code (str): The code to be refined.
 
-            Returns:
-                str: refined version of the code
-            """
-            return unicodedata.normalize('NFKD', code).encode('ascii', 'ignore').decode('utf-8')
+        Returns:
+            str: refined version of the code
+        """
+        return unicodedata.normalize('NFKD', code).encode('ascii', 'ignore').decode('utf-8')
 
 
 class LogicModel(BaseModel):
@@ -280,7 +280,7 @@ from trubrics.integrations.streamlit import FeedbackCollector
 email = st.secrets.get("TRUBRICS_EMAIL")
 password = st.secrets.get("TRUBRICS_PASSWORD")
 
-model = 'OpenAI'
+model_name = "{model_name}"
 collector = FeedbackCollector(
         component_name="default",
         email=email,
@@ -289,13 +289,15 @@ collector = FeedbackCollector(
 
 feedback_generated_code = collector.st_feedback(
                             feedback_type="thumbs",
-                            model=model,
+                            model=model_name,
                             open_feedback_label="[Optional] Provide additional feedback",
-                            metadata={"response": 'result', "prompt": 'prompt'},
+                            metadata={{"response": 'result', "prompt": 'prompt'}},
                             tags=["generated_code"],
                         
 )
-    """
+    """ 
+        trubrics_feedback_code = trubrics_feedback_code.format(model_name=self.llm.model_name)
+
         tmp.write(self.normalize(code + trubrics_feedback_code))
 
         tmp.flush()

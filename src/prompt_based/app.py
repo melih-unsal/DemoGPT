@@ -86,7 +86,7 @@ example_submitted = False
 
 final_code_empty = st.empty()
 
-
+model_name = ""
 submitted = st.button("Submit")
 for col, example in zip(cols, examples):
     if col.button(example):
@@ -102,7 +102,7 @@ if submitted or example_submitted:
     else:
         agent = LogicModel(openai_api_key=openai_api_key)
         streamlit_agent = StreamlitModel(openai_api_key=openai_api_key)
-
+        model_name = streamlit_agent.llm.model_name
         if st.session_state["pid"] != -1:
             logging.info(f"Terminating the previous applicaton ...")
             os.kill(st.session_state["pid"], signal.SIGTERM)
@@ -132,8 +132,8 @@ if submitted or example_submitted:
 
                 st.session_state["streamlit_code"] = streamlit_code
 
-                sleep(0.5)
-                # webbrowser.open("http://localhost:8502")
+                sleep(5)
+                webbrowser.open("http://localhost:8502")
 
             else:
                 bar.progress(50, text=PROGRESS_BAR_TEXTS["refining"])
@@ -147,7 +147,6 @@ if st.session_state["success"]:
     with st.expander("Code"):
         st.code(st.session_state["streamlit_code"])
 
-    model = "OpenAI"
     collector = FeedbackCollector(
         component_name="default",
         email=email,
@@ -156,7 +155,7 @@ if st.session_state["success"]:
 
     feedback_main_code = collector.st_feedback(
         feedback_type="faces",
-        model=model,
+        model=model_name,
         open_feedback_label="[Optional] Provide additional feedback",
         metadata={
             "response": st.session_state["streamlit_code"],
