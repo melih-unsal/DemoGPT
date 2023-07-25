@@ -12,7 +12,8 @@ from threading import Timer
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 
-from prompts import *
+from prompt_based.prompts import *
+from pkg_resources import resource_stream
 
 
 class BaseModel:
@@ -95,9 +96,9 @@ class LogicModel(BaseModel):
         Adds documents to the logic model for generating Python code.
         """
         self.document = ""
-        for path in ["src/prompt_based/prompts.txt"]:
-            with open(path) as f:
-                self.document += f.read()
+        for path in ["prompts.txt"]:
+            with resource_stream('prompt_based', path) as f:
+                self.document += f.read().decode('utf-8')
 
     def decode_results(self, results):
         """
@@ -121,7 +122,7 @@ class LogicModel(BaseModel):
         Returns:
             Tuple[str, str, bool]: The output, error, and success status of the execution.
         """
-        tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False)
+        tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False, encoding='utf-8')
         tmp.write(code)
         tmp.flush()
         environmental_variables = {"OPENAI_API_KEY": self.openai_api_key}
@@ -257,7 +258,7 @@ class StreamlitModel(BaseModel):
         Returns:
             int: The process ID of the Streamlit application.
         """
-        tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False)
+        tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False,encoding='utf-8')
         tmp.write(code)
         tmp.flush()
         environmental_variables = {

@@ -7,8 +7,8 @@
 <p align="center">
 <b>⚡ With just a prompt, you can create interactive Streamlit apps via 🦜️🔗 LangChain's transformative capabilities & Llama 2.⚡</b>
 </p>
-
 <p align="center">
+<a href="#"><img src="https://img.shields.io/pypi/dw/demogpt?logo=python" alt="Downloads"></a>
 <a href="https://github.com/melih-unsal/DemoGPT/releases"><img src="https://img.shields.io/github/release/melih-unsal/DemoGPT" alt="Releases"></a>
 <a href="https://demogpt.io"><img src="https://img.shields.io/badge/Official%20Website-demogpt.io-blue?style=flat&logo=world&logoColor=white" alt="Official Website"></a>
 <a href="https://melih-unsal.github.io/DemoGPT-Docs/"><img src="https://img.shields.io/badge/Documentation-📘-blueviolet" alt="DemoGPT Documentation"></a>
@@ -38,6 +38,10 @@
 <a href="https://huggingface.co/spaces/melihunsal/demogpt"><img src="https://img.shields.io/badge/%F0%9F%A4%97-Spaces-yellow"></a>
 </p>
 
+<p align="center">
+<a href="https://www.producthunt.com/posts/demogpt"><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Product+Hunt&color=DA552F&logo=Product+Hunt&logoColor=FFFFFF&label=" alt="Product Hunt"/></a>
+</p>
+
 ## ⭐ Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=melih-unsal/DemoGPT&type=Timeline)](https://star-history.com/#melih-unsal/DemoGPT&Timeline)
@@ -57,6 +61,20 @@ https://github.com/melih-unsal/DemoGPT/assets/34304254/8991e296-b6fe-4817-bd08-4
 See our documentation site [here](https://melih-unsal.github.io/DemoGPT-Docs/) for full how-to docs and guidelines
 
 ⚡ The new release with the power of **Llama 2** is within a week. ⚡
+
+## 📦 Using DemoGPT Package
+
+The DemoGPT package is now available and can be installed using pip. Run the following command to install the package:
+
+```sh
+pip install demogpt
+```
+
+To use the DemoGPT application, simply type "demogpt" into your terminal:
+
+```sh
+demogpt
+```
 
 
 ## 📑 Table of Contents
@@ -90,6 +108,17 @@ In the next release, we are gonna add **Llama 2** inside of DemoGPT to make the 
 
 ## 🔧 Installation
 
+### For the Package Version
+
+You can install the DemoGPT package by running the following command:
+
+```sh
+pip install demogpt
+```
+
+### For the Source Code Version
+
+
 1. Clone the repository:
     ```sh
     git clone https://github.com/melih-unsal/DemoGPT.git
@@ -105,7 +134,17 @@ In the next release, we are gonna add **Llama 2** inside of DemoGPT to make the 
 
 ## 🎮 Usage
 
-Once installed, you can use DemoGPT by running the following command:
+### For the Package Version
+
+Once the DemoGPT package is installed, you can use it by running the following command in your terminal:
+
+```sh
+demogpt
+```
+
+### For the Source Code Version
+
+If you have cloned the repository and wish to run the source code version, you can use DemoGPT by running the following command:
 
 ```sh
 streamlit run src/prompt_based/app.py
