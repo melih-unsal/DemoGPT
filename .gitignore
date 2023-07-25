@@ -13,10 +13,6 @@ src/beta/goals_db/
 db_tutorials/
 src/beta/langchain_db_python/
 src/beta/langchain_code/
-langchain_db_python/**/*
-langchain_code/
-src/.chroma/**
-src/langchain_code/**
 
 
 quick_start.txt
