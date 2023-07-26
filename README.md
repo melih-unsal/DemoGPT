@@ -39,8 +39,8 @@
 </p>
 
 <p align="center">
-<a href="https://www.producthunt.com/posts/demogpt"><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Product+Hunt&color=DA552F&logo=Product+Hunt&logoColor=FFFFFF&label=" alt="Product Hunt" height="20"/></a>
-<a href="https://demogpt.medium.com/"><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Medium&color=000000&logo=Medium&logoColor=FFFFFF&label=" alt="DemoGPT Medium" height="20"/></a>
+<a href="https://www.producthunt.com/posts/demogpt"><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Product+Hunt&color=DA552F&logo=Product+Hunt&logoColor=FFFFFF&label=" alt="Product Hunt" height="25"/></a>
+<a href="https://demogpt.medium.com/"><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Medium&color=000000&logo=Medium&logoColor=FFFFFF&label=" alt="DemoGPT Medium" height="25"/></a>
 </p>
 
 ## ⭐ Star History
