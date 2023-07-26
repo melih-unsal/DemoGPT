@@ -10,12 +10,11 @@ import unicodedata
 from subprocess import PIPE
 from threading import Timer
 
+from pkg_resources import resource_stream
 from prompts import *
 
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
-
-from pkg_resources import resource_stream
 
 
 class BaseModel:

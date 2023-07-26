@@ -13,16 +13,8 @@ setup(
     long_description=long_description,
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    install_requires=[
-        "streamlit",
-        "altair<5",
-        "langchain",
-        "openai",
-        "python-dotenv"
-    ],
-    package_data={
-    "prompt_based": ["prompts.txt"]
-    },
+    install_requires=["streamlit", "altair<5", "langchain", "openai", "python-dotenv"],
+    package_data={"prompt_based": ["prompts.txt"]},
     entry_points={
         "console_scripts": [
             "demogpt = prompt_based.cli:main",
@@ -34,5 +26,5 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
-    python_requires='>=3.7'
+    python_requires=">=3.7",
 )
