@@ -1,0 +1,32 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "demogpt"
+version = "1.1.1.8"
+description = "Auto Gen-AI App Generator with the Power of Llama 2"
+authors = ["Melih Unsal <melih@demogpt.io>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/melih-unsal/DemoGPT"
+include = ["src/prompt_based/prompts.txt"]
+packages = [
+    { include = "prompt_based", from = "src" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+streamlit = "*"
+altair = "<5"
+langchain = "*"
+openai = "*"
+python-dotenv = "*"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+demogpt = "prompt_based.cli:main"
+
+[tool.poetry.urls]
+"Homepage" = "https://github.com/melih-unsal/DemoGPT"

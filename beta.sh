@@ -1,1 +1,0 @@
-streamlit run src/beta/app.py

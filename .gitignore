@@ -23,7 +23,7 @@ src/docs_explanation/*
 src/docs_explanation_some/*
 src/docs_summary/*
 
-
+.pypirc
 
 # Distribution / packaging
 .Python
