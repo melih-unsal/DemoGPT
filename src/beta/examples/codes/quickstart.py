@@ -65,9 +65,11 @@ prompt.format(product="colorful socks")
 
 # Because this is generating a list of messages, it is slightly more complex than the normal prompt template which is generating only a string. Please see the detailed guides on prompts to understand more options available to you here.
 
-from langchain.prompts.chat import (ChatPromptTemplate,
-                                    HumanMessagePromptTemplate,
-                                    SystemMessagePromptTemplate)
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+)
 
 template = (
     "You are a helpful assistant that translates {input_language} to {output_language}."
@@ -117,9 +119,11 @@ chain.run("colorful socks")
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts.chat import (ChatPromptTemplate,
-                                    HumanMessagePromptTemplate,
-                                    SystemMessagePromptTemplate)
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+)
 
 chat = ChatOpenAI(temperature=0)
 
@@ -176,9 +180,12 @@ conversation.run("Hi there!")
 from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
-                               MessagesPlaceholder,
-                               SystemMessagePromptTemplate)
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
 
 prompt = ChatPromptTemplate.from_messages(
     [

@@ -19,8 +19,6 @@ from langchain.vectorstores import FAISS
 # Depending on the store you choose, this step may look different. Consult the relevant VectorStore documentation for more details.
 
 
-
-
 embedding_size = 1536  # Dimensions of the OpenAIEmbeddings
 index = faiss.IndexFlatL2(embedding_size)
 embedding_fn = OpenAIEmbeddings().embed_query

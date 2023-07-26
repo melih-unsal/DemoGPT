@@ -8,12 +8,12 @@ import tempfile
 import threading
 from subprocess import PIPE
 from threading import Timer
+import unicodedata
 
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 
-from prompt_based.prompts import *
-from pkg_resources import resource_stream
+from prompts import *
 
 
 class BaseModel:
@@ -53,6 +53,17 @@ class BaseModel:
             if code.startswith("python"):
                 code = code[len("python") :].strip()
         return code
+    
+    def normalize(self,code):
+        """Fix Unicode related problems
+
+        Args:
+            code (str): The code to be refined.
+
+        Returns:
+            str: refined version of the code
+        """
+        return unicodedata.normalize('NFKD', code).encode('ascii', 'ignore').decode('utf-8')
 
 
 class LogicModel(BaseModel):
@@ -122,8 +133,11 @@ class LogicModel(BaseModel):
         Returns:
             Tuple[str, str, bool]: The output, error, and success status of the execution.
         """
-        tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False, encoding='utf-8')
-        tmp.write(code)
+
+        tmp = tempfile.NamedTemporaryFile(
+            "w", suffix=".py", delete=False, encoding="utf-8"
+        )
+        tmp.write(self.normalize(code))
         tmp.flush()
         environmental_variables = {"OPENAI_API_KEY": self.openai_api_key}
         python_path = shutil.which("python")
@@ -258,8 +272,10 @@ class StreamlitModel(BaseModel):
         Returns:
             int: The process ID of the Streamlit application.
         """
-        tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False,encoding='utf-8')
-        tmp.write(code)
+        tmp = tempfile.NamedTemporaryFile(
+            "w", suffix=".py", delete=False, encoding="utf-8"
+        )
+        tmp.write(self.normalize(code))
         tmp.flush()
         environmental_variables = {
             "OPENAI_API_KEY": self.openai_api_key,
