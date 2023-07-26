@@ -2,8 +2,10 @@ import logging
 import os
 
 import fire
-import langchain
 from dotenv import load_dotenv
+from tqdm import tqdm
+
+import langchain
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import TextLoader
@@ -12,7 +14,6 @@ from langchain.schema import HumanMessage
 from langchain.text_splitter import (CharacterTextSplitter, Language,
                                      RecursiveCharacterTextSplitter)
 from langchain.vectorstores import Chroma
-from tqdm import tqdm
 
 load_dotenv()
 
