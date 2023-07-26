@@ -11,6 +11,7 @@ setup(
     package_dir={"": "src"},
     install_requires=[
         "streamlit",
+        "altair<5",
         "langchain",
         "openai",
         "python-dotenv"
