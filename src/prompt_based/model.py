@@ -112,8 +112,8 @@ class LogicModel(BaseModel):
         """
         self.document = ""
         for path in ["prompts.txt"]:
-            with resource_stream("prompt_based", path) as f:
-                self.document += f.read().decode("utf-8")
+            with open("src/prompt_based/"+path) as f:
+                self.document += f.read()#.decode('utf-8')
 
     def decode_results(self, results):
         """

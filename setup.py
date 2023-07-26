@@ -9,8 +9,16 @@ setup(
     description="Description of my package",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    install_requires=["streamlit", "langchain", "openai", "python-dotenv"],
-    package_data={"prompt_based": ["prompts.txt"]},
+    install_requires=[
+        "streamlit",
+        "altair<5",
+        "langchain",
+        "openai",
+        "python-dotenv"
+    ],
+    package_data={
+    "prompt_based": ["prompts.txt"]
+    },
     entry_points={
         "console_scripts": [
             "demogpt = prompt_based.cli:main",
