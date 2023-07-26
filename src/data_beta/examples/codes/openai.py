@@ -6,20 +6,20 @@
 # How to create a chain that actually executes the chosen function
 from typing import Optional
 
+# Using Pydantic classes
+# When passing in Pydantic classes to structure our text, we need to make sure to have a docstring description for the class. It also helps to have descriptions for each of the classes attributes.
+from pydantic import BaseModel, Field
+
 from langchain.chains.openai_functions import (create_openai_fn_chain,
                                                create_structured_output_chain)
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain.schema import HumanMessage, SystemMessage
-# Using Pydantic classes
-# When passing in Pydantic classes to structure our text, we need to make sure to have a docstring description for the class. It also helps to have descriptions for each of the classes attributes.
-from pydantic import BaseModel, Field
 
 # Getting structured outputs
 # We can take advantage of OpenAI functions to try and force the model to return a particular kind of structured output. We'll use the create_structured_output_chain to create our chain, which takes the desired structured output either as a Pydantic class or as JsonSchema.
 
 # See here for relevant reference docs.
-
 
 
 class Person(BaseModel):

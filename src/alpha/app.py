@@ -5,7 +5,6 @@ import webbrowser
 from time import sleep
 
 import streamlit as st
-
 import utils
 from model import Model
 
@@ -60,7 +59,7 @@ PROGRESS_BAR_INFO = {
     "plan": {"text": "Global plan has been generated", "percentage": 35},
     "draft": {"text": "Draft code has been generated...", "percentage": 50},
     "langchain": {"text": "Langchain code has been generated.", "percentage": 75},
-    "done": {"text": "App created, directed to the demo page", "percentage": 100}
+    "done": {"text": "App created, directed to the demo page", "percentage": 100},
 }
 
 
@@ -118,9 +117,7 @@ with st.form("a", clear_on_submit=True):
                     with st.expander("Code"):
                         st.code(code)
                     example_submitted = False
-                    st.session_state["pid"] = utils.runStreamlit(
-                        code, openai_api_key
-                    )
+                    st.session_state["pid"] = utils.runStreamlit(code, openai_api_key)
                     sleep(5)
                     webbrowser.open("http://localhost:8502")
                     break

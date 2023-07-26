@@ -44,10 +44,11 @@ memory.load_memory_variables({"input": "who is Sam"})
 
 from typing import Any, Dict, List
 
+from pydantic import BaseModel
+
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationEntityMemory
 from langchain.memory.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
-from pydantic import BaseModel
 
 conversation = ConversationChain(
     llm=llm,

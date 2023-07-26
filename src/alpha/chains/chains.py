@@ -1,12 +1,13 @@
+import json
+
+import chains.prompts as prompts
+import utils
+
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
-import json
-
-import chains.prompts as prompts
-import utils
 
 
 class Chains:
@@ -28,22 +29,22 @@ class Chains:
         chat_prompt = ChatPromptTemplate.from_messages(prompts)
         return LLMChain(llm=cls.llm, prompt=chat_prompt).run(**kwargs)
 
-
     @classmethod
-    def draft(cls,inputs,instruction,function_name):
+    def draft(cls, inputs, instruction, function_name):
         res = cls.getChain(
-            system_template = prompts.code.system_template, 
-            human_template  = prompts.code.human_template,
+            system_template=prompts.code.system_template,
+            human_template=prompts.code.human_template,
             instruction=instruction,
-            inputs=inputs)
+            inputs=inputs,
+        )
         templates = json.loads(res)
-        run_call = '{}'
+        run_call = "{}"
         if len(inputs) > 0:
             run_call = ", ".join([f"{var}={var}" for var in inputs])
-        
-        temperature = 0 if templates.get("variety","False") == "False" else 0.7
 
-        code =f"""
+        temperature = 0 if templates.get("variety", "False") == "False" else 0.7
+
+        code = f"""
         def {function_name}({str(inputs)[2:-2]}):
             chat = ChatOpenAI(
                 temperature={temperature}
@@ -61,40 +62,41 @@ class Chains:
             return result # returns string                            
         """
         return code
-    
+
     @classmethod
-    def inputs(cls,instruction):
-        return cls.getChain(human_template=prompts.system_inputs.human_template, 
-                            instruction=instruction)
-    
+    def inputs(cls, instruction):
+        return cls.getChain(
+            human_template=prompts.system_inputs.human_template, instruction=instruction
+        )
+
     @classmethod
-    def buttonText(cls,instruction):
-        return cls.getChain(human_template=prompts.button_text.human_template, 
-                            instruction=instruction)
-    
+    def buttonText(cls, instruction):
+        return cls.getChain(
+            human_template=prompts.button_text.human_template, instruction=instruction
+        )
+
     @classmethod
-    def tasks(cls,instruction,system_inputs):
-        task_list = cls.getChain(system_template=prompts.tasks.system_template,
-                            human_template=prompts.tasks.human_template, 
-                            instruction=instruction,
-                            system_inputs=system_inputs)
-        
+    def tasks(cls, instruction, system_inputs):
+        task_list = cls.getChain(
+            system_template=prompts.tasks.system_template,
+            human_template=prompts.tasks.human_template,
+            instruction=instruction,
+            system_inputs=system_inputs,
+        )
+
         return json.loads(task_list)
-    
+
     @classmethod
     def streamlit(cls, **kwargs):
-        code = cls.getChain(system_template=prompts.streamlit.system_template,
-                            human_template=prompts.streamlit.human_template, 
-                             **kwargs)
-        
+        code = cls.getChain(
+            system_template=prompts.streamlit.system_template,
+            human_template=prompts.streamlit.human_template,
+            **kwargs,
+        )
+
         return utils.refine(code)
-    
+
     @classmethod
-    def final(cls,**kwargs):
-        code = cls.getChain(human_template=prompts.final.human_template, 
-                             **kwargs)
+    def final(cls, **kwargs):
+        code = cls.getChain(human_template=prompts.final.human_template, **kwargs)
         return utils.refine(code)
-
-
-
-   

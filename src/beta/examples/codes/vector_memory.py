@@ -7,6 +7,7 @@
 from datetime import datetime
 
 import faiss
+
 from langchain.chains import ConversationChain
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings.openai import OpenAIEmbeddings

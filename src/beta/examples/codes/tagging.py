@@ -3,7 +3,8 @@
 # This helps us make sure that the model outputs exactly tags that we want, with their appropriate types.
 # The tagging chain is to be used when we want to tag a passage with a specific attribute (i.e. what is the sentiment of this message?)
 
-from langchain.chains import create_tagging_chain, create_tagging_chain_pydantic
+from langchain.chains import (create_tagging_chain,
+                              create_tagging_chain_pydantic)
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 

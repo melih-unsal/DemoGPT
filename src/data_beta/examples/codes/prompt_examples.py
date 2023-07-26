@@ -14,7 +14,6 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 # Here are the examples:
 
 
-
 def generateBlogPost(title):
     chat = ChatOpenAI(
         temperature=0.1

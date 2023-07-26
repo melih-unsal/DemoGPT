@@ -7,6 +7,7 @@
 from datetime import datetime
 
 import faiss
+
 from langchain.chains import ConversationChain
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -17,8 +18,6 @@ from langchain.vectorstores import FAISS
 
 # Initialize your VectorStore
 # Depending on the store you choose, this step may look different. Consult the relevant VectorStore documentation for more details.
-
-
 
 
 embedding_size = 1536  # Dimensions of the OpenAIEmbeddings

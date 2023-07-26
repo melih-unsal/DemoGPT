@@ -8,8 +8,6 @@ import streamlit as st
 
 from model import LogicModel, StreamlitModel
 
-
-
 try:
     from dotenv import load_dotenv
 
@@ -21,7 +19,6 @@ except Exception as e:
 def main():
 
     num_of_iterations = 10
-
 
     def generate_response(txt):
         """
@@ -36,7 +33,6 @@ def main():
         for data in agent(txt, num_of_iterations):
             yield data
 
-
     # Page title
     title = "🧩 DemoGPT"
 
@@ -50,10 +46,14 @@ def main():
         value=os.getenv("OPENAI_API_KEY", ""),
         type="password",
     )
-    demo_title = st.text_input("Enter your demo title", placeholder="Type your demo title")
+    demo_title = st.text_input(
+        "Enter your demo title", placeholder="Type your demo title"
+    )
     empty_idea = st.empty()
     demo_idea = empty_idea.text_area(
-        "Enter your LLM-based demo idea", placeholder="Type your demo idea here", height=100
+        "Enter your LLM-based demo idea",
+        placeholder="Type your demo idea here",
+        height=100,
     )
 
     st.write("Examples")
@@ -135,6 +135,7 @@ def main():
                         break
                 else:
                     bar.progress(100, text=PROGRESS_BAR_TEXTS["failed"])
+
 
 if __name__ == "__main__":
     main()

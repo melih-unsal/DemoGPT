@@ -6,12 +6,10 @@
 
 from typing import List
 
-from langchain.chains import (
-    ConversationalRetrievalChain,
-    LLMChain,
-    RetrievalQA,
-    create_qa_with_sources_chain,
-)
+from pydantic import BaseModel, Field
+
+from langchain.chains import (ConversationalRetrievalChain, LLMChain,
+                              RetrievalQA, create_qa_with_sources_chain)
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain.chains.openai_functions import create_qa_with_structure_chain
 from langchain.chat_models import ChatOpenAI
@@ -19,11 +17,11 @@ from langchain.document_loaders import TextLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
-from langchain.prompts.chat import ChatPromptTemplate, HumanMessagePromptTemplate
+from langchain.prompts.chat import (ChatPromptTemplate,
+                                    HumanMessagePromptTemplate)
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma
-from pydantic import BaseModel, Field
 
 # Load documents
 loader = TextLoader("../../state_of_the_union.txt", encoding="utf-8")
