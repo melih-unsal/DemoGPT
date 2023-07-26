@@ -12,6 +12,7 @@ import unicodedata
 
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
+
 from prompts import *
 
 
@@ -106,9 +107,9 @@ class LogicModel(BaseModel):
         Adds documents to the logic model for generating Python code.
         """
         self.document = ""
-        for path in ["src/prompt_based/prompts.txt"]:
-            with open(path) as f:
-                self.document += f.read()
+        for path in ["prompts.txt"]:
+            with resource_stream('prompt_based', path) as f:
+                self.document += f.read().decode('utf-8')
 
     def decode_results(self, results):
         """
@@ -132,6 +133,7 @@ class LogicModel(BaseModel):
         Returns:
             Tuple[str, str, bool]: The output, error, and success status of the execution.
         """
+
         tmp = tempfile.NamedTemporaryFile(
             "w", suffix=".py", delete=False, encoding="utf-8"
         )

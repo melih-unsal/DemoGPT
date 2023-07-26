@@ -1,0 +1,286 @@
+# Entity memory
+# Entity Memory remembers given facts about specific entities in a conversation. It extracts information on entities (using an LLM) and builds up its knowledge about that entity over time (also using an LLM).
+
+# Let's first walk through using this functionality.
+
+from langchain.llms import OpenAI
+from langchain.memory import ConversationEntityMemory
+
+llm = OpenAI(temperature=0)
+
+memory = ConversationEntityMemory(llm=llm)
+_input = {"input": "Deven & Sam are working on a hackathon project"}
+memory.load_memory_variables(_input)
+memory.save_context(
+    _input,
+    {
+        "output": " That sounds like a great project! What kind of project are they working on?"
+    },
+)
+
+memory.load_memory_variables({"input": "who is Sam"})
+
+# {'history': 'Human: Deven & Sam are working on a hackathon project\nAI:  That sounds like a great project! What kind of project are they working on?',
+#  'entities': {'Sam': 'Sam is working on a hackathon project with Deven.'}}
+
+memory = ConversationEntityMemory(llm=llm, return_messages=True)
+_input = {"input": "Deven & Sam are working on a hackathon project"}
+memory.load_memory_variables(_input)
+memory.save_context(
+    _input,
+    {
+        "output": " That sounds like a great project! What kind of project are they working on?"
+    },
+)
+
+memory.load_memory_variables({"input": "who is Sam"})
+
+# {'history': [HumanMessage(content='Deven & Sam are working on a hackathon project', additional_kwargs={}),
+#   AIMessage(content=' That sounds like a great project! What kind of project are they working on?', additional_kwargs={})],
+#  'entities': {'Sam': 'Sam is working on a hackathon project with Deven.'}}
+
+# Using in a chain
+# Let's now use it in a chain!
+
+from typing import Any, Dict, List
+
+from langchain.chains import ConversationChain
+from langchain.memory import ConversationEntityMemory
+from langchain.memory.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
+from pydantic import BaseModel
+
+conversation = ConversationChain(
+    llm=llm,
+    verbose=True,
+    prompt=ENTITY_MEMORY_CONVERSATION_TEMPLATE,
+    memory=ConversationEntityMemory(llm=llm),
+)
+
+conversation.predict(input="Deven & Sam are working on a hackathon project")
+
+# > Entering new ConversationChain chain...
+# Prompt after formatting:
+# You are an assistant to a human, powered by a large language model trained by OpenAI.
+
+# You are designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, you are able to generate human-like text based on the input you receive, allowing you to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
+
+# You are constantly learning and improving, and your capabilities are constantly evolving. You are able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. You have access to some personalized information provided by the human in the Context section below. Additionally, you are able to generate your own text based on the input you receive, allowing you to engage in discussions and provide explanations and descriptions on a wide range of topics.
+
+# Overall, you are a powerful tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether the human needs help with a specific question or just wants to have a conversation about a particular topic, you are here to assist.
+
+# Context:
+# {'Deven': 'Deven is working on a hackathon project with Sam.', 'Sam': 'Sam is working on a hackathon project with Deven.'}
+
+# Current conversation:
+
+# Last line:
+# Human: Deven & Sam are working on a hackathon project
+# You:
+
+# > Finished chain.
+
+# ' That sounds like a great project! What kind of project are they working on?'
+
+conversation.memory.entity_store.store
+
+# {'Deven': 'Deven is working on a hackathon project with Sam, which they are entering into a hackathon.',
+#  'Sam': 'Sam is working on a hackathon project with Deven.'}
+
+conversation.predict(
+    input="They are trying to add more complex memory structures to Langchain"
+)
+
+# > Entering new ConversationChain chain...
+# Prompt after formatting:
+# You are an assistant to a human, powered by a large language model trained by OpenAI.
+
+# You are designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, you are able to generate human-like text based on the input you receive, allowing you to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
+
+# You are constantly learning and improving, and your capabilities are constantly evolving. You are able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. You have access to some personalized information provided by the human in the Context section below. Additionally, you are able to generate your own text based on the input you receive, allowing you to engage in discussions and provide explanations and descriptions on a wide range of topics.
+
+# Overall, you are a powerful tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether the human needs help with a specific question or just wants to have a conversation about a particular topic, you are here to assist.
+
+# Context:
+# {'Deven': 'Deven is working on a hackathon project with Sam, which they are entering into a hackathon.', 'Sam': 'Sam is working on a hackathon project with Deven.', 'Langchain': ''}
+
+# Current conversation:
+# Human: Deven & Sam are working on a hackathon project
+# AI:  That sounds like a great project! What kind of project are they working on?
+# Last line:
+# Human: They are trying to add more complex memory structures to Langchain
+# You:
+
+# > Finished chain.
+
+# ' That sounds like an interesting project! What kind of memory structures are they trying to add?'
+
+conversation.predict(
+    input="They are adding in a key-value store for entities mentioned so far in the conversation."
+)
+
+# > Entering new ConversationChain chain...
+# Prompt after formatting:
+# You are an assistant to a human, powered by a large language model trained by OpenAI.
+
+# You are designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, you are able to generate human-like text based on the input you receive, allowing you to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
+
+# You are constantly learning and improving, and your capabilities are constantly evolving. You are able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. You have access to some personalized information provided by the human in the Context section below. Additionally, you are able to generate your own text based on the input you receive, allowing you to engage in discussions and provide explanations and descriptions on a wide range of topics.
+
+# Overall, you are a powerful tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether the human needs help with a specific question or just wants to have a conversation about a particular topic, you are here to assist.
+
+# Context:
+# {'Deven': 'Deven is working on a hackathon project with Sam, which they are entering into a hackathon. They are trying to add more complex memory structures to Langchain.', 'Sam': 'Sam is working on a hackathon project with Deven, trying to add more complex memory structures to Langchain.', 'Langchain': 'Langchain is a project that is trying to add more complex memory structures.', 'Key-Value Store': ''}
+
+# Current conversation:
+# Human: Deven & Sam are working on a hackathon project
+# AI:  That sounds like a great project! What kind of project are they working on?
+# Human: They are trying to add more complex memory structures to Langchain
+# AI:  That sounds like an interesting project! What kind of memory structures are they trying to add?
+# Last line:
+# Human: They are adding in a key-value store for entities mentioned so far in the conversation.
+# You:
+
+# > Finished chain.
+
+# ' That sounds like a great idea! How will the key-value store help with the project?'
+
+conversation.predict(input="What do you know about Deven & Sam?")
+
+# > Entering new ConversationChain chain...
+# Prompt after formatting:
+# You are an assistant to a human, powered by a large language model trained by OpenAI.
+
+# You are designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, you are able to generate human-like text based on the input you receive, allowing you to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
+
+# You are constantly learning and improving, and your capabilities are constantly evolving. You are able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. You have access to some personalized information provided by the human in the Context section below. Additionally, you are able to generate your own text based on the input you receive, allowing you to engage in discussions and provide explanations and descriptions on a wide range of topics.
+
+# Overall, you are a powerful tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether the human needs help with a specific question or just wants to have a conversation about a particular topic, you are here to assist.
+
+# Context:
+# {'Deven': 'Deven is working on a hackathon project with Sam, which they are entering into a hackathon. They are trying to add more complex memory structures to Langchain, including a key-value store for entities mentioned so far in the conversation, and seem to be working hard on this project with a great idea for how the key-value store can help.', 'Sam': 'Sam is working on a hackathon project with Deven, trying to add more complex memory structures to Langchain, including a key-value store for entities mentioned so far in the conversation.'}
+
+# Current conversation:
+# Human: Deven & Sam are working on a hackathon project
+# AI:  That sounds like a great project! What kind of project are they working on?
+# Human: They are trying to add more complex memory structures to Langchain
+# AI:  That sounds like an interesting project! What kind of memory structures are they trying to add?
+# Human: They are adding in a key-value store for entities mentioned so far in the conversation.
+# AI:  That sounds like a great idea! How will the key-value store help with the project?
+# Last line:
+# Human: What do you know about Deven & Sam?
+# You:
+
+# > Finished chain.
+
+# ' Deven and Sam are working on a hackathon project together, trying to add more complex memory structures to Langchain, including a key-value store for entities mentioned so far in the conversation. They seem to be working hard on this project and have a great idea for how the key-value store can help.'
+
+# Inspecting the memory store
+# We can also inspect the memory store directly. In the following examaples, we look at it directly, and then go through some examples of adding information and watch how it changes.
+
+from pprint import pprint
+
+pprint(conversation.memory.entity_store.store)
+
+# {'Daimon': 'Daimon is a company founded by Sam, a successful entrepreneur.',
+#  'Deven': 'Deven is working on a hackathon project with Sam, which they are '
+#           'entering into a hackathon. They are trying to add more complex '
+#           'memory structures to Langchain, including a key-value store for '
+#           'entities mentioned so far in the conversation, and seem to be '
+#           'working hard on this project with a great idea for how the '
+#           'key-value store can help.',
+#  'Key-Value Store': 'A key-value store is being added to the project to store '
+#                     'entities mentioned in the conversation.',
+#  'Langchain': 'Langchain is a project that is trying to add more complex '
+#                'memory structures, including a key-value store for entities '
+#                'mentioned so far in the conversation.',
+#  'Sam': 'Sam is working on a hackathon project with Deven, trying to add more '
+#         'complex memory structures to Langchain, including a key-value store '
+#         'for entities mentioned so far in the conversation. They seem to have '
+#         'a great idea for how the key-value store can help, and Sam is also '
+#         'the founder of a company called Daimon.'}
+
+conversation.predict(input="Sam is the founder of a company called Daimon.")
+
+# > Entering new ConversationChain chain...
+# Prompt after formatting:
+# You are an assistant to a human, powered by a large language model trained by OpenAI.
+
+# You are designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, you are able to generate human-like text based on the input you receive, allowing you to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
+
+# You are constantly learning and improving, and your capabilities are constantly evolving. You are able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. You have access to some personalized information provided by the human in the Context section below. Additionally, you are able to generate your own text based on the input you receive, allowing you to engage in discussions and provide explanations and descriptions on a wide range of topics.
+
+# Overall, you are a powerful tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether the human needs help with a specific question or just wants to have a conversation about a particular topic, you are here to assist.
+
+# Context:
+# {'Daimon': 'Daimon is a company founded by Sam, a successful entrepreneur.', 'Sam': 'Sam is working on a hackathon project with Deven, trying to add more complex memory structures to Langchain, including a key-value store for entities mentioned so far in the conversation. They seem to have a great idea for how the key-value store can help, and Sam is also the founder of a company called Daimon.'}
+
+# Current conversation:
+# Human: They are adding in a key-value store for entities mentioned so far in the conversation.
+# AI:  That sounds like a great idea! How will the key-value store help with the project?
+# Human: What do you know about Deven & Sam?
+# AI:  Deven and Sam are working on a hackathon project together, trying to add more complex memory structures to Langchain, including a key-value store for entities mentioned so far in the conversation. They seem to be working hard on this project and have a great idea for how the key-value store can help.
+# Human: Sam is the founder of a company called Daimon.
+# AI:
+# That's impressive! It sounds like Sam is a very successful entrepreneur. What kind of company is Daimon?
+# Last line:
+# Human: Sam is the founder of a company called Daimon.
+# You:
+
+# > Finished chain.
+
+# " That's impressive! It sounds like Sam is a very successful entrepreneur. What kind of company is Daimon?"
+
+from pprint import pprint
+
+pprint(conversation.memory.entity_store.store)
+
+# {'Daimon': 'Daimon is a company founded by Sam, a successful entrepreneur, who '
+#            'is working on a hackathon project with Deven to add more complex '
+#            'memory structures to Langchain.',
+#  'Deven': 'Deven is working on a hackathon project with Sam, which they are '
+#           'entering into a hackathon. They are trying to add more complex '
+#           'memory structures to Langchain, including a key-value store for '
+#           'entities mentioned so far in the conversation, and seem to be '
+#           'working hard on this project with a great idea for how the '
+#           'key-value store can help.',
+#  'Key-Value Store': 'A key-value store is being added to the project to store '
+#                     'entities mentioned in the conversation.',
+#  'Langchain': 'Langchain is a project that is trying to add more complex '
+#                'memory structures, including a key-value store for entities '
+#                'mentioned so far in the conversation.',
+#  'Sam': 'Sam is working on a hackathon project with Deven, trying to add more '
+#         'complex memory structures to Langchain, including a key-value store '
+#         'for entities mentioned so far in the conversation. They seem to have '
+#         'a great idea for how the key-value store can help, and Sam is also '
+#         'the founder of a successful company called Daimon.'}
+
+conversation.predict(input="What do you know about Sam?")
+
+# > Entering new ConversationChain chain...
+# Prompt after formatting:
+# You are an assistant to a human, powered by a large language model trained by OpenAI.
+
+# You are designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, you are able to generate human-like text based on the input you receive, allowing you to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
+
+# You are constantly learning and improving, and your capabilities are constantly evolving. You are able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. You have access to some personalized information provided by the human in the Context section below. Additionally, you are able to generate your own text based on the input you receive, allowing you to engage in discussions and provide explanations and descriptions on a wide range of topics.
+
+# Overall, you are a powerful tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether the human needs help with a specific question or just wants to have a conversation about a particular topic, you are here to assist.
+
+# Context:
+# {'Deven': 'Deven is working on a hackathon project with Sam, which they are entering into a hackathon. They are trying to add more complex memory structures to Langchain, including a key-value store for entities mentioned so far in the conversation, and seem to be working hard on this project with a great idea for how the key-value store can help.', 'Sam': 'Sam is working on a hackathon project with Deven, trying to add more complex memory structures to Langchain, including a key-value store for entities mentioned so far in the conversation. They seem to have a great idea for how the key-value store can help, and Sam is also the founder of a successful company called Daimon.', 'Langchain': 'Langchain is a project that is trying to add more complex memory structures, including a key-value store for entities mentioned so far in the conversation.', 'Daimon': 'Daimon is a company founded by Sam, a successful entrepreneur, who is working on a hackathon project with Deven to add more complex memory structures to Langchain.'}
+
+# Current conversation:
+# Human: What do you know about Deven & Sam?
+# AI:  Deven and Sam are working on a hackathon project together, trying to add more complex memory structures to Langchain, including a key-value store for entities mentioned so far in the conversation. They seem to be working hard on this project and have a great idea for how the key-value store can help.
+# Human: Sam is the founder of a company called Daimon.
+# AI:
+# That's impressive! It sounds like Sam is a very successful entrepreneur. What kind of company is Daimon?
+# Human: Sam is the founder of a company called Daimon.
+# AI:  That's impressive! It sounds like Sam is a very successful entrepreneur. What kind of company is Daimon?
+# Last line:
+# Human: What do you know about Sam?
+# You:
+
+# > Finished chain.
+
+# ' Sam is the founder of a successful company called Daimon. He is also working on a hackathon project with Deven to add more complex memory structures to Langchain. They seem to have a great idea for how the key-value store can help.'
