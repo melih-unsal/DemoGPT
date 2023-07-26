@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="demogpt",
-    version="1.1.1.7",
+    version="1.1.1.8",
     url="https://github.com/melih-unsal/DemoGPT",
     author="Melih Unsal",
     author_email="melih@demogpt.io",
@@ -17,8 +17,8 @@ setup(
         "python-dotenv"
     ],
     package_data={
-    "prompt_based": ["prompts.txt"]
-    },
+        "prompt_based": ["prompts.txt"]
+        },
     entry_points={
         "console_scripts": [
             "demogpt = prompt_based.cli:main",
