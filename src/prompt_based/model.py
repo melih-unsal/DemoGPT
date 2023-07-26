@@ -6,9 +6,9 @@ import subprocess
 import sys
 import tempfile
 import threading
+import unicodedata
 from subprocess import PIPE
 from threading import Timer
-import unicodedata
 
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
@@ -52,8 +52,8 @@ class BaseModel:
             if code.startswith("python"):
                 code = code[len("python") :].strip()
         return code
-    
-    def normalize(self,code):
+
+    def normalize(self, code):
         """Fix Unicode related problems
 
         Args:
@@ -62,7 +62,11 @@ class BaseModel:
         Returns:
             str: refined version of the code
         """
-        return unicodedata.normalize('NFKD', code).encode('ascii', 'ignore').decode('utf-8')
+        return (
+            unicodedata.normalize("NFKD", code)
+            .encode("ascii", "ignore")
+            .decode("utf-8")
+        )
 
 
 class LogicModel(BaseModel):

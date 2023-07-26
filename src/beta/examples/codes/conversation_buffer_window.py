@@ -32,7 +32,6 @@ print(
 )  # Output: [HumanMessage(content='not much you', additional_kwargs={}), AIMessage(content='not much', additional_kwargs={})]
 
 from langchain.chains import ConversationChain
-
 # Import the required modules
 from langchain.llms import OpenAI
 
