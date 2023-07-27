@@ -1,27 +1,20 @@
-import logging
-import os
-
-import fire
 import utils
 from chains.chains import Chains
-from tqdm import tqdm
-
-import langchain
-from langchain.chat_models import ChatOpenAI
-from langchain.docstore.document import Document
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
 
 
 class Model:
     def __init__(self, openai_api_key="sk-", model_name="gpt-3.5-turbo"):
-        Chains.setLlm(model_name, openai_api_key)
+        self.model_name = model_name
+        self.openai_api_key = openai_api_key
+        Chains.setLlm(self.model_name, self.openai_api_key)
+
+    def setModel(self,model_name):
+        self.model_name = model_name
+        Chains.setLlm(self.model_name, self.openai_api_key)
 
     def __call__(
         self,
-        instruction="Create a translation system that converts English to French",
-        title="my translator",
-        iterations=10,
+        instruction="Create a translation system that converts English to French"
     ):
         system_inputs = Chains.inputs(instruction)
         button_text = Chains.buttonText(instruction)

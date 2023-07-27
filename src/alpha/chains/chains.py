@@ -83,13 +83,11 @@ class Chains:
             instruction=instruction,
             system_inputs=system_inputs,
         )
-
         return json.loads(task_list)
 
     @classmethod
     def streamlit(cls, **kwargs):
         code = cls.getChain(
-            system_template=prompts.streamlit.system_template,
             human_template=prompts.streamlit.human_template,
             **kwargs,
         )

@@ -45,6 +45,11 @@ openai_api_key = st.sidebar.text_input(
     value=os.getenv("OPENAI_API_KEY", ""),
     type="password",
 )
+
+model_name = st.sidebar.selectbox(
+    'Model',
+    ('gpt-3.5-turbo', 'gpt-4'))
+
 empty_idea = st.empty()
 demo_idea = empty_idea.text_area(
     "Enter your LLM-based demo idea", placeholder="Type your demo idea here", height=100
@@ -100,6 +105,7 @@ with st.form("a", clear_on_submit=True):
             bar = progressBar("start")
 
             agent = Model(openai_api_key=openai_api_key)
+            agent.setModel(model_name)
 
             if st.session_state["pid"] != -1:
                 logging.info(f"Terminating the previous applicaton ...")
