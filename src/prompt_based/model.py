@@ -16,8 +16,6 @@ from prompts import *
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 
-from pkg_resources import resource_stream
-
 
 class BaseModel:
     """
