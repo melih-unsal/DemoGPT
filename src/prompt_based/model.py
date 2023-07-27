@@ -10,6 +10,7 @@ import unicodedata
 from subprocess import PIPE
 from threading import Timer
 
+from pkg_resources import resource_stream
 from prompts import *
 
 from langchain.chains import LLMChain
@@ -114,8 +115,12 @@ class LogicModel(BaseModel):
         """
         self.document = ""
         for path in ["prompts.txt"]:
-            with resource_stream("prompt_based", path) as f:
-                self.document += f.read().decode("utf-8")
+            try:
+                with resource_stream("prompt_based", path) as f:
+                    self.document += f.read().decode("utf-8")
+            except ImportError:
+                with open(f"src/prompt_based/{path}", "r") as f:
+                    self.document += f.read()
 
     def decode_results(self, results):
         """
