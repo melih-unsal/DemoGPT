@@ -39,7 +39,7 @@
 </p>
 
 <p align="center">
-<a href="https://www.producthunt.com/posts/demogpt"><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Product+Hunt&color=DA552F&logo=Product+Hunt&logoColor=FFFFFF&label=" alt="Product Hunt" height="25"/></a>
+<a href="https://www.producthunt.com/posts/demogpt?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-demogpt" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=406106&theme=light" alt="DemoGPT - Auto&#0032;generative&#0032;AI&#0032;app&#0032;generator&#0032;with&#0032;the&#0032;power&#0032;of&#0032;Llama&#0032;2 | Product Hunt" height="25" /></a>
 <a href="https://demogpt.medium.com/"><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Medium&color=000000&logo=Medium&logoColor=FFFFFF&label=" alt="DemoGPT Medium" height="25"/></a>
 </p>
 
