@@ -15,11 +15,15 @@ def refine(code):
 
 def getAIPieces(task_list):
     ai_tasks = [task for task in task_list if task["model_type"] == "ai"]
-    ai_functions = [task["function_name"] for task in ai_tasks]
-    return ai_tasks, ai_functions
+    return ai_tasks
+
+def getUIPieces(task_list):
+    ui_tasks = [task for task in task_list if task["model_type"] == "ui"]
+    return ui_tasks
 
 
-def getLangchainFunctions(ai_tasks):
+def getLangchainFunctions(tasks):
+    ai_tasks = getAIPieces(tasks)
     langchain_functions = ""
     for task in ai_tasks:
         function_name = task["function_name"]
@@ -27,11 +31,28 @@ def getLangchainFunctions(ai_tasks):
         description = task["description"]
         if isinstance(inputs, str):
             inputs = [inputs]
-        langchain_code = Chains.draft(
+        langchain_code = Chains.langchain(
             inputs=inputs, instruction=description, function_name=function_name
         )
         langchain_functions += langchain_code + "\n\n\n"
     return langchain_functions
+
+def getStreamlitFunctions(tasks):
+    ui_tasks = getUIPieces(tasks)
+    streamlit_code =""
+    for task in ui_tasks:
+        function_name = task["function_name"]
+        inputs = task["input_key"] 
+        description = task["description"]
+        if isinstance(inputs,str):
+            inputs = [inputs]
+        code = Chains.streamlit(instruction=description,
+                        inputs=inputs,
+                        function_name=function_name
+                        )
+        streamlit_code += code + "\n\n\n"
+
+    return streamlit_code
 
 
 def runStreamlit(code, openai_api_key):

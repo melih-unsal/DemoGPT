@@ -30,7 +30,7 @@ class Chains:
         return LLMChain(llm=cls.llm, prompt=chat_prompt).run(**kwargs)
 
     @classmethod
-    def draft(cls, inputs, instruction, function_name):
+    def langchain(cls, inputs, instruction, function_name):
         res = cls.getChain(
             system_template=prompts.code.system_template,
             human_template=prompts.code.human_template,
@@ -62,6 +62,14 @@ class Chains:
             return result # returns string                            
         """
         return code
+    
+    @classmethod
+    def streamlit(cls, instruction, inputs, function_name):
+        code = cls.getChain(human_template=prompts.streamlit.human_template,
+                 instruction=instruction,
+                 inputs=inputs,
+                 function_name=function_name)
+        return utils.refine(code)
 
     @classmethod
     def inputs(cls, instruction):
@@ -84,15 +92,14 @@ class Chains:
             system_inputs=system_inputs,
         )
         return json.loads(task_list)
-
+    
     @classmethod
-    def streamlit(cls, **kwargs):
-        code = cls.getChain(
-            human_template=prompts.streamlit.human_template,
-            **kwargs,
-        )
-
-        return utils.refine(code)
+    def explain(cls, instruction, task_list):
+        return cls.getChain(
+            human_template=prompts.explain.human_template,
+            instruction=instruction,
+            task_list=task_list
+            )
 
     @classmethod
     def final(cls, **kwargs):

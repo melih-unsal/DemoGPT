@@ -1,17 +1,12 @@
 human_template = """
-Create an interactive Streamlit application
-by applying the tasks in the Task List to accomplish the Instruction
+Create a streamlit function that having the following features by using only streamlit library and python's standard library:
+When you use text_input, please use key attribute to differentiate the text inputs.
 
-When you call ai functions, please check if the inputs are non-empty before calling it
-Make sure, that you don't use any function that you don't define.
-
-After taking the inputs, to give the response, check inputs and trigger the system with the following code
-```if st.button({button_text}):```
-
-Task List:{task_list}
-#################################
-Instruction:{instruction}
-#################################
-AI Functions : {ai_functions}
-Streamlit Code:
+instruction:{instruction}
+===========================
+inputs:{inputs}
+===========================
+function name:{function_name}
+===========================
+Streamlit Function:
 """

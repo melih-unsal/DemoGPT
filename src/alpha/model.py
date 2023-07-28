@@ -16,33 +16,32 @@ class Model:
         self,
         instruction="Create a translation system that converts English to French"
     ):
+        yield {"stage": "start"}
         system_inputs = Chains.inputs(instruction)
         button_text = Chains.buttonText(instruction)
 
-        yield {"stage": "start"}
-
         task_list = Chains.tasks(instruction=instruction, system_inputs=system_inputs)
 
-        yield {"stage": "plan"}
+        yield {"stage": "plan","tasks":task_list}
 
-        ai_tasks, ai_functions = utils.getAIPieces(task_list)
-        streamlit_code = Chains.streamlit(
-            instruction=instruction,
-            task_list=task_list,
-            button_text=button_text,
-            ai_functions=ai_functions,
-        )
+        explanation = Chains.explain(instruction=instruction, task_list=task_list)
 
-        yield {"stage": "draft"}
+        yield {"stage": "explanation"}
 
-        langchain_functions = utils.getLangchainFunctions(ai_tasks)
+        langchain_functions = utils.getLangchainFunctions(task_list)
 
-        yield {"stage": "langchain"}
+        yield {"stage": "langchain","code":langchain_functions}
+
+        streamlit_functions = utils.getStreamlitFunctions(task_list)
+
+        yield {"stage": "streamlit","code":streamlit_functions}
 
         final_code = Chains.final(
             instruction=instruction,
-            streamlit_code=streamlit_code,
+            streamlit_code=streamlit_functions,
             langchain_code=langchain_functions,
+            explanation=explanation,
+            button_text=button_text,
             imports_code_snippet=utils.IMPORTS_CODE_SNIPPET,
         )
 

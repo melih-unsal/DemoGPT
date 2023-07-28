@@ -44,6 +44,7 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+src/demogpt.engg-info/
 MANIFEST
 
 # PyInstaller
