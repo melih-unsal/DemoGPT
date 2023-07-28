@@ -62,13 +62,15 @@ class Chains:
             return result # returns string                            
         """
         return code
-    
+
     @classmethod
     def streamlit(cls, instruction, inputs, function_name):
-        code = cls.getChain(human_template=prompts.streamlit.human_template,
-                 instruction=instruction,
-                 inputs=inputs,
-                 function_name=function_name)
+        code = cls.getChain(
+            human_template=prompts.streamlit.human_template,
+            instruction=instruction,
+            inputs=inputs,
+            function_name=function_name,
+        )
         return utils.refine(code)
 
     @classmethod
@@ -92,14 +94,14 @@ class Chains:
             system_inputs=system_inputs,
         )
         return json.loads(task_list)
-    
+
     @classmethod
     def explain(cls, instruction, task_list):
         return cls.getChain(
             human_template=prompts.explain.human_template,
             instruction=instruction,
-            task_list=task_list
-            )
+            task_list=task_list,
+        )
 
     @classmethod
     def final(cls, **kwargs):

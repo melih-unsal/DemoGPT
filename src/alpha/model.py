@@ -8,13 +8,12 @@ class Model:
         self.openai_api_key = openai_api_key
         Chains.setLlm(self.model_name, self.openai_api_key)
 
-    def setModel(self,model_name):
+    def setModel(self, model_name):
         self.model_name = model_name
         Chains.setLlm(self.model_name, self.openai_api_key)
 
     def __call__(
-        self,
-        instruction="Create a translation system that converts English to French"
+        self, instruction="Create a translation system that converts English to French"
     ):
         yield {"stage": "start"}
         system_inputs = Chains.inputs(instruction)
@@ -22,7 +21,7 @@ class Model:
 
         task_list = Chains.tasks(instruction=instruction, system_inputs=system_inputs)
 
-        yield {"stage": "plan","tasks":task_list}
+        yield {"stage": "plan", "tasks": task_list}
 
         explanation = Chains.explain(instruction=instruction, task_list=task_list)
 
@@ -30,11 +29,11 @@ class Model:
 
         langchain_functions = utils.getLangchainFunctions(task_list)
 
-        yield {"stage": "langchain","code":langchain_functions}
+        yield {"stage": "langchain", "code": langchain_functions}
 
         streamlit_functions = utils.getStreamlitFunctions(task_list)
 
-        yield {"stage": "streamlit","code":streamlit_functions}
+        yield {"stage": "streamlit", "code": streamlit_functions}
 
         final_code = Chains.final(
             instruction=instruction,

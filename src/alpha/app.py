@@ -46,9 +46,7 @@ openai_api_key = st.sidebar.text_input(
     type="password",
 )
 
-model_name = st.sidebar.selectbox(
-    'Model',
-    ('gpt-3.5-turbo', 'gpt-4'))
+model_name = st.sidebar.selectbox("Model", ("gpt-3.5-turbo", "gpt-4"))
 
 empty_idea = st.empty()
 demo_idea = empty_idea.text_area(
@@ -59,7 +57,7 @@ demo_idea = empty_idea.text_area(
 PROGRESS_BAR_INFO = {
     "start": {"text": "Plan generation started...", "percentage": 0},
     "plan": {"text": "Global plan has been generated", "percentage": 20},
-    "explanation": {"text": "Tasks have been explained", "percentage":40},
+    "explanation": {"text": "Tasks have been explained", "percentage": 40},
     "langchain": {"text": "Langchain code has been generated.", "percentage": 60},
     "streamlit": {"text": "Streamlit code has been generated...", "percentage": 80},
     "done": {"text": "App created, directed to the demo page", "percentage": 100},
@@ -67,18 +65,20 @@ PROGRESS_BAR_INFO = {
 
 
 def progressBarOld(key, bar=None):
-    info = PROGRESS_BAR_INFO[key]        
+    info = PROGRESS_BAR_INFO[key]
     if bar:
         bar.progress(info["percentage"], text=info["text"])
     else:
         return st.progress(info["percentage"], text=info["text"])
-    
+
+
 def progressBar(key, bar=None):
-    info = PROGRESS_BAR_INFO[key]        
+    info = PROGRESS_BAR_INFO[key]
     if bar:
         bar.progress(info["percentage"])
     else:
         return st.progress(info["percentage"])
+
 
 if "pid" not in st.session_state:
     st.session_state["pid"] = -1
@@ -126,6 +126,3 @@ if submitted:
                     container.json(data["tasks"])
                 elif code:
                     container.code(code)
-
-
-

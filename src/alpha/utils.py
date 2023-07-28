@@ -17,6 +17,7 @@ def getAIPieces(task_list):
     ai_tasks = [task for task in task_list if task["model_type"] == "ai"]
     return ai_tasks
 
+
 def getUIPieces(task_list):
     ui_tasks = [task for task in task_list if task["model_type"] == "ui"]
     return ui_tasks
@@ -37,19 +38,19 @@ def getLangchainFunctions(tasks):
         langchain_functions += langchain_code + "\n\n\n"
     return langchain_functions
 
+
 def getStreamlitFunctions(tasks):
     ui_tasks = getUIPieces(tasks)
-    streamlit_code =""
+    streamlit_code = ""
     for task in ui_tasks:
         function_name = task["function_name"]
-        inputs = task["input_key"] 
+        inputs = task["input_key"]
         description = task["description"]
-        if isinstance(inputs,str):
+        if isinstance(inputs, str):
             inputs = [inputs]
-        code = Chains.streamlit(instruction=description,
-                        inputs=inputs,
-                        function_name=function_name
-                        )
+        code = Chains.streamlit(
+            instruction=description, inputs=inputs, function_name=function_name
+        )
         streamlit_code += code + "\n\n\n"
 
     return streamlit_code
