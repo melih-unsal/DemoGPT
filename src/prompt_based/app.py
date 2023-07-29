@@ -5,7 +5,7 @@ from templates import *
    
 
 # Page title
-title = '🦜🔗 DemoGPT'
+title = "🧩 DemoGPT"
 
 st.set_page_config(page_title=title)
 st.title(title)
