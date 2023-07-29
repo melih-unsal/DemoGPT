@@ -16,8 +16,7 @@ class Model:
         self, instruction="Create a translation system that converts English to French"
     ):
         yield {"stage": "start"}
-        system_inputs = Chains.inputs(instruction)
-        button_text = Chains.buttonText(instruction)
+        system_inputs, button_text = Chains.helpers(instruction)
 
         task_list = Chains.tasks(instruction=instruction, system_inputs=system_inputs)
 
