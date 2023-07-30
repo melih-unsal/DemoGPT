@@ -2,6 +2,7 @@ import json
 
 import chains.prompts as prompts
 import utils
+import os
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
@@ -14,7 +15,7 @@ class Chains:
     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
     @classmethod
-    def setLlm(cls, model, openai_api_key, temperature=0):
+    def setLlm(cls, model, openai_api_key=os.environ["OPENAI_API_KEY"], temperature=0):
         cls.llm = ChatOpenAI(
             model=model, openai_api_key=openai_api_key, temperature=temperature
         )
@@ -109,12 +110,12 @@ class Chains:
         )
 
     @classmethod
-    def tasks(cls, instruction, system_inputs):
+    def tasks(cls, instruction, plan):
         task_list = cls.getChain(
             system_template=prompts.tasks.system_template,
             human_template=prompts.tasks.human_template,
             instruction=instruction,
-            system_inputs=system_inputs,
+            plan=plan
         )
         return json.loads(task_list)
 
