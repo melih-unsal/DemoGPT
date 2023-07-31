@@ -6,13 +6,15 @@ import subprocess
 import sys
 import tempfile
 import threading
+import unicodedata
 from subprocess import PIPE
 from threading import Timer
-import unicodedata
+
+from pkg_resources import resource_stream
+from prompts import *
 
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
-from prompts import *
 
 
 class BaseModel:
@@ -53,7 +55,7 @@ class BaseModel:
                 code = code[len("python") :].strip()
         return code
 
-    def normalize(self,code):
+    def normalize(self, code):
         """Fix Unicode related problems
 
         Args:
@@ -62,7 +64,11 @@ class BaseModel:
         Returns:
             str: refined version of the code
         """
-        return unicodedata.normalize('NFKD', code).encode('ascii', 'ignore').decode('utf-8')
+        return (
+            unicodedata.normalize("NFKD", code)
+            .encode("ascii", "ignore")
+            .decode("utf-8")
+        )
 
 
 class LogicModel(BaseModel):
@@ -106,9 +112,13 @@ class LogicModel(BaseModel):
         Adds documents to the logic model for generating Python code.
         """
         self.document = ""
-        for path in ["src/prompt_based/prompts.txt"]:
-            with open(path) as f:
-                self.document += f.read()
+        for path in ["prompts.txt"]:
+            try:
+                with resource_stream("prompt_based", path) as f:
+                    self.document += f.read().decode("utf-8")
+            except ImportError:
+                with open(f"src/prompt_based/{path}", "r") as f:
+                    self.document += f.read()
 
     def decode_results(self, results):
         """
@@ -132,6 +142,7 @@ class LogicModel(BaseModel):
         Returns:
             Tuple[str, str, bool]: The output, error, and success status of the execution.
         """
+
         tmp = tempfile.NamedTemporaryFile(
             "w", suffix=".py", delete=False, encoding="utf-8"
         )

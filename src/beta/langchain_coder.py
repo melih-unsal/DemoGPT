@@ -2,15 +2,16 @@ import logging
 import os
 
 import fire
-import langchain
 import utils
 from chains.chains import Chains
-from langchain.docstore.document import Document
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
 from langchain_expert import LangChainExpert
 from termcolor import colored
 from tqdm import tqdm
+
+import langchain
+from langchain.docstore.document import Document
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import Chroma
 
 
 class LangChainCoder:
@@ -18,6 +19,7 @@ class LangChainCoder:
         self,
         openai_api_key="sk-",
         model_name="gpt-3.5-turbo-16k",
+        data_root="src/data_beta/",
         persist_directory="langchain_code",
         device="cuda",
         distance_metric="cos",
@@ -26,7 +28,8 @@ class LangChainCoder:
     ):
         self.root_dir = "/".join(langchain.__file__.split("/")[:-1])
         Chains.setLlm(model_name, openai_api_key)
-        self.persist_directory = persist_directory
+        self.persist_directory = os.path.join(data_root, persist_directory)
+        self.goals_directory = os.path.join(data_root, "examples/goals/")
         self.device = device
         self.distance_metric = distance_metric
         self.maximal_marginal_relevance = maximal_marginal_relevance
@@ -44,7 +47,7 @@ class LangChainCoder:
         else:
             logging.info("DB not found, creation started...")
             docs = []
-            for dirpath, _, filenames in tqdm(os.walk("examples/goals/")):
+            for dirpath, _, filenames in tqdm(os.walk(self.goals_directory)):
                 for file in filenames:
                     if file.endswith(".md"):
                         filepath = os.path.join(dirpath, file)
@@ -144,13 +147,15 @@ class LangChainCoder:
 
     def __getLangChainCode(self, instruction, iterations):
         tasks = self.__getTasks(instruction)
-        print(tasks)
+        print(colored(tasks, "yellow"))
         print(colored("Tasks have been generated", "green"))
         examples = ""
         for i, task in enumerate(tasks):
             doc = self.__getSource(task)
             for res in self.__getSubResult(task, doc, i, iterations=iterations):
                 text = f"Task[{res['task_id']}/{len(tasks)}]\nProgress: {res['progress']}\nSuccess: {res['success']}\n"
+                print(task)
+                print(colored(res["code"], "blue"))
                 if res["success"]:
                     print(colored(text, "green"))
                 else:

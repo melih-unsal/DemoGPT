@@ -8,7 +8,7 @@
 <b>⚡ With just a prompt, you can create interactive Streamlit apps via 🦜️🔗 LangChain's transformative capabilities & Llama 2.⚡</b>
 </p>
 <p align="center">
-<a href="#"><img src="https://img.shields.io/pypi/dw/demogpt?logo=python" alt="Downloads"></a>
+<a href="https://pepy.tech/project/demogpt"><img src="https://static.pepy.tech/badge/demogpt/week" alt="Downloads"></a>
 <a href="https://github.com/melih-unsal/DemoGPT/releases"><img src="https://img.shields.io/github/release/melih-unsal/DemoGPT" alt="Releases"></a>
 <a href="https://demogpt.io"><img src="https://img.shields.io/badge/Official%20Website-demogpt.io-blue?style=flat&logo=world&logoColor=white" alt="Official Website"></a>
 <a href="https://melih-unsal.github.io/DemoGPT-Docs/"><img src="https://img.shields.io/badge/Documentation-📘-blueviolet" alt="DemoGPT Documentation"></a>
@@ -26,20 +26,18 @@
 <a href="https://github.com/melih-unsal/DemoGPT/issues?q=is%3Aopen+is%3Aissue"><img src="https://img.shields.io/github/issues/melih-unsal/DemoGPT.svg?maxAge=2592000000000000" alt="Open an issue"></a>
 <a href="https://github.com/melih-unsal/DemoGPT/issues?q=is%3Aissue+is%3Aclosed"><img src="https://img.shields.io/github/issues-closed-raw/melih-unsal/DemoGPT.svg?maxAge=25920000000000000000" alt="Closed issues"></a>
 <a href="https://star-history.com/#melih-unsal/DemoGPT"><img src="https://img.shields.io/github/stars/melih-unsal/DemoGPT?style=social" alt="DemoGPT  Stars"></a>
+<a href=""><img src="https://img.shields.io/github/forks/melih-unsal/DemoGPT" /> </a>
 </p>
 
 <p align="center">
-<a href="docs/resources/WeChat.jpeg"><img src="https://img.shields.io/badge/WeChat-微信-blue" alt="WeChat"></a>
 <a href="https://twitter.com/demo_gpt"><img src="https://img.shields.io/twitter/follow/demo_gpt?style=social" alt="Twitter Follow"></a>
+<a href="https://demogpt.medium.com/"><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Medium&color=000000&logo=Medium&logoColor=FFFFFF&label=" alt="DemoGPT Medium" height="20"/></a>
+<a href="https://www.producthunt.com/posts/demogpt?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-demogpt" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=406106&theme=light" alt="DemoGPT - Auto&#0032;generative&#0032;AI&#0032;app&#0032;generator&#0032;with&#0032;the&#0032;power&#0032;of&#0032;Llama&#0032;2 | Product Hunt" height="20" /></a>
 </p>
 
 <p align="center">
 <a href="https://demogpt.streamlit.app"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Streamlit application"></a>
 <a href="https://huggingface.co/spaces/melihunsal/demogpt"><img src="https://img.shields.io/badge/%F0%9F%A4%97-Spaces-yellow"></a>
-</p>
-
-<p align="center">
-<a href="https://www.producthunt.com/posts/demogpt"><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Product+Hunt&color=DA552F&logo=Product+Hunt&logoColor=FFFFFF&label=" alt="Product Hunt"/></a>
 </p>
 
 ## ⭐ Star History

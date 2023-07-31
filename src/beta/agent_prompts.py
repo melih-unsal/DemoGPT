@@ -24,7 +24,7 @@ Proceed with your Python code below:
 
 APP_GENERATION_TEMPLATE = """
 As a Python developer, your task is to create a new application with the LangChain library based on a user-specified idea. 
-Reference successful examples in the library's repository, translate the user's idea into specific requirements, draft an architecture, develop the application, and validate your work against the examples.mber, due to the one-shot nature of the task, attention to detail in understanding the examples, meticulous planning, and precise execution are paramount for successful application generation.
+Reference successful examples in the library's repository, translate the user's idea into specific requirements, draft an architecture, develop the application, and validate your work against the examples, due to the one-shot nature of the task, attention to detail in understanding the examples, meticulous planning, and precise execution are paramount for successful application generation.
 
 Possible answers:{possible_answers}
 

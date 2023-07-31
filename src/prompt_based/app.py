@@ -8,8 +8,6 @@ import streamlit as st
 from model import LogicModel, StreamlitModel
 from trubrics.integrations.streamlit import FeedbackCollector
 
-# logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
-
 try:
     from dotenv import load_dotenv
 
@@ -17,74 +15,79 @@ try:
 except Exception as e:
     logging.error("dotenv import error but no needed")
 
-num_of_iterations = 10
-
-
-def generate_response(txt):
-    """
-    Generate response using the LogicModel.
-
-    Args:
-        txt (str): The input text.
-
-    Yields:
-        dict: A dictionary containing response information.
-    """
-    for data in agent(txt, num_of_iterations):
-        yield data
-
-
 if "success" not in st.session_state:
     st.session_state["success"] = False
 
 if "streamlit_code" not in st.session_state:
     st.session_state["streamlit_code"] = ""
 
-# Page title
-title = "🧩 DemoGPT"
 
-st.set_page_config(page_title=title)
-st.title(title)
-# Text input
+def main():
+    
+    num_of_iterations = 10
 
-email = st.secrets.get("TRUBRICS_EMAIL")
-password = st.secrets.get("TRUBRICS_PASSWORD")
+    def generate_response(txt):
+        """
+        Generate response using the LogicModel.
 
-openai_api_key = st.sidebar.text_input(
-    "OpenAI API Key",
-    placeholder="sk-...",
-    value=os.getenv("OPENAI_API_KEY", ""),
-    type="password",
-)
-demo_title = st.text_input("Enter your demo title", placeholder="Type your demo title")
-empty_idea = st.empty()
-demo_idea = empty_idea.text_area(
-    "Enter your LLM-based demo idea", placeholder="Type your demo idea here", height=100
-)
+        Args:
+            txt (str): The input text.
 
-st.write("Examples")
+        Yields:
+            dict: A dictionary containing response information.
+        """
+        for data in agent(txt, num_of_iterations):
+            yield data
 
-cols = st.columns([1, 1, 1.2])
+    # Page title
+    title = "🧩 DemoGPT"
 
-PROGRESS_BAR_TEXTS = {
-    "start": "Generating Code...",
-    "creating": "Creating App...",
-    "refining": "Refining Code...",
-    "failed": "Failed",
-}
+    st.set_page_config(page_title=title)
+    st.title(title)
+    # Text input
 
-examples = [
-    "Language Translator 📝",
-    "Grammer Corrector 🛠",
-    "Blog post generator from title 📔",
-]
+    email = st.secrets.get("TRUBRICS_EMAIL")
+    password = st.secrets.get("TRUBRICS_PASSWORD")
 
-if "pid" not in st.session_state:
-    st.session_state["pid"] = -1
+    openai_api_key = st.sidebar.text_input(
+        "OpenAI API Key",
+        placeholder="sk-...",
+        value=os.getenv("OPENAI_API_KEY", ""),
+        type="password",
+    )
+    demo_title = st.text_input(
+        "Enter your demo title", placeholder="Type your demo title"
+    )
+    empty_idea = st.empty()
+    demo_idea = empty_idea.text_area(
+        "Enter your LLM-based demo idea",
+        placeholder="Type your demo idea here",
+        height=100,
+    )
 
-example_submitted = False
+    st.write("Examples")
 
-final_code_empty = st.empty()
+    cols = st.columns([1, 1, 1.2])
+
+    PROGRESS_BAR_TEXTS = {
+        "start": "Generating Code...",
+        "creating": "Creating App...",
+        "refining": "Refining Code...",
+        "failed": "Failed",
+    }
+
+    examples = [
+        "Language Translator 📝",
+        "Grammer Corrector 🛠",
+        "Blog post generator from title 📔",
+    ]
+
+    if "pid" not in st.session_state:
+        st.session_state["pid"] = -1
+
+    example_submitted = False
+
+    final_code_empty = st.empty()
 
 model_name = ""
 submitted = st.button("Submit")
@@ -97,12 +100,14 @@ for col, example in zip(cols, examples):
         logging.info(f"Demo Idea:{demo_idea}")
 
 if submitted or example_submitted:
+
     if not openai_api_key.startswith("sk-"):
         st.warning("Please enter your OpenAI API Key!", icon="⚠️")
     else:
         agent = LogicModel(openai_api_key=openai_api_key)
         streamlit_agent = StreamlitModel(openai_api_key=openai_api_key)
         model_name = streamlit_agent.llm.model_name
+
         if st.session_state["pid"] != -1:
             logging.info(f"Terminating the previous applicaton ...")
             os.kill(st.session_state["pid"], signal.SIGTERM)
@@ -129,7 +134,6 @@ if submitted or example_submitted:
                     bar.progress,
                     st.balloons,
                 )
-
                 st.session_state["streamlit_code"] = streamlit_code
 
                 sleep(5)
@@ -164,3 +168,6 @@ if st.session_state["success"]:
         },
         tags=["main_code"],
     )
+
+if __name__ == "__main__":
+    main()
