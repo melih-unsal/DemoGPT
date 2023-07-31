@@ -1,7 +1,7 @@
 import shutil
 import tempfile
 from subprocess import Popen
-
+import json
 from chains.chains import Chains
 
 
@@ -12,49 +12,42 @@ def refine(code):
             code = code[len("python") :].strip()
     return code
 
+def getPromptChatTemplateCode(res,task):
+    inputs = task["input_key"]
+    if inputs.startswith("["):
+        inputs = inputs[1:-1]
+        inputs = [var.strip() for var in inputs.split(",")]
+    else:
+        inputs = [inputs]
+    variable = task["output_key"]
+    templates = json.loads(res)
+    run_call = "{}"
+    if len(inputs) > 0:
+        run_call = ", ".join([f"{var}={var}" for var in inputs])
 
-def getAIPieces(task_list):
-    ai_tasks = [task for task in task_list if task["model_type"] == "ai"]
-    return ai_tasks
+    temperature = 0 if templates.get("variety", "False") == "False" else 0.7
 
+    signature = f"{templates['function_name']}({str(inputs)[2:-2]})"
 
-def getUIPieces(task_list):
-    ui_tasks = [task for task in task_list if task["model_type"] == "ui"]
-    return ui_tasks
-
-
-def getLangchainFunctions(tasks):
-    ai_tasks = getAIPieces(tasks)
-    langchain_functions = ""
-    for task in ai_tasks:
-        function_name = task["function_name"]
-        inputs = task["input_key"]
-        description = task["description"]
-        if isinstance(inputs, str):
-            inputs = [inputs]
-        langchain_code = Chains.langchain(
-            inputs=inputs, instruction=description, function_name=function_name
+    code = f"""
+    def {signature}:
+        chat = ChatOpenAI(
+            temperature={temperature}
         )
-        langchain_functions += langchain_code + "\n\n\n"
-    return langchain_functions
-
-
-def getStreamlitFunctions(tasks):
-    ui_tasks = getUIPieces(tasks)
-    streamlit_code = ""
-    for task in ui_tasks:
-        function_name = task["function_name"]
-        inputs = task["input_key"]
-        description = task["description"]
-        if isinstance(inputs, str):
-            inputs = [inputs]
-        code = Chains.streamlit(
-            instruction=description, inputs=inputs, function_name=function_name
+        system_template = {templates['system_template']}
+        system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+        human_template = {templates['template']}
+        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+        chat_prompt = ChatPromptTemplate.from_messages(
+            [system_message_prompt, human_message_prompt]
         )
-        streamlit_code += code + "\n\n\n"
 
-    return streamlit_code
-
+        chain = LLMChain(llm=chat, prompt=chat_prompt)
+        result = chain.run({run_call})
+        return result # returns string      
+    {variable} = {signature}                   
+    """
+    return code
 
 def runStreamlit(code, openai_api_key):
     """

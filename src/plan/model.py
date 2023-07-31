@@ -1,5 +1,7 @@
+from tqdm import tqdm
 import utils
 from chains.chains import Chains
+from chains.task_chains import TaskChains
 
 
 class Model:
@@ -15,32 +17,47 @@ class Model:
     def __call__(
         self, instruction="Create a translation system that converts English to French"
     ):
-        yield {"stage": "start"}
-        system_inputs, button_text = Chains.helpers(instruction)
+        yield {"stage": "plan"}
 
-        task_list = Chains.tasks(instruction=instruction, system_inputs=system_inputs)
+        plan = Chains.plan(instruction)
 
-        yield {"stage": "plan", "tasks": task_list}
+        yield {"stage": "task_generation"}
 
-        explanation = Chains.explain(instruction=instruction, task_list=task_list)
+        task_list = Chains.tasks(instruction=instruction, plan=plan)
 
-        yield {"stage": "explanation"}
+        code_snippets = []
 
-        langchain_functions = utils.getLangchainFunctions(task_list)
+        for task in tqdm(task_list):
+            task_instruction = task["description"]
+            if task["task_name"] == "ui_input_text":
+                code = TaskChains.uiInputText(instruction=task_instruction)
+                code_snippets.append(
+                    {
+                        "description": task_instruction,
+                        "code":code
+                    }
+                )
+            elif task["task_name"] == "ui_output_text":
+                args = task["input_key"]
+                code = TaskChains.uiOutputText(instruction=task_instruction,args=args)
+                code_snippets.append(
+                    {
+                        "description": task_instruction,
+                        "code":code
+                    }
+                )
+            elif task["task_name"] == "prompt_chat_template":
+                inputs = task["input_key"]
+                res = TaskChains.promptChatTemplate(instruction=task_instruction, inputs=inputs)
+                code = utils.getPromptChatTemplateCode(res,inputs)
+                code_snippets.append(
+                    {
+                        "description": task_instruction,
+                        "code":code
+                    }
+                )
 
-        yield {"stage": "langchain", "code": langchain_functions}
 
-        streamlit_functions = utils.getStreamlitFunctions(task_list)
 
-        yield {"stage": "streamlit", "code": streamlit_functions}
 
-        final_code = Chains.final(
-            instruction=instruction,
-            streamlit_code=streamlit_functions,
-            langchain_code=langchain_functions,
-            explanation=explanation,
-            button_text=button_text,
-            imports_code_snippet=utils.IMPORTS_CODE_SNIPPET,
-        )
-
-        yield {"stage": "done", "code": final_code}
+    
