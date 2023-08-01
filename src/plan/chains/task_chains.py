@@ -44,6 +44,8 @@ class TaskChains:
     @classmethod
     def uiOutputText(cls, task):
         args = task["input_key"]
+        if isinstance(args, list):
+            args = ",".join(args)
         instruction = task["description"]   
         code = cls.getChain(
             human_template=prompts.ui_output_text.human_template,

@@ -8,7 +8,8 @@ So you don't need to give dummy variables to the function while calling.
 You should use "{args}" to call the function
 In the function, also add a descriptive part next to the "{args}"
 After defining the function, call it with "{args}". 
-Assume that, they have been already defined.
+Assume that, they have been already defined but only call the function by checking if the input is not an empty string.
+use st.markdown to show the main text
 
 Instruction:{instruction}
 Streamlit Code:

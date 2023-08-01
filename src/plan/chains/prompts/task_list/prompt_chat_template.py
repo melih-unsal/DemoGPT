@@ -13,7 +13,8 @@ Args: {{
 "system_template":"You are a helpful assistant that generates a blog post from the title: {{title}}.",
 "template":"Title is {{title}}",
 "variety":"True",
-"function_name":"blogger"
+"function_name":"blogger",
+"button_text":"Generate Blog"
 }}
 ##########################################
 Instruction:Implement language translation app
@@ -22,7 +23,8 @@ Args: {{
 "system_template":"You are a helpful assistant that translates {{input_language}} to {{output_language}}.",
 "template":"Translate {{text}}",
 "variety":"False",
-"function_name":"translator"
+"function_name":"translator",
+"button_text":"Translate"
 }}
 ##########################################
 Instruction:Generate animal name from animal
@@ -31,7 +33,8 @@ Args: {{
 "system_template":"You are a helpful assistant that generates a name for an animal. You generate short answer.",
 "template":"Create a good name for {{animal}}?",
 "variety":"True",
-"function_name":"animalNameGenerator"
+"function_name":"animalNameGenerator",
+"button_text":"Create Name"
 }}
 ##########################################
 Instruction:Create programming related humor machine
@@ -40,7 +43,8 @@ Args: {{
 "system_template":"You are a helpful assistant that generates a humor related to programming.",
 "template":"",
 "variety":"True",
-"function_name":"humorGenerator"
+"function_name":"humorGenerator",
+"button_text":"Generate Humor"
 }}
 ##########################################
 Instruction:Create a math teacher.
@@ -49,7 +53,8 @@ Args: {{
 "system_template":"You are a helpful assistant that solve any math problem",
 "template":"Here is the math problem: {{math_problem}}",
 "variety":"False",
-"function_name":"mathSolver"
+"function_name":"mathSolver",
+"button_text":"Solve"
 }}
 ##########################################
 Instruction:{instruction}

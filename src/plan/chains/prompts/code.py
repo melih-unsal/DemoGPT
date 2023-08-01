@@ -12,7 +12,7 @@ Inputs:[title]
 Args: {{
 "system_template":"You are a helpful assistant that generates a blog post from the title: {{title}}.",
 "template":"Title is {{title}}",
-"examples":"",
+"button_text":"Generate Blog",
 "variety":"True"
 }}
 ##########################################
@@ -21,7 +21,7 @@ Inputs:[input_language,output_language,text]
 Args: {{
 "system_template":"You are a helpful assistant that translates {{input_language}} to {{output_language}}.",
 "template":"Translate {{text}}",
-"examples":"",
+"button_text":"Translate",
 "variety":"False"
 }}
 ##########################################
@@ -30,7 +30,7 @@ Inputs:[animal]
 Args: {{
 "system_template":"You are a helpful assistant that generates a name for an animal. You generate short answer.",
 "template":"Create a good name for {{animal}}?",
-"examples":"Create a good name for cat\nFelix\nCreate a good name for horse\nSugar\n"
+"button_text":"Create Name",
 "variety":"True"
 }}
 ##########################################
@@ -39,7 +39,7 @@ Inputs:[]
 Args: {{
 "system_template":"You are a helpful assistant that generates a humor related to programming.",
 "template":"",
-"examples":"",
+"button_text":"Generate Humor",
 "variety":"True"
 }}
 ##########################################
@@ -48,7 +48,7 @@ Inputs:[math_problem]
 Args: {{
 "system_template":"You are a helpful assistant that solve any math problem",
 "template":"Here is the math problem: {{math_problem}}",
-"examples":"",
+"button_text":"Solve",
 "variety":"False"
 }}
 ##########################################

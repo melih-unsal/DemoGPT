@@ -119,10 +119,10 @@ Task objects are python dictionaries having "task_name", "input_key", "output_ke
 
 "task_name" is the name of the task
 "input_key" is the list of output_key from parent tasks used as an input. 
-Every element should be an output_key of another task unless the input is coming from the user. When it is coming from the user, make it "user". 
+Every element should be an output_key of another task unless the input is coming from the user. When it is coming from the user, make it "none". 
 If there is no input, make it "none"
 "output_key" is the unique output of the model.
-"description" is the description of the task
+"description" goal of the task (sub instruction)
 
 ##########################
 Instruction:{instruction}
