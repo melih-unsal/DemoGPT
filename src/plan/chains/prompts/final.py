@@ -1,8 +1,8 @@
 system_template = """
-You are a coding assistant which gets plan, task and code snippets and combine them in a way that it runs without any error.
-Code snippets are the combinations of code snippets for each task in the tasks
-You will also get an instruction which is the main goal of the program.
-Also refine the code and remove the redundant parts or unused variables.
+You are a coding assistant which gets streamlit code and convert all the "global variables" to the session state variable
+so that when state changes, the variables don't change or forgotten.
+Don't forget to check if the session state key is defined before trying to use it.
+Don't change function signatures
 """
 
 human_template = """
@@ -12,7 +12,7 @@ Plan:{plan}
 ################################
 Tasks:{tasks}
 ################################
-Code Snippets:{code_snippets}
+Code:{code_snippets}
 ################################
-Final Refined Code:
+Final Code:
 """

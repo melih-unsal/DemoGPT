@@ -78,7 +78,7 @@ demogpt
 ## 📑 Table of Contents
 
 - [Introduction](#-introduction)
-- [Pipeline](#%EF%B8%8F-pipeline)
+- [Architecture](#-architecture)
 - [Installation](#-installation)
 - [Usage](#-usage)
 - [Contribute](#-contribute)
