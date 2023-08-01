@@ -77,12 +77,12 @@ demogpt
 
 ## 📑 Table of Contents
 
-- [Introduction](#-introduction)
-- [Architecture](#-architecture)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [Contribute](#-contribute)
-- [License](#-license)
+- [Introduction](#introduction)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contribute](#contribute)
+- [License](#license)
 
 ## 📌 Introduction
 
