@@ -21,10 +21,11 @@ step: It represents the step number corresponding to which plan step it matches
 task_type: Should match one of the task names provided in task descriptions.
 task_name: Define a specific name for the task that aligns with the corresponding plan step.
 input_key: List the "output_key" values from parent tasks used as input or "none" if there's no input or if it comes from the user.
-output_key: Designate a unique key for the task's output.
+output_key: Designate a unique key for the task's output. It is compatible with the output type if not none
 description: Provide a brief description of the task's goal, mirroring the plan step.
 
 Ensure that each task corresponds to each step in the plan, and that no step in the plan is omitted.
+Ensure that output_key is unique for each task.
 
 ##########################
 Instruction:{instruction}

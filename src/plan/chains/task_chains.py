@@ -53,6 +53,18 @@ class TaskChains:
             args=args
         )
         return utils.refine(code)
+    
+    @classmethod
+    def uiInputFile(cls, task):
+        variable = task["output_key"]
+        instruction = task["description"]   
+        code = cls.getChain(
+            human_template=prompts.ui_input_file.human_template,
+            instruction=instruction,
+            variable=variable
+        )
+        return utils.refine(code)
+
 
     @classmethod
     def promptChatTemplate(cls, task):

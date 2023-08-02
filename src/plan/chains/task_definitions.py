@@ -11,11 +11,11 @@ ALL_TASKS = [
     },
     {
         "name": "ui_input_file",
-        "description": "Gets file input from the user via file upload.",
-        "good_at": "Retrieving file input from the user.",
+        "description": "Provide a mechanism for users to upload a file and return its content as string. The task involves creating a file upload widget, reading the uploaded file, and returning its content as string.",
+        "good_at": "Enabling file uploads, reading file content, and making the content available for further analysis or processing by returning as string.",
         "input": "none",
-        "output": "file",
-        "purpose": "Allow users to upload files."
+        "output": "string",
+        "purpose": "Facilitating the upload of files (e.g., documents, spreadsheets, images) and providing access to their content for various applications such as data analysis, content review, or question-answering.",
     },
     {
         "name": "ui_output_text",
@@ -39,14 +39,6 @@ ALL_TASKS = [
         "input": "string",
         "output": "list",
         "purpose": "Converting textual data into structured list format."
-    },
-    {
-        "name": "document",
-        "description": "Read the file and answer file-related questions defined in the string.",
-        "good_at": "Answering questions on the given file.",
-        "input": ["file", "string"],
-        "output": "string",
-        "purpose": "Analyzing and extracting information from documents."
     },
     {
         "name": "router",
@@ -114,7 +106,7 @@ ALL_TASKS = [
     }
 ]
 
-TASKS = ALL_TASKS[:4] # first 4 of them has been implemented yet.
+TASKS = ALL_TASKS[:4] # first 5 of them has been implemented yet.
 
 TASK_DESCRIPTIONS = json.dumps(TASKS,indent=4)
 

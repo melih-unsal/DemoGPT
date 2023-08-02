@@ -3,6 +3,24 @@ import tempfile
 from subprocess import Popen
 import json
 from chains.chains import Chains
+from chains.task_chains import TaskChains
+
+
+def getCodeSnippet(task):
+    task_type = task["task_type"]
+    code = ""
+    if task_type == "ui_input_text":
+        code = TaskChains.uiInputText(task=task)
+    elif task_type == "ui_output_text":
+        code = TaskChains.uiOutputText(task=task)
+    elif task_type == "prompt_chat_template":
+        res = TaskChains.promptChatTemplate(task=task)
+        print(res)
+        code = getPromptChatTemplateCode(res,task)
+    elif task_type == "ui_input_file":
+        code = TaskChains.uiInputFile(task=task)
+    return code.strip() + "\n"
+    
 
 
 def refine(code):
@@ -20,27 +38,16 @@ def getPromptChatTemplateCode(res,task):
     button = f"st.button('{button_text}')"
     run_call = "{}"
 
-
     if inputs == "none":
         signature = f"{templates['function_name']}()"
-        function_call = f"{variable} = {signature}"
     else:
         if isinstance(inputs, str):
             if inputs.startswith("["):
                 inputs = inputs[1:-1]
-                inputs = [var.strip() for var in inputs.split(",")]
-            else:
-                inputs = [inputs]
+            inputs = [var.strip() for var in inputs.split(",")]
         if len(inputs) > 0:
             run_call = ", ".join([f"{var}={var}" for var in inputs])
         signature = f"{templates['function_name']}({','.join(inputs)})"
-        if False:
-            function_call = f"""
-if {' and '.join(inputs+[button])}:
-    {variable} = {signature}
-else:
-    {variable} = ""
-        """
         
     function_call = f"{variable} = {signature}"
     temperature = 0 if templates.get("variety", "False") == "False" else 0.7
