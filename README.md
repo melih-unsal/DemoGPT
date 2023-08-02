@@ -102,7 +102,7 @@ In the next release, we are gonna add **Llama 2** inside of DemoGPT to make the 
 
 ## ⚙️ Architecture
 ### DemoGPT Architecture
-![DemoGPT Architecture](assets/demogpt_new_pipeline1.jpeg?raw=true "DemoGPT Architecture")
+![DemoGPT Architecture](assets/plan_based_pipeline.png?raw=true "DemoGPT Architecture")
 
 ## 🔧 Installation
 
