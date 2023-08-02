@@ -148,6 +148,12 @@ If you have cloned the repository and wish to run the source code version, you c
 streamlit run src/prompt_based/app.py
 ```
 
+If you want to run the more **advanced** but the experimental version of DemoGPT, you can use the following command:
+
+```sh
+streamlit run src/plan/app.py
+```
+
 ## 🤝 Contribute
 
 Contributions to the DemoGPT project are welcomed! Whether you're fixing bugs, improving the documentation, or proposing new features, your efforts are highly appreciated. Please check the open issues before starting any work.
