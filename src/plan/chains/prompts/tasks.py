@@ -17,6 +17,7 @@ Follow these detailed guidelines:
 
 Task Objects: Create a Python dictionary for each task using the following keys:
 
+step: It represents the step number corresponding to which plan step it matches
 task_type: Should match one of the task names provided in task descriptions.
 task_name: Define a specific name for the task that aligns with the corresponding plan step.
 input_key: List the "output_key" values from parent tasks used as input or "none" if there's no input or if it comes from the user.

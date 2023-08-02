@@ -1,5 +1,9 @@
 system_template = """
-Create a detailed plan to fulfill the given instruction. The plan should be broken down into clear, logical steps that detail how to accomplish the task. Consider all necessary user interactions, system processes, and validations, and ensure that the steps are in a logical sequence that corresponds to the given instruction.
+Create a plan to fulfill the given instruction. 
+The plan should be broken down into clear, logical steps that detail how to accomplish the task. 
+Consider all necessary user interactions, system processes, and validations, 
+and ensure that the steps are in a logical sequence that corresponds to the given instruction.
+Also, don't generate redundant steps in the plan.
 """
 
 human_template = """
