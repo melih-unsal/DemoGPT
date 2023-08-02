@@ -18,7 +18,7 @@ except Exception as e:
     logging.error("dotenv import error but no needed")
 
 
-def generate_response(txt):
+def generate_response(txt,title):
     """
     Generate response using the LangChainCoder.
 
@@ -28,7 +28,7 @@ def generate_response(txt):
     Yields:
         dict: A dictionary containing response information.
     """
-    for data in agent(txt):
+    for data in agent(txt,title):
         yield data
 
 
@@ -46,38 +46,35 @@ openai_api_key = st.sidebar.text_input(
     type="password",
 )
 
-model_name = st.sidebar.selectbox("Model", ("gpt-3.5-turbo", "gpt-4"))
+models = (
+    "gpt-3.5-turbo", 
+    "gpt-3.5-turbo-0301",
+    "gpt-3.5-turbo-0613",
+    "gpt-3.5-turbo-16k",
+    "gpt-3.5-turbo-16k-0613",
+    "gpt-4",
+    "gpt-4-0314",
+    "gpt-4-0613"
+)
+
+model_name = st.sidebar.selectbox("Model", models)
 
 empty_idea = st.empty()
 demo_idea = empty_idea.text_area(
     "Enter your LLM-based demo idea", placeholder="Type your demo idea here", height=100
 )
 
-
-PROGRESS_BAR_INFO = {
-    "start": {"text": "Plan generation started...", "percentage": 0},
-    "plan": {"text": "Global plan has been generated", "percentage": 20},
-    "explanation": {"text": "Tasks have been explained", "percentage": 40},
-    "langchain": {"text": "Langchain code has been generated.", "percentage": 60},
-    "streamlit": {"text": "Streamlit code has been generated...", "percentage": 80},
-    "done": {"text": "App created, directed to the demo page", "percentage": 100},
-}
+empty_title = st.empty()
+demo_title = empty_title.text_input(
+    "Give a name for your application", placeholder="Title"
+)
 
 
-def progressBarOld(key, bar=None):
-    info = PROGRESS_BAR_INFO[key]
+def progressBar(percentage, bar=None):
     if bar:
-        bar.progress(info["percentage"], text=info["text"])
+        bar.progress(percentage)
     else:
-        return st.progress(info["percentage"], text=info["text"])
-
-
-def progressBar(key, bar=None):
-    info = PROGRESS_BAR_INFO[key]
-    if bar:
-        bar.progress(info["percentage"])
-    else:
-        return st.progress(info["percentage"])
+        return st.progress(percentage)
 
 
 if "pid" not in st.session_state:
@@ -92,8 +89,7 @@ if submitted:
     if not openai_api_key.startswith("sk-"):
         st.warning("Please enter your OpenAI API Key!", icon="⚠️")
     else:
-        bar = progressBar("start")
-
+        bar = progressBar(0)
         container = st.container()
 
         agent = Model(openai_api_key=openai_api_key)
@@ -105,14 +101,17 @@ if submitted:
             st.session_state["pid"] = -1
 
         code_empty = st.empty()
-        for data in generate_response(demo_idea):
+        for data in generate_response(demo_idea,demo_title):
+            done = data["done"]
+            message = data["message"]
             stage = data["stage"]
+            completed = data["completed"]
             code = data.get("code")
 
-            progressBar(stage, bar)
+            progressBar(data["percentage"], bar)
 
-            if stage == "done":
-                container.success(PROGRESS_BAR_INFO[stage]["text"])
+            if done:
+                container.success(message)
                 with st.expander("Code"):
                     st.code(code)
                 example_submitted = False
@@ -121,8 +120,4 @@ if submitted:
                 webbrowser.open("http://localhost:8502")
                 break
             else:
-                container.info("🤖 " + PROGRESS_BAR_INFO[stage]["text"])
-                if stage == "plan":
-                    container.json(data["tasks"])
-                elif code:
-                    container.code(code)
+                container.info("🧩 " + message)

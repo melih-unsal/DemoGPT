@@ -5,6 +5,11 @@ import json
 from chains.chains import Chains
 from chains.task_chains import TaskChains
 
+def init(title=""):
+    if title:
+        return IMPORTS_CODE_SNIPPET + f"\nst.title({title})\n"
+    return IMPORTS_CODE_SNIPPET 
+
 
 def getCodeSnippet(task):
     task_type = task["task_type"]
