@@ -46,15 +46,15 @@ class Chains:
             instruction=instruction,
             plan=plan
         )
+        print(task_list)
         return json.loads(task_list)
 
     @classmethod
-    def final(cls, instruction, plan, tasks, code_snippets):
+    def final(cls, instruction, code_snippets,plan):
         code = cls.getChain(
             system_template=prompts.final.system_template,
             human_template=prompts.final.human_template, 
             instruction=instruction,
-            plan=plan,
-            tasks=tasks,
-            code_snippets=code_snippets)
+            code_snippets=code_snippets,
+            plan=plan)
         return utils.refine(code)

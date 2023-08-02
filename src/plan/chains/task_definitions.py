@@ -24,8 +24,8 @@ ALL_TASKS = [
     },
     {
         "name":"prompt_chat_template",
-        "description":"generate intelligent text output from a text input by making a role play",
-        "good_at":"generating intelligent text by role play",
+        "description":"generate intelligent text output from a text input by ai",
+        "good_at":"generating intelligent text from another text to accomplish an instruction by ai",
         "input":"string",
         "output":"string"
     },

@@ -1,35 +1,34 @@
 from chains.task_definitions import TASK_DESCRIPTIONS
 
 system_template = f"""
-Create a python list of task objects where task objects are python dictionaries
-You can only use those tasks below:
+Create a Python list of task objects that align with the provided instruction and plan. Task objects must be Python dictionaries, and the output should strictly conform to a Python list of JSON objects.
+
+You must use only the tasks provided in the description:
 
 {TASK_DESCRIPTIONS}
-
-Make sure the output is stritly in Python list of JSON objects
 """
 
 human_template = """
-Create a list for of task objects to accomplish the instruction according to the plan.
-Don't create any redundant task, only create the needed the high level tasks.
-For each step in the plan, generate a corresponding task object
+Create a Python list of task objects that align with the provided instruction and all steps of the plan.
 
-Task objects are python dictionaries having "task_type", "task_name", "input_key", "output_key", "description"
+Task objects must be Python dictionaries, and the output should strictly conform to a Python list of JSON objects.
 
-"task_type" is the type of the task. This is one of the "name" in the available tasks.
-"task_name" is the name of the task
-"input_key" is the list of output_key from parent tasks used as an input. 
-Every element should be an output_key of another task unless the input is coming from the user. When it is coming from the user, make it "none". 
-If there is no input, make it "none"
-"output_key" is the unique output of the model.
-"description" goal of the task (sub instruction)
+Follow these detailed guidelines:
 
-Create at least 1 task per plan step to be sure that the plan is fully applied.
+Task Objects: Create a Python dictionary for each task using the following keys:
+
+task_type: Should match one of the task names provided in task descriptions.
+task_name: Define a specific name for the task that aligns with the corresponding plan step.
+input_key: List the "output_key" values from parent tasks used as input or "none" if there's no input or if it comes from the user.
+output_key: Designate a unique key for the task's output.
+description: Provide a brief description of the task's goal, mirroring the plan step.
+
+Ensure that each task corresponds to each step in the plan, and that no step in the plan is omitted.
 
 ##########################
 Instruction:{instruction}
 ##########################
 Plan : {plan}
 ##########################
-List of Task objects(List of JSON):
+List of Task Objects (Python List of JSON), and ensure that each task corresponds to each step in the plan:
 """

@@ -20,14 +20,10 @@ def getPromptChatTemplateCode(res,task):
     button = f"st.button('{button_text}')"
     run_call = "{}"
 
+
     if inputs == "none":
         signature = f"{templates['function_name']}()"
-        function_call = f"""
-if {button}:
-    {variable} = {signature}
-else:
-    {variable} = ""
-"""
+        function_call = f"{variable} = {signature}"
     else:
         if isinstance(inputs, str):
             if inputs.startswith("["):
@@ -38,15 +34,18 @@ else:
         if len(inputs) > 0:
             run_call = ", ".join([f"{var}={var}" for var in inputs])
         signature = f"{templates['function_name']}({','.join(inputs)})"
-        function_call = f"""
+        if False:
+            function_call = f"""
 if {' and '.join(inputs+[button])}:
     {variable} = {signature}
 else:
     {variable} = ""
         """
         
-
+    function_call = f"{variable} = {signature}"
     temperature = 0 if templates.get("variety", "False") == "False" else 0.7
+
+    print("inputs:",inputs)
 
 
     code = f"""\n
