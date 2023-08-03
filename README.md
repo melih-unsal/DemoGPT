@@ -50,7 +50,7 @@
 
 For quick demo, you can visit [our website](https://demogpt.io)
 
-![Humor Machine](assets/humor_machine.gif)
+![Humor Machine](assets/demogpt_new_version.gif)
 
 https://github.com/melih-unsal/DemoGPT/assets/34304254/8991e296-b6fe-4817-bd08-4dab6d13020d
 
