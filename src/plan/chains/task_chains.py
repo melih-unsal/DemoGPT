@@ -13,7 +13,6 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 
 class TaskChains:
     llm = None
-
     @classmethod
     def setLlm(cls, model, openai_api_key=os.getenv("OPENAI_API_KEY",""), temperature=0):
         cls.llm = ChatOpenAI(
