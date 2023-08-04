@@ -103,7 +103,7 @@ def runStreamlit(code, openai_api_key):
         "STREAMLIT_SERVER_PORT": "8502",
     }
     streamlit_path = shutil.which("streamlit")
-    if platform.system() == "Windows":
+    if True or platform.system() == "Windows":
         env = os.environ.copy()
         env["PYTHONPATH"] = ""
         env["OPENAI_API_KEY"] = openai_api_key
@@ -116,13 +116,6 @@ def runStreamlit(code, openai_api_key):
             stderr=PIPE,
         )
         threading.Thread(target=runThread, args=(process,)).start()
-    else:
-        process = Popen(
-            [streamlit_path, "run", tmp.name],
-            env=environmental_variables,
-            stdout=PIPE,
-            stderr=PIPE,
-        )
     try:
         tmp.close()
     except PermissionError:

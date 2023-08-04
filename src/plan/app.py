@@ -116,8 +116,6 @@ if submitted:
                     st.code(code)
                 example_submitted = False
                 st.session_state["pid"] = utils.runStreamlit(code, openai_api_key)
-                sleep(5)
-                webbrowser.open("http://localhost:8502")
                 break
             else:
                 container.info("🧩 " + message)
