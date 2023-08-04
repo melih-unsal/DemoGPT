@@ -11,10 +11,12 @@ class Model:
         self.model_name = model_name
         self.openai_api_key = openai_api_key
         Chains.setLlm(self.model_name, self.openai_api_key)
+        TaskChains.setLlm(self.model_name, self.openai_api_key)
 
     def setModel(self, model_name):
         self.model_name = model_name
         Chains.setLlm(self.model_name, self.openai_api_key)
+        TaskChains.setLlm(self.model_name, self.openai_api_key)
 
     def __call__(
         self, instruction="Create a translation system that converts English to French",
@@ -76,8 +78,6 @@ class Model:
 
         for i,task in enumerate(task_list):
             code = utils.getCodeSnippet(task)
-            print(code)
-            print("#"*100)
             code_snippets += code
             yield {
                 "stage":"draft",

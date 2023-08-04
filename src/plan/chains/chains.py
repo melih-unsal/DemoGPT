@@ -12,10 +12,9 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 
 
 class Chains:
-    llm = None
     @classmethod
     def setLlm(cls, model, openai_api_key=os.getenv("OPENAI_API_KEY",""), temperature=0):
-        cls.llm = ChatOpenAI(
+        Chains.llm = ChatOpenAI(
             model=model, openai_api_key=openai_api_key, temperature=temperature
         )
 
@@ -45,7 +44,6 @@ class Chains:
             instruction=instruction,
             plan=plan
         )
-        print(task_list)
         return json.loads(task_list)
 
     @classmethod

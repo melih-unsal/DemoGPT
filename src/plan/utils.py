@@ -1,7 +1,9 @@
 import shutil
 import tempfile
-from subprocess import Popen
-import json
+from subprocess import Popen, PIPE
+import json, os, sys
+import platform
+import threading
 from chains.chains import Chains
 from chains.task_chains import TaskChains
 
@@ -20,7 +22,6 @@ def getCodeSnippet(task):
         code = TaskChains.uiOutputText(task=task)
     elif task_type == "prompt_chat_template":
         res = TaskChains.promptChatTemplate(task=task)
-        print(res)
         code = getPromptChatTemplateCode(res,task)
     elif task_type == "ui_input_file":
         code = TaskChains.uiInputFile(task=task)
@@ -57,9 +58,6 @@ def getPromptChatTemplateCode(res,task):
     function_call = f"{variable} = {signature}"
     temperature = 0 if templates.get("variety", "False") == "False" else 0.7
 
-    print("inputs:",inputs)
-
-
     code = f"""\n
 def {signature}:
     chat = ChatOpenAI(
@@ -82,6 +80,9 @@ def {signature}:
 """
     return code
 
+def runThread(proc):
+    proc.communicate()
+
 def runStreamlit(code, openai_api_key):
     """
     Runs the provided code as a Streamlit application and returns the process ID.
@@ -92,16 +93,42 @@ def runStreamlit(code, openai_api_key):
     Returns:
         int: The process ID of the Streamlit application.
     """
-    with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as tmp:
-        tmp.write(code)
-        tmp.flush()
-        environmental_variables = {
-            "OPENAI_API_KEY": openai_api_key,
-            "STREAMLIT_SERVER_PORT": "8502",
-        }
-        streamlit_path = shutil.which("streamlit")
-        process = Popen([streamlit_path, "run", tmp.name], env=environmental_variables)
-        return process.pid
+    tmp = tempfile.NamedTemporaryFile(
+            "w", suffix=".py", delete=False, encoding="utf-8"
+        )
+    tmp.write(code)
+    tmp.flush()
+    environmental_variables = {
+        "OPENAI_API_KEY": openai_api_key,
+        "STREAMLIT_SERVER_PORT": "8502",
+    }
+    streamlit_path = shutil.which("streamlit")
+    if platform.system() == "Windows":
+        env = os.environ.copy()
+        env["PYTHONPATH"] = ""
+        env["OPENAI_API_KEY"] = openai_api_key
+        env["STREAMLIT_SERVER_PORT"] = "8502"
+        python_path = sys.executable
+        process = Popen(
+            [python_path, "-m", "streamlit", "run", tmp.name],
+            env=env,
+            stdout=PIPE,
+            stderr=PIPE,
+        )
+        threading.Thread(target=runThread, args=(process,)).start()
+    else:
+        process = Popen(
+            [streamlit_path, "run", tmp.name],
+            env=environmental_variables,
+            stdout=PIPE,
+            stderr=PIPE,
+        )
+    try:
+        tmp.close()
+    except PermissionError:
+        pass
+
+    return process.pid
 
 
 IMPORTS_CODE_SNIPPET = """
