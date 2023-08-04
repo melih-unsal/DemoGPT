@@ -1,16 +1,20 @@
-import shutil
-import tempfile
-from subprocess import Popen, PIPE
-import json, os, sys
+import json
+import os
 import platform
+import shutil
+import sys
+import tempfile
 import threading
+from subprocess import PIPE, Popen
+
 from chains.chains import Chains
 from chains.task_chains import TaskChains
+
 
 def init(title=""):
     if title:
         return IMPORTS_CODE_SNIPPET + f"\nst.title({title})\n"
-    return IMPORTS_CODE_SNIPPET 
+    return IMPORTS_CODE_SNIPPET
 
 
 def getCodeSnippet(task):
@@ -22,11 +26,10 @@ def getCodeSnippet(task):
         code = TaskChains.uiOutputText(task=task)
     elif task_type == "prompt_chat_template":
         res = TaskChains.promptChatTemplate(task=task)
-        code = getPromptChatTemplateCode(res,task)
+        code = getPromptChatTemplateCode(res, task)
     elif task_type == "ui_input_file":
         code = TaskChains.uiInputFile(task=task)
     return code.strip() + "\n"
-    
 
 
 def refine(code):
@@ -36,7 +39,8 @@ def refine(code):
             code = code[len("python") :].strip()
     return code
 
-def getPromptChatTemplateCode(res,task):
+
+def getPromptChatTemplateCode(res, task):
     inputs = task["input_key"]
     templates = json.loads(res)
     variable = task["output_key"]
@@ -54,7 +58,7 @@ def getPromptChatTemplateCode(res,task):
         if len(inputs) > 0:
             run_call = ", ".join([f"{var}={var}" for var in inputs])
         signature = f"{templates['function_name']}({','.join(inputs)})"
-        
+
     function_call = f"{variable} = {signature}"
     temperature = 0 if templates.get("variety", "False") == "False" else 0.7
 
@@ -80,8 +84,10 @@ def {signature}:
 """
     return code
 
+
 def runThread(proc):
     proc.communicate()
+
 
 def runStreamlit(code, openai_api_key):
     """
@@ -93,9 +99,7 @@ def runStreamlit(code, openai_api_key):
     Returns:
         int: The process ID of the Streamlit application.
     """
-    tmp = tempfile.NamedTemporaryFile(
-            "w", suffix=".py", delete=False, encoding="utf-8"
-        )
+    tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False, encoding="utf-8")
     tmp.write(code)
     tmp.flush()
     environmental_variables = {

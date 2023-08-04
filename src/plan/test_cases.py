@@ -1,17 +1,17 @@
 TEST_CASES = [
     {
-        "instruction":"""
+        "instruction": """
         create a system that can predict horoscope by asking intelligent question 
         to the user and analyzing user's answer without birth date or explicit question directly related to horoscope.
         """,
-        "plan":"""
+        "plan": """
         1. Generate intelligent questions related to horoscope using AI.
         2. Show the question to the user.
         3. Get answer from the user for the asked question.
         4. Analyze user's answer using AI to predict horoscope.
         5. Show the horoscope prediction to the user.
         """,
-        "task":"""
+        "task": """
         [
             {
                 "step": 1,
@@ -55,7 +55,7 @@ TEST_CASES = [
             }
         ]
         """,
-        "code_snippet":"""
+        "code_snippet": """
         import streamlit as st
         from langchain import LLMChain
         from langchain.chat_models import ChatOpenAI
@@ -113,19 +113,19 @@ TEST_CASES = [
                 st.markdown(horoscope_prediction)
 
         show_horoscope_prediction(horoscope_prediction)
-        """
+        """,
     },
     {
-        "instruction":"""
+        "instruction": """
         create a system that can translate a text to any determined language by the user
         """,
-        "plan":"""
+        "plan": """
         1. Get the source text from the user.
         2. Get the desired output language from the user.
         3. If both inputs are filled, use AI to translate the text to the output language.
         4. If the translation is ready, return it to the user.
         """,
-        "task":"""
+        "task": """
         [
             {
                 "step": 1,
@@ -164,7 +164,7 @@ TEST_CASES = [
             }
         ]
         """,
-        "code_snippet":"""
+        "code_snippet": """
         import streamlit as st
         from langchain import LLMChain
         from langchain.chat_models import ChatOpenAI
@@ -200,19 +200,19 @@ TEST_CASES = [
                 st.markdown("Translated Text: " + translated_text)
 
         show_translated_text(translated_text)
-        """
+        """,
     },
     {
-        "instruction":"""
+        "instruction": """
         create a song melody and its lyrics from a song title
         """,
-        "plan":"""
+        "plan": """
         1. Get song title from the user.
         2. Use AI to generate a melody for the song.
         3. Use AI to generate lyrics for the song.
         4. If melody and lyrics are ready, return them to the user.
         """,
-        "task":"""
+        "task": """
         [
             {
                 "step": 1,
@@ -247,8 +247,8 @@ TEST_CASES = [
                 "description": "If melody and lyrics are ready, return them to the user."
             }
         ]
-        """
-        "code_snippets":"""
+        """,
+        "code_snippets": """
         import streamlit as st
         from langchain import LLMChain
         from langchain.chat_models import ChatOpenAI
@@ -305,13 +305,13 @@ TEST_CASES = [
 
         if melody != "" and lyrics != "":
             show_text(melody, lyrics)
-        """
+        """,
     },
     {
-        "instruction":"""
+        "instruction": """
         generate a system that reads uploaded text file and translates its content into the language that user prompted
         """,
-        "plan":"""
+        "plan": """
         1. Get the input language from the user.
         2. Get the output language from the user.
         3. Get the text file from the user.
@@ -319,7 +319,7 @@ TEST_CASES = [
         5. Use AI to translate the content from the input language to the output language.
         6. If the translation is successful, return the translated content to the user.
         """,
-        "task":"""
+        "task": """
         [
             {
                 "step": 1,
@@ -370,8 +370,8 @@ TEST_CASES = [
                 "description": "If the translation is successful, return the translated content to the user."
             }
         ]
-        """
-        "code_snippets":"""
+        """,
+        "code_snippets": """
         import streamlit as st
         from langchain import LLMChain
         from langchain.chat_models import ChatOpenAI
@@ -424,54 +424,45 @@ TEST_CASES = [
                 st.markdown(translated_content)
 
         show_text(translated_content)
-        """
+        """,
     },
 ]
 
 TOOL_EXAMPLES = {
-    "ui_input_text":[
+    "ui_input_text": [
         {
-            "instruction":"Get answer from the user for the asked question",
-            "variable":"answer"
+            "instruction": "Get answer from the user for the asked question",
+            "variable": "answer",
         },
-        {
-            "instruction":"Get song title from the user",
-            "variable":"song_title"
-        },
-        {
-            "instruction":"Get the source text from the user",
-            "variable":"source_text"
-        }
+        {"instruction": "Get song title from the user", "variable": "song_title"},
+        {"instruction": "Get the source text from the user", "variable": "source_text"},
     ],
-    "ui_output_text":[
+    "ui_output_text": [
         {
-            "instruction":"Show the predicted horoscope to the user",
-            "args":"horoscope"
+            "instruction": "Show the predicted horoscope to the user",
+            "args": "horoscope",
         },
         {
-            "instruction":"Return the translated text to the user",
-            "args":"translated_text"
+            "instruction": "Return the translated text to the user",
+            "args": "translated_text",
         },
-        {
-            "instruction":"Show the generated questions to the user",
-            "args":"question"
-        }
+        {"instruction": "Show the generated questions to the user", "args": "question"},
     ],
-    "prompt_chat_template":[
+    "prompt_chat_template": [
         {
-            "instruction":"Generate intelligent questions related to horoscope",
-            "inputs":"user"
+            "instruction": "Generate intelligent questions related to horoscope",
+            "inputs": "user",
         },
         {
-            "instruction":"Analyze user's answers using AI to predict their horoscope",
-            "inputs":"answer"
+            "instruction": "Analyze user's answers using AI to predict their horoscope",
+            "inputs": "answer",
         },
         {
-            "instruction":"Translate the text to the output language using AI",
-            "inputs":"""[
+            "instruction": "Translate the text to the output language using AI",
+            "inputs": """[
                 "source_text",
                 "output_language"
-            ]"""
-        }
-    ]
+            ]""",
+        },
+    ],
 }

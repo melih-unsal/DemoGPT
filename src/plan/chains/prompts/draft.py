@@ -1,5 +1,3 @@
-
-
 system_template = """
 Create a code for the instruction using the plan
 There are 3 available functions which are "prompt",  "input" and "show".

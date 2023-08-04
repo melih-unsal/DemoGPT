@@ -18,7 +18,7 @@ except Exception as e:
     logging.error("dotenv import error but no needed")
 
 
-def generate_response(txt,title):
+def generate_response(txt, title):
     """
     Generate response using the LangChainCoder.
 
@@ -28,7 +28,7 @@ def generate_response(txt,title):
     Yields:
         dict: A dictionary containing response information.
     """
-    for data in agent(txt,title):
+    for data in agent(txt, title):
         yield data
 
 
@@ -47,14 +47,14 @@ openai_api_key = st.sidebar.text_input(
 )
 
 models = (
-    "gpt-3.5-turbo", 
+    "gpt-3.5-turbo",
     "gpt-3.5-turbo-0301",
     "gpt-3.5-turbo-0613",
     "gpt-3.5-turbo-16k",
     "gpt-3.5-turbo-16k-0613",
     "gpt-4",
     "gpt-4-0314",
-    "gpt-4-0613"
+    "gpt-4-0613",
 )
 
 model_name = st.sidebar.selectbox("Model", models)
@@ -101,7 +101,7 @@ if submitted:
             st.session_state["pid"] = -1
 
         code_empty = st.empty()
-        for data in generate_response(demo_idea,demo_title):
+        for data in generate_response(demo_idea, demo_title):
             done = data["done"]
             message = data["message"]
             stage = data["stage"]

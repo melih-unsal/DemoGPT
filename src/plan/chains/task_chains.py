@@ -1,8 +1,8 @@
 import json
+import os
 
 import chains.prompts as prompts
 import utils
-import os
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
@@ -13,8 +13,11 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 
 class TaskChains:
     llm = None
+
     @classmethod
-    def setLlm(cls, model, openai_api_key=os.getenv("OPENAI_API_KEY",""), temperature=0):
+    def setLlm(
+        cls, model, openai_api_key=os.getenv("OPENAI_API_KEY", ""), temperature=0
+    ):
         cls.llm = ChatOpenAI(
             model=model, openai_api_key=openai_api_key, temperature=temperature
         )
@@ -32,11 +35,11 @@ class TaskChains:
     @classmethod
     def uiInputText(cls, task):
         variable = task["output_key"]
-        instruction = task["description"]   
+        instruction = task["description"]
         code = cls.getChain(
             human_template=prompts.ui_input_text.human_template,
             instruction=instruction,
-            variable=variable
+            variable=variable,
         )
         return utils.refine(code)
 
@@ -45,35 +48,34 @@ class TaskChains:
         args = task["input_key"]
         if isinstance(args, list):
             args = ",".join(args)
-        instruction = task["description"]   
+        instruction = task["description"]
         code = cls.getChain(
             human_template=prompts.ui_output_text.human_template,
             instruction=instruction,
-            args=args
-        )
-        return utils.refine(code)
-    
-    @classmethod
-    def uiInputFile(cls, task):
-        variable = task["output_key"]
-        instruction = task["description"]   
-        code = cls.getChain(
-            human_template=prompts.ui_input_file.human_template,
-            instruction=instruction,
-            variable=variable
+            args=args,
         )
         return utils.refine(code)
 
+    @classmethod
+    def uiInputFile(cls, task):
+        variable = task["output_key"]
+        instruction = task["description"]
+        code = cls.getChain(
+            human_template=prompts.ui_input_file.human_template,
+            instruction=instruction,
+            variable=variable,
+        )
+        return utils.refine(code)
 
     @classmethod
     def promptChatTemplate(cls, task):
         inputs = task["input_key"]
-        instruction = task["description"]   
+        instruction = task["description"]
 
         code = cls.getChain(
             system_template=prompts.prompt_chat_template.system_template,
             human_template=prompts.prompt_chat_template.human_template,
             instruction=instruction,
-            inputs=inputs
+            inputs=inputs,
         )
         return utils.refine(code)

@@ -1,4 +1,5 @@
-import re,json
+import json
+import re
 
 ALL_TASKS = [
     {
@@ -7,7 +8,7 @@ ALL_TASKS = [
         "good_at": "Retrieving text input from the user.",
         "input": "none",
         "output": "string",
-        "purpose": "Collect user-entered text for further processing."
+        "purpose": "Collect user-entered text for further processing.",
     },
     {
         "name": "ui_input_file",
@@ -23,14 +24,14 @@ ALL_TASKS = [
         "good_at": "Showing text to the user.",
         "input": "string",
         "output": "none",
-        "purpose": "Displaying textual information to the user."
+        "purpose": "Displaying textual information to the user.",
     },
     {
         "name": "prompt_chat_template",
         "description": "Generate intelligent text output, such as questions or responses, from a given context or input.",
         "good_at": "Creating context-aware questions, responses, or instructions.",
         "input": "string, context",
-        "output": "string"
+        "output": "string",
     },
     {
         "name": "prompt_list_parser",
@@ -38,7 +39,7 @@ ALL_TASKS = [
         "good_at": "Transforming text into a list.",
         "input": "string",
         "output": "list",
-        "purpose": "Converting textual data into structured list format."
+        "purpose": "Converting textual data into structured list format.",
     },
     {
         "name": "router",
@@ -46,7 +47,7 @@ ALL_TASKS = [
         "good_at": "Handling different types of questions that require different abilities.",
         "input": "list of prompt_chat_template, string",
         "output": "string",
-        "purpose": "Routing queries to the appropriate handler based on context or type."
+        "purpose": "Routing queries to the appropriate handler based on context or type.",
     },
     {
         "name": "react",
@@ -54,7 +55,7 @@ ALL_TASKS = [
         "good_at": "Answering questions that require Google search or other web searches.",
         "input": "string",
         "output": "string",
-        "purpose": "Finding information online to answer user queries."
+        "purpose": "Finding information online to answer user queries.",
     },
     {
         "name": "memory",
@@ -62,7 +63,7 @@ ALL_TASKS = [
         "good_at": "Memorizing the conversation history or context.",
         "input": "none",
         "output": "memory",
-        "purpose": "Storing and retrieving conversation history or contextual information."
+        "purpose": "Storing and retrieving conversation history or contextual information.",
     },
     {
         "name": "hub_summarize",
@@ -70,7 +71,7 @@ ALL_TASKS = [
         "good_at": "Summarizing long text into concise and relevant information.",
         "input": "string",
         "output": "string",
-        "purpose": "Creating shorter versions of lengthy content."
+        "purpose": "Creating shorter versions of lengthy content.",
     },
     {
         "name": "hub_question_answering",
@@ -78,7 +79,7 @@ ALL_TASKS = [
         "good_at": "Question answering on files or documents.",
         "input": ["string", "file"],
         "output": "memory",
-        "purpose": "Extracting and providing specific information from files in response to questions."
+        "purpose": "Extracting and providing specific information from files in response to questions.",
     },
     {
         "name": "hub_pal_math",
@@ -86,7 +87,7 @@ ALL_TASKS = [
         "good_at": "Solving complex math problems and equations.",
         "input": "string",
         "output": "string",
-        "purpose": "Performing mathematical calculations and solving problems."
+        "purpose": "Performing mathematical calculations and solving problems.",
     },
     {
         "name": "hub_bash",
@@ -94,7 +95,7 @@ ALL_TASKS = [
         "good_at": "Executing bash commands and providing results.",
         "input": "string",
         "output": "string",
-        "purpose": "Running scripts or commands on the terminal and returning the output."
+        "purpose": "Running scripts or commands on the terminal and returning the output.",
     },
     {
         "name": "hub_meteo",
@@ -102,17 +103,17 @@ ALL_TASKS = [
         "good_at": "Answering weather-related questions.",
         "input": "string",
         "output": "string",
-        "purpose": "Providing weather forecasts, conditions, and related information."
-    }
+        "purpose": "Providing weather forecasts, conditions, and related information.",
+    },
 ]
 
-TASKS = ALL_TASKS[:4] # first 5 of them has been implemented yet.
+TASKS = ALL_TASKS[:4]  # first 5 of them has been implemented yet.
 
-TASK_DESCRIPTIONS = json.dumps(TASKS,indent=4)
+TASK_DESCRIPTIONS = json.dumps(TASKS, indent=4)
 
-tasks = re.findall(r'\{(?:[^{}]|(?:\{[^{}]*\}))*\}', TASK_DESCRIPTIONS)
+tasks = re.findall(r"\{(?:[^{}]|(?:\{[^{}]*\}))*\}", TASK_DESCRIPTIONS)
 
 # Printing each JSON object
 for task in tasks:
-    changed = "{"+task+"}"
-    TASK_DESCRIPTIONS = TASK_DESCRIPTIONS.replace(task,changed)
+    changed = "{" + task + "}"
+    TASK_DESCRIPTIONS = TASK_DESCRIPTIONS.replace(task, changed)

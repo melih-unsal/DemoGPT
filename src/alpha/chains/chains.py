@@ -84,28 +84,28 @@ class Chains:
         return cls.getChain(
             human_template=prompts.button_text.human_template, instruction=instruction
         )
-    
+
     @classmethod
     def helpers(cls, instruction):
         system_inputs = Chains.inputs(instruction)
         button_text = Chains.buttonText(instruction)
-        return system_inputs, button_text 
-    
+        return system_inputs, button_text
+
     @classmethod
     def plan(cls, instruction):
         return cls.getChain(
-            system_template = prompts.plan.system_template,
+            system_template=prompts.plan.system_template,
             human_template=prompts.plan.human_template,
-            instruction=instruction
+            instruction=instruction,
         )
-    
+
     @classmethod
-    def draft(cls, instruction,plan):
+    def draft(cls, instruction, plan):
         return cls.getChain(
             system_template=prompts.draft.system_template,
             human_template=prompts.draft.human_template,
             instruction=instruction,
-            plan=plan
+            plan=plan,
         )
 
     @classmethod

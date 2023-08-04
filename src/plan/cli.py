@@ -3,12 +3,14 @@
 import os
 import subprocess
 import sys
-from prompt_based.cli import main as plan_main  # Make sure to import the plan.cli module appropriately
+
+from prompt_based.cli import \
+    main as plan_main  # Make sure to import the plan.cli module appropriately
 
 
 def main():
-    if '--basic' in sys.argv:
-        sys.argv.remove('--basic')
+    if "--basic" in sys.argv:
+        sys.argv.remove("--basic")
         plan_main()
         return
 
