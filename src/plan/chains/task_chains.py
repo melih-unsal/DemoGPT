@@ -12,10 +12,10 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 
 
 class TaskChains:
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+    llm = None
 
     @classmethod
-    def setLlm(cls, model, openai_api_key=os.environ["OPENAI_API_KEY"], temperature=0):
+    def setLlm(cls, model, openai_api_key=os.getenv("OPENAI_API_KEY",""), temperature=0):
         cls.llm = ChatOpenAI(
             model=model, openai_api_key=openai_api_key, temperature=temperature
         )
