@@ -85,7 +85,6 @@ db.sqlite3
 db.sqlite3-journal
 
 LangChain.ipynb
-test.py
 src/.chroma/**/*
 
 # Flask stuff:
