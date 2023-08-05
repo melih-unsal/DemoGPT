@@ -1,15 +1,12 @@
 site_name: 🧩 DemoGPT
 
 theme:
-    name: material
+    name: dracula
 
 nav:
     - Home: index.md
-    - Modules: 
-        - Overview: src_plan.md
-        - Chains: 
-            - Overview: src_plan_chains.md
-            - Prompts: 
-                - Overview: src_plan_chains_prompts.md
-                - Tasks: src_plan_chains_prompts_tasks.md
+    - Modules: src_plan.md
+    - Chains: src_plan_chains.md
+    - Prompts: src_plan_chains_prompts.md
+    - Tasks: src_plan_chains_prompts_tasks.md
     - Test: test.md
