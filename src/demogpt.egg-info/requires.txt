@@ -1,5 +1,0 @@
-streamlit
-altair<5
-langchain
-openai
-python-dotenv
