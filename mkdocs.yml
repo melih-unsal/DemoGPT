@@ -1,1 +1,10 @@
-site_name: My Docs
+site_name: DemoGPT
+
+theme:
+    name: dracula
+
+nav:
+    - Home: index.md
+    - Model: model.md
+    - Prompts: prompts.md
+    - App: app.md
