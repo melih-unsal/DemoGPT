@@ -5,10 +5,11 @@ theme:
 
 nav:
     - Home: index.md
-    - Plan: 
+    - Modules: 
         - Overview: src_plan.md
         - Chains: 
             - Overview: src_plan_chains.md
             - Prompts: 
                 - Overview: src_plan_chains_prompts.md
                 - Tasks: src_plan_chains_prompts_tasks.md
+    - Test: test.md
