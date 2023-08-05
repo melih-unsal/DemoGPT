@@ -2,36 +2,38 @@
 
 Our goal is to enable DemoGPT to accomplish anything that can be done through LangChain. In order to realize this goal, we have outlined the following development roadmap:
 
-## Phase 1: Chain Creation
+## Phase 1: New DemoGPT Pipeline Implementation
 
-We will first enable DemoGPT to create chains. This will form the basic building blocks for the LangChain applications.
+- Implement a new DemoGPT pipeline including plan generation, task creation, code snippet generation, and final code assembly.
+- Define useful LangChain tasks and publish a release with the new pipeline without refinement.
 
-## Phase 2: Llama 2 Integeration
+## Phase 2: Model Selection and Integration
 
-We will integrate Llama2 to DemoGPT for running everything locally.
+- Add a feature to allow users to select models that meet specific performance criteria.
+- Integrate Llama 2 to DemoGPT for running everything locally.
 
-## Phase 3: Agent Creation
+## Phase 3: Task Implementation and Refinement
 
-Next, we will allow DemoGPT to create agents, enhancing the system's interaction capabilities.
+- Implement remaining LangChain tasks.
+- Implement a self-refining strategy for model response refinement.
 
-## Phase 4: API Usage
+## Phase 4: API Integration and Expansion
 
-After establishing chain creation and agent creation, we will empower DemoGPT with API usage capabilities. This will allow it to interact with external services and broaden its operational scope.
+- Integrate the Gorilla model for API calls.
+- Add Rapid API for expanding available API calls.
 
-## Phase 5: Utilizing the LangChain Documentation Tree
+## Phase 5: Database Implementation
 
-Here, we will enable DemoGPT to make use of the LangChain documentation tree, further enhancing its knowledge base and improving the quality of the applications it can create.
+- Implement a publicly available database to accelerate the generation process by retrieving similar examples during the refining process.
+- Add all successfully generated steps to a DB to eliminate redundant refinement.
 
-## Phase 6: Automatic Application Testing
+## Phase 6: Creation of React-Based Applications
 
-Before moving on to application creation, we will introduce automatic application testing. This will ensure the applications DemoGPT creates are robust, error-free, and ready for deployment.
+- Extend DemoGPT's capabilities to create react-based applications, leveraging a self-refining strategy for continuous improvement of application performance.
 
-## Phase 7: Creation of React-Based Applications
+## Phase 7: Automatic Deployment
 
-In this phase, we will extend DemoGPT's capabilities to creating react-based applications. These applications will leverage a self-refining strategy, allowing for continuous improvement of the application performance.
-
-## Phase 8: Automatic Deployment
-
-In the final phase, we will append automatic deployment of the application for demo showcase. This will streamline the process of launching new applications, making it easier for users to get started with DemoGPT.
+- Append automatic deployment of the application for demo showcase.
+- Streamline the process of launching new applications, making it easier for users to get started with DemoGPT.
 
 This roadmap will guide our development efforts, and we look forward to sharing our progress with the community as we work towards making DemoGPT an indispensable tool for LangChain development.
