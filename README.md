@@ -81,6 +81,7 @@ demogpt
 - [Architecture](#%EF%B8%8F-architecture)
 - [Installation](#-installation)
 - [Usage](#-usage)
+- [To-Do](#-to-do)
 - [Contribute](#-contribute)
 - [License](#-license)
 
@@ -176,6 +177,18 @@ If you want to run the previous version of DemoGPT, you can use the following co
 streamlit run src/prompt_based/app.py
 ```
 
+## To-Do 📝
+- [x] Implement new DemoGPT pipeline including plan generation, task creation, code snippet generation, and final code assembly.
+- [x] Add feature to allow users to select models.
+- [x] Defin useful LangChain tasks
+- [x] Publish release with the new pipeline without refinement
+- [ ] Implement remaining LangChain tasks
+- [ ] Implement self-refining strategy for model response refinement.
+- [ ] Integrate Gorilla model for API calls.
+- [ ] Add Rapid API for expanding available API calls. 
+- [ ] Implement publicly available database to accelerate the generation process by retrieving similar examples during the refining process.
+- [ ] Add all successfully generated steps to a DB to eliminate redundant refinement.
+
 ## 🤝 Contribute
 
 Contributions to the DemoGPT project are welcomed! Whether you're fixing bugs, improving the documentation, or proposing new features, your efforts are highly appreciated. Please check the open issues before starting any work.
@@ -189,3 +202,5 @@ DemoGPT is an open-source project licensed under [MIT License](LICENSE).
 ---
 
 For any issues, questions, or comments, please feel free to contact us or open an issue. We appreciate your feedback to make DemoGPT better.
+
+## TODO
