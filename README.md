@@ -180,7 +180,7 @@ streamlit run src/prompt_based/app.py
 ## To-Do 📝
 - [x] Implement new DemoGPT pipeline including plan generation, task creation, code snippet generation, and final code assembly.
 - [x] Add feature to allow users to select models.
-- [x] Defin useful LangChain tasks
+- [x] Define useful LangChain tasks
 - [x] Publish release with the new pipeline without refinement
 - [ ] Implement remaining LangChain tasks
 - [ ] Implement self-refining strategy for model response refinement.
