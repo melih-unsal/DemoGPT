@@ -1,23 +1,28 @@
-# ![favicon](./img/puzzle.png) DemoGPT
+# Welcome to DemoGPT Documentation
 
-Welcome to the documentation for DemoGPT. This application uses OpenAI's GPT-3.5-turbo model to automate the process of creating Large Language Model (LLM) based applications. It refines and generates Python code, constructs LangChain pipelines, and offers an interactive Streamlit interface for users to work with.
+![DemoGPT Logo](img/puzzle_24.png) DemoGPT is an open-source project that leverages the power of Large Language Models (LLM) to auto-generate LangChain code, which is then transformed into interactive Streamlit applications. This process is powered by the synergy of GPT-3.5-turbo & Llama 2.
 
-## Core Functionalities of ![favicon](./img/puzzle_24.png) DemoGPT
+## Brief Description
 
-- **Automatic LangChain Pipelines**: DemoGPT creates automatic LangChain pipelines that enable the effortless creation of LLM-based applications. It takes advantage of LangChain, a framework designed for developing applications powered by language models.
+DemoGPT is a revolutionary initiative reshaping the landscape of LLM-based application development. By combining the capabilities of GPT-3.5-turbo and Llama 2, DemoGPT auto-generates LangChain code, which is then transformed into interactive Streamlit applications. This process is enriched with a sophisticated architecture that translates user instructions into interactive applications. DemoGPT is more than a project; it's a visionary approach, pushing the boundaries of what's possible in LLM-based application development.
 
-- **Interactive Demo Generation**: DemoGPT empowers developers to create engaging and interactive product demos. It generates applications that showcase key features, providing a hands-on experience with simulated interactions and real-time visualizations.
+## Core Functionalities
 
-- **Version Control and Management**: DemoGPT simplifies version control, enabling seamless management and generation of multiple product versions. It tracks changes to ensure structured version management and allows developers to showcase different iterations and enhancements to stakeholders. *(Note: This feature is planned for future development)*
+DemoGPT's core functionalities revolve around four main steps:
 
-- **Automated Pipeline Generation**: DemoGPT automates pipeline generation, saving developers time and effort. It intelligently constructs data processing pipelines based on specific requirements, streamlining the development process and eliminating the need for manual construction.
+1. **Planning:** DemoGPT starts by generating a plan from the user's instruction.
+2. **Task Creation:** It then creates specific tasks from the plan and instruction.
+3. **Code Snippet Generation:** These tasks are transferred into code snippets.
+4. **Final Code Assembly:** The code snippets are combined into a final code, resulting in an interactive Streamlit app.
 
-## Modules in ![favicon](./img/puzzle_24.png) DemoGPT
+These functionalities allow DemoGPT to transform user instructions into interactive applications, making it a powerful tool for LLM-based application development.
 
-- [**Model**](model.md): The `LogicModel` and `StreamlitModel` classes interact with the OpenAI API and generate Python code, respectively. Explore how these two models work together to deliver the core functionalities of DemoGPT.
+## Project Structure
 
-- [**Prompts**](prompts.md): Learn how we use `ChatPromptTemplate` instances to guide the GPT-3.5-turbo model for code generation, testing, and refining in a structured manner.
+The project is organized into several modules and files. Here's a brief overview of the project structure:
 
-- [**App**](app.md): Discover the main Streamlit application that integrates all the components and serves as the user interface for our code generator.
+- [src/plan/](./src_plan.md)
+- [src/plan/chains/](./src_plan_chains.md)
+- [src/plan/chains/prompts/](./src_plan_chains_prompts.md)
 
-Please navigate through the links to learn more about each module.
+Please navigate through the documentation for a detailed understanding of the project.
