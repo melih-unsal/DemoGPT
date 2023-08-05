@@ -72,10 +72,11 @@ class TaskChains:
         inputs = task["input_key"]
         instruction = task["description"]
 
-        code = cls.getChain(
+        res = cls.getChain(
             system_template=prompts.prompt_chat_template.system_template,
             human_template=prompts.prompt_chat_template.human_template,
             instruction=instruction,
             inputs=inputs,
         )
-        return utils.refine(code)
+        start_index = res.find("{")
+        return res[start_index:]

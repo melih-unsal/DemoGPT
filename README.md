@@ -86,19 +86,35 @@ demogpt
 
 ## 📌 Introduction
 
-Welcome to DemoGPT, a ground-breaking open-source initiative aimed at optimizing and democratizing the development of Large Language Model (LLM) based applications. 
+Welcome to DemoGPT, a revolutionary open-source initiative that is reshaping the landscape of Large Language Model (LLM) based application development.
 
-At the heart of DemoGPT lies the potent GPT-3.5-turbo & Llama 2, which enables the auto-generation of LangChain code. This process is fueled by a unique self-refining strategy that seamlessly blends document understanding from the LangChain documentation tree with user prompts. The outcome is a piece of code that doesn't just work, but is inherently robust, adhering to best coding practices while maintaining a deep-rooted alignment with the LangChain library.
+At the core of DemoGPT lies the synergy of GPT-3.5-turbo & Llama 2, which powers the auto-generation of LangChain code. This process is enriched with a sophisticated architecture that translates user instructions into interactive Streamlit applications.
 
-The LangChain code, once generated, is not a final product but an intermediate stage. The code is further transformed into a user-friendly Streamlit application, adding an interactive layer to the logic produced.
+### How DemoGPT Works
 
-Alongside this, DemoGPT embraces an iterative development process, wherein each code segment is individually tested. This approach, coupled with the self-refining strategy, enables an efficient and error-minimized workflow, pushing the envelope in traditional code development.
+1. **Planning:** DemoGPT starts by generating a plan from the user's instruction.
+2. **Task Creation:** It then creates specific tasks from the plan and instruction.
+3. **Code Snippet Generation:** These tasks are transferred into code snippets.
+4. **Final Code Assembly:** The code snippets are combined into a final code, resulting in an interactive Streamlit app.
 
-By making software development accessible through simple prompts, DemoGPT is laying the groundwork for a paradigm shift in how we create, refine, and customize LLM-based applications. The end goal is a broader, more inclusive ecosystem where users, regardless of their coding proficiency, can contribute to the continuous evolution of products. 
+The LangChain code, once generated, is not a mere endpoint but a transformative stage. It evolves into a user-friendly Streamlit application, adding an interactive dimension to the logic crafted. This metamorphosis embodies DemoGPT's commitment to user engagement and experience.
 
-In summary, DemoGPT isn't just a project; it is a forward-thinking approach, redefining the boundaries of LLM-based application development.
+### Future Enhancements
 
-In the next release, we are gonna add **Llama 2** inside of DemoGPT to make the whole system runnable completely locally.
+We are planning to add a publicly available database that will accelerate the generation process by retrieving similar examples during the refining process. This innovation will further streamline the development workflow, making it more efficient and responsive.
+
+### Model Flexibility
+
+DemoGPT is designed to be adaptable, capable of using any LLM model that meets specific performance criteria in terms of code generation. This flexibility ensures that DemoGPT remains at the forefront of technology, embracing new advancements in LLM.
+
+DemoGPT's iterative development process remains a cornerstone of its innovation. Each code segment undergoes individual testing, and the self-refining strategy ensures an efficient and error-minimized workflow. This fusion of meticulous testing and refinement is a testament to DemoGPT's pursuit of excellence.
+
+By transcending traditional coding paradigms, DemoGPT is pioneering a new era in LLM-based applications. It's not just about code generation; it's about crafting intelligent, interactive, and inclusive solutions.
+
+In summary, DemoGPT is more than a project; it's a visionary approach, pushing the boundaries of what's possible in LLM-based application development.
+
+In the next release, we are gonna add **Llama 2** inside of DemoGPT to make the whole system runnable completely locally. The future is bright, and the journey has just begun. Join us in this exciting adventure!
+
 
 ## ⚙️ Architecture
 ### DemoGPT Architecture
