@@ -101,6 +101,10 @@ docs/_build/
 .pybuilder/
 target/
 
+src/alpha/**/*
+src/beta/**/*
+src/data_beta/**/*
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
