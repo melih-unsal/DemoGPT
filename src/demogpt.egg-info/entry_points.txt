@@ -1,0 +1,2 @@
+[console_scripts]
+demogpt = prompt_based.cli:main

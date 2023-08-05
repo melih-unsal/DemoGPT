@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: demogpt
+Version: 1.1.1.7
+Summary: Description of my package
+Home-page: https://github.com/melih-unsal/DemoGPT
+Author: Melih Unsal
+Author-email: melih@demogpt.io
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+License-File: LICENSE
