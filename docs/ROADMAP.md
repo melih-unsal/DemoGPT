@@ -31,9 +31,4 @@ Our goal is to enable DemoGPT to accomplish anything that can be done through La
 
 - Extend DemoGPT's capabilities to create react-based applications, leveraging a self-refining strategy for continuous improvement of application performance.
 
-## Phase 7: Automatic Deployment
-
-- Append automatic deployment of the application for demo showcase.
-- Streamline the process of launching new applications, making it easier for users to get started with DemoGPT.
-
 This roadmap will guide our development efforts, and we look forward to sharing our progress with the community as we work towards making DemoGPT an indispensable tool for LangChain development.
