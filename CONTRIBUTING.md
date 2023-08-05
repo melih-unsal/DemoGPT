@@ -1,92 +1,68 @@
-# Contributing
+# Contributing to DemoGPT
 
-When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change. 
+Thank you for your interest in contributing to DemoGPT! This document provides guidelines and instructions for contributing to the project. Whether you're adding new features, fixing bugs, or improving documentation, your contributions are welcome.
 
-Please note we have a code of conduct, please follow it in all your interactions with the project.
+## System Overview
 
-## Pull Request Process
+DemoGPT works through the following steps:
+1. A plan is generated based on the incoming instruction from the user.
+2. Tasks are generated based on the plan.
+3. Code generation is made for each task.
+4. Each generated code is combined, and the final code is generated as a Streamlit app.
+5. The generated Streamlit code is executed with the Streamlit command.
 
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a 
-   build.
-2. Update the README.md with details of changes to the interface, this includes new environment 
-   variables, exposed ports, useful file locations and container parameters.
-3. Increase the version numbers in any examples files and the README.md to the new version that this
-   Pull Request would represent. The versioning scheme we use is [SemVer](http://semver.org/).
-4. You may merge the Pull Request in once you have the sign-off of two other developers, or if you 
-   do not have permission to do that, you may request the second reviewer to merge it for you.
+## Project Structure
 
-## Code of Conduct
+### Root Folder
 
-### Our Pledge
+- `src`: Contains the source code of the project.
+  - `plan`: Main folder for planning and task generation.
+    - `app.py`: Initial application where users can write down the demo idea (instruction) and the demo title (app title).
+    - `cli.py`: For starting Streamlit at the beginning.
+    - `model.py`: Includes the model corresponding to each step.
+    - `utils.py`: Helper functions for the system.
+    - `test.py`: Important to test the system components.
+    - `test_cases.py`: Source includes test cases for `test.py`.
+    - `chains`: Contains module definitions and task implementations.
+      - `chains.py`: Module definitions.
+      - `__init__.py`: Includes the modules.
+      - `task_chains.py`: Implementations of all available tasks.
+      - `task_definitions.py`: Definitions of all available tasks.
+      - `prompts`: Folder containing task files.
 
-In the interest of fostering an open and welcoming environment, we as
-contributors and maintainers pledge to making participation in our project and
-our community a harassment-free experience for everyone, regardless of age, body
-size, disability, ethnicity, gender identity and expression, level of experience,
-nationality, personal appearance, race, religion, or sexual identity and
-orientation.
+### Task List Folder (`src/plan/chains/prompts`)
 
-### Our Standards
+Contains task files. Only `prompt_chat_template.py`, `ui_input_file.py`, `ui_input_text.py`, `ui_output_text.py` are filled. Others need to be filled according to their needs.
 
-Examples of behavior that contributes to creating a positive environment
-include:
+## Adding a New Task
 
-* Using welcoming and inclusive language
-* Being respectful of differing viewpoints and experiences
-* Gracefully accepting constructive criticism
-* Focusing on what is best for the community
-* Showing empathy towards other community members
+To add a new task, follow these steps:
 
-Examples of unacceptable behavior by participants include:
+1. **Fill the Corresponding File:** Fill the corresponding file in `src/plan/chains/prompts` with the implementation of the new task.
+2. **Update Task Definitions:** Change the "TASKS" variable in `src/plan/chains/task_definitions.py` to include the new task.
+3. **Add the New Task to Task Chains:** Add the new task in `src/plan/chains/task_chains.py`.
+4. **Modify `__init__.py`:** Modify `src/plan/chains/prompts/__init__.py` in a way that the new task becomes available.
+5. **Update Test Cases:** Update the `TOOL_EXAMPLES` variable in `src/plan/test_cases.py` and add at least one test case to test the new tool.
+6. **Add Test Script:** Add the corresponding test script in `src/plan/test.py` like the following:
 
-* The use of sexualized language or imagery and unwelcome sexual attention or
-advances
-* Trolling, insulting/derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information, such as a physical or electronic
-  address, without explicit permission
-* Other conduct which could reasonably be considered inappropriate in a
-  professional setting
+   ```python
+   def test_$new_task_name(self):
+       for example in TOOL_EXAMPLES[$new_task_name]:
+           instruction = example["instruction"]
+           inputs = example["inputs"]
+           res = TaskChains.$new_task_name(instruction=instruction, inputs=inputs)
+           self.writeToFile($APPROPRIATE_TASK_NAME, res, instruction)
+   ```
+**Test the New Task**: To test the new task, in the root, run the corresponding module like in the below:
+```bash
+python -m unittest src.plan.test.TestDemoGPT.$function_name
+```
+Then, the test result will be available in the **test.log**.
 
-### Our Responsibilities
+## Upcoming Tasks
+We are planning to integrate 🦍 Gorilla, a model specifically designed for API calls, as a task. Stay tuned for more details on this exciting addition.
 
-Project maintainers are responsible for clarifying the standards of acceptable
-behavior and are expected to take appropriate and fair corrective action in
-response to any instances of unacceptable behavior.
+## Conclusion
+Your contributions are vital to the success and growth of DemoGPT. Whether you're a seasoned developer or just starting, your insights, creativity, and hard work are appreciated. If you have any questions or need further assistance, please don't hesitate to reach out.
 
-Project maintainers have the right and responsibility to remove, edit, or
-reject comments, commits, code, wiki edits, issues, and other contributions
-that are not aligned to this Code of Conduct, or to ban temporarily or
-permanently any contributor for other behaviors that they deem inappropriate,
-threatening, offensive, or harmful.
-
-### Scope
-
-This Code of Conduct applies both within project spaces and in public spaces
-when an individual is representing the project or its community. Examples of
-representing a project or community include using an official project e-mail
-address, posting via an official social media account, or acting as an appointed
-representative at an online or offline event. Representation of a project may be
-further defined and clarified by project maintainers.
-
-### Enforcement
-
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at [melihunsal.ai@gmail.com](melihunsal.ai@gmail.com). All
-complaints will be reviewed and investigated and will result in a response that
-is deemed necessary and appropriate to the circumstances. The project team is
-obligated to maintain confidentiality with regard to the reporter of an incident.
-Further details of specific enforcement policies may be posted separately.
-
-Project maintainers who do not follow or enforce the Code of Conduct in good
-faith may face temporary or permanent repercussions as determined by other
-members of the project's leadership.
-
-### Attribution
-
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at [http://contributor-covenant.org/version/1/4][version]
-
-[homepage]: http://contributor-covenant.org
-[version]: http://contributor-covenant.org/version/1/4/
+Thank you for being a part of the DemoGPT community!
