@@ -140,18 +140,24 @@ Once the DemoGPT package is installed, you can use it by running the following c
 demogpt
 ```
 
+If you want to run the previous version, you can do so by using the **--basic** flag:
+
+```sh
+demogpt --basic
+```
+
 ### For the Source Code Version
 
 If you have cloned the repository and wish to run the source code version, you can use DemoGPT by running the following command:
 
 ```sh
-streamlit run src/prompt_based/app.py
+streamlit run src/plan/app.py
 ```
 
-If you want to run the more **advanced** but the experimental version of DemoGPT, you can use the following command:
+If you want to run the previous version of DemoGPT, you can use the following command:
 
 ```sh
-streamlit run src/plan/app.py
+streamlit run src/prompt_based/app.py
 ```
 
 ## 🤝 Contribute
