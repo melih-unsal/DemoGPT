@@ -5,6 +5,7 @@ nav:
     - Home: index.md
     - "Value Proposition": values.md
     - "Mission And Vision": mission_and_vision.md
+    - Roadmap: roadmap.md
     - Modules: src_plan.md
     - Chains: src_plan_chains.md
     - Prompts: src_plan_chains_prompts.md

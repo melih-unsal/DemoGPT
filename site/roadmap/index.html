@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-        <title>Modules - 🧩 DemoGPT</title>
+        <title>Roadmap - 🧩 DemoGPT</title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -85,15 +85,15 @@
                 </a>
             </li>
             <li class="drac-box">
-                <a href="../roadmap/"
-                    class="
+                <a href="./"
+                    class=" active 
                     drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
                     Roadmap
                 </a>
             </li>
             <li class="drac-box">
-                <a href="./"
-                    class=" active 
+                <a href="../src_plan/"
+                    class="
                     drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
                     Modules
                 </a>
@@ -154,13 +154,13 @@
         <div class="container">
             <div class="row row-preview">
                 <div class="col">
-                    <a href="../roadmap/"
+                    <a href="../mission_and_vision/"
                         class="btn-preview drac-btn drac-btn-outline drac-text-white drac-text-cyan-green--hover">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </div>
                 <div class="col">
-                    <a href="../src_plan_chains/"
+                    <a href="../src_plan/"
                         class="btn-preview drac-btn drac-btn-outline drac-text-white drac-text-cyan-green--hover" style="padding-left: 3%;">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
@@ -197,28 +197,51 @@
             <!-- block content -->
                 <section class="p-md-5 section-content">
     <article>
-        <p><h1 id="srcplan-module">src/plan Module</h1>
-<p>The <code>src/plan</code> module is the core directory of the DemoGPT project. It contains the main application and the modules for the different stages of the DemoGPT pipeline.</p>
-<h2 id="files-in-srcplan">Files in src/plan</h2>
+        <p><h1 id="demogpt-development-roadmap">DemoGPT Development Roadmap</h1>
+<p>Our goal is to enable DemoGPT to accomplish anything that can be done. We aim to turn a single static idea into a dynamic evolving product. That's why, we have outlined the following development roadmap:</p>
+<h2 id="phase-1-demogpt-first-release">Phase 1: 🐣 DemoGPT First Release</h2>
 <ul>
-<li><code>app.py</code>: This is the main application file that starts the Streamlit application.</li>
-<li><code>cli.py</code>: This file is responsible for initiating the Streamlit application.</li>
-<li><code>model.py</code>: This file contains the modules corresponding to the plan, task, code generation, and code finalization stages of the DemoGPT pipeline.</li>
-<li><code>test_cases.py</code>: This file contains test examples to test the model.</li>
-<li><code>test.py</code>: This file contains the tests for the modules.</li>
-<li><code>utils.py</code>: This file contains helper modules to assist the pipeline.</li>
+<li>It is able to generate basic apps using few shot learning</li>
 </ul>
-<h2 id="chains-folder"><a href="../src_plan_chains/">chains Folder</a></h2>
-<p>The <code>chains</code> folder contains the files related to the task chains and their definitions.</p>
+<h2 id="phase-2-demogpt-base-model-release-with-new-pipeline">Phase 2: 👶🏻 DemoGPT Base Model Release with New Pipeline</h2>
 <ul>
-<li><code>chains.py</code>: This file includes the model definitions which are plan, tasks, and final.</li>
-<li><code>task_chains.py</code>: This file includes the implementations of all the available tasks.</li>
-<li><code>task_definitions.py</code>: This file includes definitions of all the available tasks.</li>
+<li>Implement a new DemoGPT pipeline including plan generation, task creation, code snippet generation, and final code assembly.</li>
+<li>Define useful LangChain tasks and publish a release with the new pipeline without refinement.</li>
 </ul>
-<h3 id="prompts-folder">prompts Folder</h3>
-<p>The <code>prompts</code> folder under <code>chains</code> contains all the necessary prompts for the models.</p>
-<h2 id="summary">Summary</h2>
-<p>The <code>src/plan</code> module is the heart of the DemoGPT project. It orchestrates the different stages of the pipeline, from planning to task creation, code snippet generation, and final code assembly. The <code>chains</code> folder within this module contains the definitions and implementations of the tasks, as well as the prompts for the models. The <code>test_cases.py</code> and <code>test.py</code> files provide a suite of tests to ensure the correct functioning of the modules.</p></p>
+<h2 id="phase-3-feedback-mechanism">Phase 3: 💬 Feedback Mechanism</h2>
+<ul>
+<li>Regenerate the app based on the given feedback</li>
+</ul>
+<h2 id="phase-4-expanding-the-langchain-tasks">Phase 4: 🦜 Expanding the LangChain Tasks</h2>
+<ul>
+<li>It will expand the model capability</li>
+</ul>
+<h2 id="phase-5-api-integration-and-expansion">Phase 5: 🦍 API Integration and Expansion</h2>
+<ul>
+<li>Integrate the Gorilla model for API calls.</li>
+<li>Add Rapid API for expanding available API calls.</li>
+</ul>
+<h2 id="phase-6-marketplace-showcase-page">Phase 6: 🌎 Marketplace (Showcase Page)</h2>
+<ul>
+<li>New apps will be generated by users</li>
+</ul>
+<h2 id="phase-7-marketplace-generation-page">Phase 7: 🌎 Marketplace (Generation Page)</h2>
+<ul>
+<li>Extend DemoGPT's capabilities to create react-based applications, leveraging a self-refining strategy for continuous improvement of application performance.</li>
+</ul>
+<h2 id="phase-8-agent-integration">Phase 8: 🤖 Agent Integration</h2>
+<ul>
+<li>Other agents could be selected as a tool to generate new applications. Like If the user want to generate Non-LLM based app gpt-engineer will be available to generate this app idea</li>
+</ul>
+<h2 id="phase-9-api-generation-as-an-output">Phase 9: 💻 API Generation as an Output</h2>
+<ul>
+<li>As a second option the app will be generated as API instead of UI</li>
+</ul>
+<h2 id="phase-10-integrations">Phase 10: 🖇️ Integrations</h2>
+<ul>
+<li>The generated apps will be used within the other well known platforms such as notion</li>
+</ul>
+<p>This roadmap will guide our development efforts, and we look forward to sharing our progress with the community as we work towards making DemoGPT an indispensable tool for app development.</p></p>
     </article>
 </section>
             <!-- endblock -->
