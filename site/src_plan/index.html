@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-        <title>Architecture - 🧩 DemoGPT</title>
+        <title>Modules - 🧩 DemoGPT</title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,15 +92,15 @@
                 </a>
             </li>
             <li class="drac-box">
-                <a href="./"
-                    class=" active 
+                <a href="../pipeline/"
+                    class="
                     drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
                     Architecture
                 </a>
             </li>
             <li class="drac-box">
-                <a href="../src_plan/"
-                    class="
+                <a href="./"
+                    class=" active 
                     drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
                     Modules
                 </a>
@@ -161,13 +161,13 @@
         <div class="container">
             <div class="row row-preview">
                 <div class="col">
-                    <a href="../roadmap/"
+                    <a href="../pipeline/"
                         class="btn-preview drac-btn drac-btn-outline drac-text-white drac-text-cyan-green--hover">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </div>
                 <div class="col">
-                    <a href="../src_plan/"
+                    <a href="../src_plan_chains/"
                         class="btn-preview drac-btn drac-btn-outline drac-text-white drac-text-cyan-green--hover" style="padding-left: 3%;">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
@@ -204,23 +204,28 @@
             <!-- block content -->
                 <section class="p-md-5 section-content">
     <article>
-        <p><h1 id="demogpt-architecture">🛠️ DemoGPT Architecture</h1>
-<p><br/>
-<br/>
-<br/></p>
-<p align="center">
-<a href="https://github.com/melih-unsal/DemoGPT"><img src="https://github.com/melih-unsal/DemoGPT/blob/main/assets/architecture_transparent.png?raw=true"></a>
-</p>
-
-<h2 id="how-demogpt-works">How DemoGPT Works</h2>
-<ol>
-<li><strong>Planning</strong>: DemoGPT starts by generating a plan from the user's instruction.</li>
-<li><strong>Task Creation</strong>: It then creates specific tasks from the plan and instruction.</li>
-<li><strong>Code Snippet Generation</strong>: These tasks are transferred into code snippets.</li>
-<li><strong>Final Code Assembly</strong>: The code snippets are combined into a final code, resulting in an interactive application.</li>
-<li><strong>Refining</strong>: All the steps including plan generation, task creation, and code snippet generation will be refined by themselves to pass to the next stage.</li>
-<li><strong>DB Saving</strong>: If the user approves the result then all the generated plan, tasks and code snippets are saved into the database. Thus, next time, there the similar results for the corresponding instruction will be fetched from the DB and refining process will be shorter.</li>
-</ol></p>
+        <p><h1 id="srcplan-module">src/plan Module</h1>
+<p>The <code>src/plan</code> module is the core directory of the DemoGPT project. It contains the main application and the modules for the different stages of the DemoGPT pipeline.</p>
+<h2 id="files-in-srcplan">Files in src/plan</h2>
+<ul>
+<li><code>app.py</code>: This is the main application file that starts the Streamlit application.</li>
+<li><code>cli.py</code>: This file is responsible for initiating the Streamlit application.</li>
+<li><code>model.py</code>: This file contains the modules corresponding to the plan, task, code generation, and code finalization stages of the DemoGPT pipeline.</li>
+<li><code>test_cases.py</code>: This file contains test examples to test the model.</li>
+<li><code>test.py</code>: This file contains the tests for the modules.</li>
+<li><code>utils.py</code>: This file contains helper modules to assist the pipeline.</li>
+</ul>
+<h2 id="chains-folder"><a href="../src_plan_chains/">chains Folder</a></h2>
+<p>The <code>chains</code> folder contains the files related to the task chains and their definitions.</p>
+<ul>
+<li><code>chains.py</code>: This file includes the model definitions which are plan, tasks, and final.</li>
+<li><code>task_chains.py</code>: This file includes the implementations of all the available tasks.</li>
+<li><code>task_definitions.py</code>: This file includes definitions of all the available tasks.</li>
+</ul>
+<h3 id="prompts-folder">prompts Folder</h3>
+<p>The <code>prompts</code> folder under <code>chains</code> contains all the necessary prompts for the models.</p>
+<h2 id="summary">Summary</h2>
+<p>The <code>src/plan</code> module is the heart of the DemoGPT project. It orchestrates the different stages of the pipeline, from planning to task creation, code snippet generation, and final code assembly. The <code>chains</code> folder within this module contains the definitions and implementations of the tasks, as well as the prompts for the models. The <code>test_cases.py</code> and <code>test.py</code> files provide a suite of tests to ensure the correct functioning of the modules.</p></p>
     </article>
 </section>
             <!-- endblock -->
@@ -230,7 +235,7 @@
     <div class="d-flex flex-sm-row justify-content-between py-2 border-top drac-text-black drac-bg-cyan-green">
         <a href="https://github.com/melih-unsal/DemoGPT" target="_blank" style="padding-left: 1%;"
             class="footer-text drac-anchor drac-text-black drac-text-purple--hover">
-            🧩 DemoGPT
+            DemoGPT
         </a>
     </div>
 </footer>

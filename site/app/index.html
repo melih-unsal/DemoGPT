@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-        <title>Architecture - 🧩 DemoGPT</title>
+        <title>Streamlit Application Documentation - 🧩 DemoGPT</title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,8 +92,8 @@
                 </a>
             </li>
             <li class="drac-box">
-                <a href="./"
-                    class=" active 
+                <a href="../pipeline/"
+                    class="
                     drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
                     Architecture
                 </a>
@@ -158,22 +158,6 @@
                     <!-- block preview -->
                     <li class="nav-item">
                             
-        <div class="container">
-            <div class="row row-preview">
-                <div class="col">
-                    <a href="../roadmap/"
-                        class="btn-preview drac-btn drac-btn-outline drac-text-white drac-text-cyan-green--hover">
-                        <i class="fa fa-arrow-left"></i> Previous
-                    </a>
-                </div>
-                <div class="col">
-                    <a href="../src_plan/"
-                        class="btn-preview drac-btn drac-btn-outline drac-text-white drac-text-cyan-green--hover" style="padding-left: 3%;">
-                        Next <i class="fa fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
                     </li>
                     <!--  endblock -->
 
@@ -204,23 +188,27 @@
             <!-- block content -->
                 <section class="p-md-5 section-content">
     <article>
-        <p><h1 id="demogpt-architecture">🛠️ DemoGPT Architecture</h1>
-<p><br/>
-<br/>
-<br/></p>
-<p align="center">
-<a href="https://github.com/melih-unsal/DemoGPT"><img src="https://github.com/melih-unsal/DemoGPT/blob/main/assets/architecture_transparent.png?raw=true"></a>
-</p>
-
-<h2 id="how-demogpt-works">How DemoGPT Works</h2>
-<ol>
-<li><strong>Planning</strong>: DemoGPT starts by generating a plan from the user's instruction.</li>
-<li><strong>Task Creation</strong>: It then creates specific tasks from the plan and instruction.</li>
-<li><strong>Code Snippet Generation</strong>: These tasks are transferred into code snippets.</li>
-<li><strong>Final Code Assembly</strong>: The code snippets are combined into a final code, resulting in an interactive application.</li>
-<li><strong>Refining</strong>: All the steps including plan generation, task creation, and code snippet generation will be refined by themselves to pass to the next stage.</li>
-<li><strong>DB Saving</strong>: If the user approves the result then all the generated plan, tasks and code snippets are saved into the database. Thus, next time, there the similar results for the corresponding instruction will be fetched from the DB and refining process will be shorter.</li>
-</ol></p>
+        <p><h1 id="streamlit-application-documentation">Streamlit Application Documentation</h1>
+<h2 id="introduction">Introduction</h2>
+<p>This Python Streamlit application uses <code>LogicModel</code> and <code>StreamlitModel</code> from the <code>model</code> module to generate and execute Python code based on user input. The user can input their idea, and the application will generate code, refine it, test it, and display the results. The Streamlit web app allows users to interact with the model in real time, which is particularly useful for demonstrating the capabilities of the models.</p>
+<h2 id="application-flow">Application Flow</h2>
+<h3 id="importing-dependencies">Importing Dependencies</h3>
+<p>At the beginning of the application, all necessary modules such as <code>streamlit</code>, <code>model</code>, <code>os</code>, <code>logging</code>, <code>webbrowser</code>, and <code>signal</code> are imported. The logging level is set to DEBUG with the format 'levelname-message'.</p>
+<h3 id="loading-environment-variables">Loading Environment Variables</h3>
+<p>The application tries to load environment variables using the <code>dotenv</code> module. If the module is not present, it logs an error message but continues to execute the application.</p>
+<h3 id="generate-response">Generate Response</h3>
+<p>The function <code>generate_response</code> uses the <code>LogicModel</code> to generate responses for the given text. It's a generator function yielding the output of the <code>LogicModel</code> in each iteration.</p>
+<h3 id="streamlit-configuration">Streamlit Configuration</h3>
+<p>The title of the Streamlit page is set using <code>st.set_page_config</code>.</p>
+<h3 id="input-fields">Input Fields</h3>
+<p>Input fields for the OpenAI API Key, demo title, and demo idea are created using <code>st.sidebar.text_input</code>, <code>st.text_input</code>, and <code>st.text_area</code> respectively. The OpenAI API Key defaults to the value of the environment variable 'OPENAI_API_KEY'.</p>
+<h3 id="submission-form">Submission Form</h3>
+<p>A form is created to handle the submission of user input. If the user submits the form, the application checks if a valid OpenAI API Key is entered. If not, it displays a warning message.</p>
+<p>If the input is valid, instances of <code>LogicModel</code> and <code>StreamlitModel</code> are created with the provided OpenAI API Key.</p>
+<h3 id="running-the-model">Running the Model</h3>
+<p>The application then enters a loop where it generates, refines, tests and executes code using the <code>LogicModel</code>. The progress of this process is displayed on a Streamlit progress bar.</p>
+<p>If the code execution is successful, it launches a new Streamlit application running the generated code and opens the new application in the web browser.</p>
+<p>In case the execution was not successful, the application refines the code and retries. If all attempts are unsuccessful, it reports a failure.</p></p>
     </article>
 </section>
             <!-- endblock -->
@@ -230,7 +218,7 @@
     <div class="d-flex flex-sm-row justify-content-between py-2 border-top drac-text-black drac-bg-cyan-green">
         <a href="https://github.com/melih-unsal/DemoGPT" target="_blank" style="padding-left: 1%;"
             class="footer-text drac-anchor drac-text-black drac-text-purple--hover">
-            🧩 DemoGPT
+            DemoGPT
         </a>
     </div>
 </footer>
