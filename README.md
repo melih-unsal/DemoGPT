@@ -11,7 +11,7 @@
 <a href="https://pepy.tech/project/demogpt"><img src="https://static.pepy.tech/personalized-badge/demogpt?period=total&units=international_system&left_color=blue&right_color=red&left_text=Downloads" alt="Downloads"></a>
 <a href="https://github.com/melih-unsal/DemoGPT/releases"><img src="https://img.shields.io/github/release/melih-unsal/DemoGPT" alt="Releases"></a>
 <a href="https://demogpt.io"><img src="https://img.shields.io/badge/Official%20Website-demogpt.io-blue?style=flat&logo=world&logoColor=white" alt="Official Website"></a>
-<a href="https://melih-unsal.github.io/DemoGPT/"><img src="https://img.shields.io/badge/Documentation-📘-blueviolet" alt="DemoGPT Documentation"></a>
+<a href="https://docs.demogpt.io"><img src="https://img.shields.io/badge/Documentation-📘-blueviolet" alt="DemoGPT Documentation"></a>
 </p>
 
 <p align="center">
@@ -54,7 +54,7 @@ For quick demo, you can visit [our website](https://demogpt.io)
 
 ## 📚 Documentation
 
-See our documentation site [here](https://melih-unsal.github.io/DemoGPT/) for full how-to docs and guidelines
+See our documentation site [here](https://docs.demogpt.io/) for full how-to docs and guidelines
 
 ⚡ The new release with the power of **Llama 2** is within a week. ⚡
 
