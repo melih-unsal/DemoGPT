@@ -1,8 +1,6 @@
 site_name: 🧩 DemoGPT
-
 theme:
     name: dracula
-
 nav:
     - Home: index.md
     - Modules: src_plan.md
