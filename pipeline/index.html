@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-        <title>Test - 🧩 DemoGPT</title>
+        <title>Architecture - 🧩 DemoGPT</title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,8 +92,8 @@
                 </a>
             </li>
             <li class="drac-box">
-                <a href="../pipeline/"
-                    class="
+                <a href="./"
+                    class=" active 
                     drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
                     Architecture
                 </a>
@@ -127,8 +127,8 @@
                 </a>
             </li>
             <li class="drac-box">
-                <a href="./"
-                    class=" active 
+                <a href="../test/"
+                    class="
                     drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
                     Test
                 </a>
@@ -161,14 +161,14 @@
         <div class="container">
             <div class="row row-preview">
                 <div class="col">
-                    <a href="../src_plan_chains_prompts_tasks/"
+                    <a href="../roadmap/"
                         class="btn-preview drac-btn drac-btn-outline drac-text-white drac-text-cyan-green--hover">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </div>
                 <div class="col">
-                    <a 
-                        class="btn-preview drac-btn drac-text-white--hover disabled" style="padding-left: 3%;">
+                    <a href="../src_plan/"
+                        class="btn-preview drac-btn drac-btn-outline drac-text-white drac-text-cyan-green--hover" style="padding-left: 3%;">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </div>
@@ -204,35 +204,23 @@
             <!-- block content -->
                 <section class="p-md-5 section-content">
     <article>
-        <p><h1 id="testdemogpt-unit-testing">TestDemoGPT - Unit Testing</h1>
-<p>TestDemoGPT is a class that contains a series of unit tests to validate the functionality of our application.</p>
-<h2 id="test-scenario">Test Scenario</h2>
-<ul>
-<li>The test scenario involves planning, task generation, code generation and testing of various tasks in the application like UI input text, UI output text, etc. The test plan uses various test cases defined in <code>TEST_CASES</code> and <code>TOOL_EXAMPLES</code>.</li>
-</ul>
-<h2 id="test-methods">Test Methods</h2>
-<ul>
-<li><code>setUpClass</code>: This method is executed once at the start of the testing process. It sets up the environment required for testing.</li>
-<li><code>writeToFile</code>: A helper method to write the test results to a file.</li>
-<li><code>printRes</code>: A helper method to print the results in a colorful, formatted manner.</li>
-<li><code>test_plan</code>: Tests the plan creation.</li>
-<li><code>test_tasks</code>: Tests the task creation.</li>
-<li><code>test_final</code>: Tests the final code generation.</li>
-<li><code>test_task_ui_input_text</code>: Tests UI input text task.</li>
-<li><code>test_task_ui_output_text</code>: Tests UI output text task.</li>
-<li><code>test_task_prompt_chat_template</code>: Tests prompt chat template task.</li>
-<li><code>test</code>: This method runs the entire workflow of the application, from plan creation to code generation.</li>
-<li><code>test_all</code>: This method iterates over all the test cases in <code>TEST_CASES</code> and runs the <code>test</code> method for each of them.</li>
-</ul>
-<h2 id="how-to-run-tests">How to run tests</h2>
-<h3 id="running-all-tests">Running all tests</h3>
-<p>To run all the tests, use the following command:</p>
-<pre><code class="language-bash">python -m unittest src.plan.test.TestDemoGPT.test_all
-</code></pre>
-<h3 id="running-a-single-test-module">Running a single test module</h3>
-<p>To run a specific test module, you can use the following command format:</p>
-<pre><code class="language-bash">python -m unittest src.plan.test.TestDemoGPT.$func_name
-</code></pre></p>
+        <p><h1 id="demogpt-architecture">🛠️ DemoGPT Architecture</h1>
+<p><br/>
+<br/>
+<br/></p>
+<p align="center">
+<a href="https://github.com/melih-unsal/DemoGPT"><img src="https://github.com/melih-unsal/DemoGPT/blob/main/assets/architecture_transparent.png?raw=true"></a>
+</p>
+
+<h2 id="how-demogpt-works">How DemoGPT Works</h2>
+<ol>
+<li><strong>Planning</strong>: DemoGPT starts by generating a plan from the user's instruction.</li>
+<li><strong>Task Creation</strong>: It then creates specific tasks from the plan and instruction.</li>
+<li><strong>Code Snippet Generation</strong>: These tasks are transferred into code snippets.</li>
+<li><strong>Final Code Assembly</strong>: The code snippets are combined into a final code, resulting in an interactive application.</li>
+<li><strong>Refining</strong>: All the steps including plan generation, task creation, and code snippet generation will be refined by themselves to pass to the next stage.</li>
+<li><strong>DB Saving</strong>: If the user approves the result then all the generated plan, tasks and code snippets are saved into the database. Thus, next time, there the similar results for the corresponding instruction will be fetched from the DB and refining process will be shorter.</li>
+</ol></p>
     </article>
 </section>
             <!-- endblock -->
