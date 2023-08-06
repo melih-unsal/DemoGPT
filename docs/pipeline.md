@@ -1,6 +1,10 @@
-# DemoGPT Architecture
-
-![DemoGPT Logo](img/architecture_transparent.png) 
+# 🛠️ DemoGPT Architecture
+<br/>
+<br/>
+<br/>
+<p align="center">
+<a href="https://github.com/melih-unsal/DemoGPT"><img src="https://github.com/melih-unsal/DemoGPT/blob/main/assets/architecture_transparent.png?raw=true"></a>
+</p>
 
 
 
