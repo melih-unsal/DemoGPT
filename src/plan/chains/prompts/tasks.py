@@ -1,4 +1,4 @@
-from chains.task_definitions import TASK_DESCRIPTIONS
+from chains.task_definitions import TASK_DESCRIPTIONS, TASKS
 
 system_template = f"""
 Create a Python list of task objects that align with the provided instruction and plan. Task objects must be Python dictionaries, and the output should strictly conform to a Python list of JSON objects.
@@ -6,6 +6,9 @@ Create a Python list of task objects that align with the provided instruction an
 You must use only the tasks provided in the description:
 
 {TASK_DESCRIPTIONS}
+
+task_name could be only one of the task names below:
+{[task["name"] for task in TASKS]}
 """
 
 human_template = """

@@ -17,6 +17,9 @@ else:
 """
 
 human_template = """
+Here is the part of the code that you are supposed to continue:
+{code_snippets}
+
 Write a summarize function for the argument name and variable below:
 Argument Name : {argument}
 Variable Name : {variable}

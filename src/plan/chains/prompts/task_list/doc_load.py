@@ -1,4 +1,8 @@
 loaders = """
+For Local TXT file:
+from langchain.document_loaders import TextLoader
+loader = TextLoader(<local_txt_file_path>)
+################################
 For Web Page:
 from langchain.document_loaders import WebBaseLoader
 loader = WebBaseLoader("<url>")

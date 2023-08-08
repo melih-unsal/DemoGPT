@@ -17,22 +17,22 @@ def init(title=""):
     return IMPORTS_CODE_SNIPPET
 
 
-def getCodeSnippet(task):
+def getCodeSnippet(task,code_snippets):
     task_type = task["task_type"]
     code = ""
     if task_type == "ui_input_text":
-        code = TaskChains.uiInputText(task=task)
+        code = TaskChains.uiInputText(task=task,code_snippets=code_snippets)
     elif task_type == "ui_output_text":
-        code = TaskChains.uiOutputText(task=task)
+        code = TaskChains.uiOutputText(task=task,code_snippets=code_snippets)
     elif task_type == "prompt_chat_template":
-        res = TaskChains.promptChatTemplate(task=task)
+        res = TaskChains.promptChatTemplate(task=task,code_snippets=code_snippets)
         code = getPromptChatTemplateCode(res, task)
     elif task_type == "ui_input_file":
-        code = TaskChains.uiInputFile(task=task)
+        code = TaskChains.uiInputFile(task=task,code_snippets=code_snippets)
     elif task_type == "doc_load":
-        code = TaskChains.docLoad(task=task)
+        code = TaskChains.docLoad(task=task,code_snippets=code_snippets)
     elif task_type == "summarize":
-        code = TaskChains.summarize(task=task)
+        code = TaskChains.summarize(task=task,code_snippets=code_snippets)
     return code.strip() + "\n"
 
 
@@ -67,6 +67,8 @@ def getPromptChatTemplateCode(res, task):
         function_call = f"""
 if {' and '.join(inputs)}:
     {variable} = {signature}
+else:
+    {variable} = ""
 """
 
     temperature = 0 if templates.get("variety", "False") == "False" else 0.7

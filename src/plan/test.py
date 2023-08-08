@@ -14,7 +14,8 @@ from tqdm import tqdm
 
 
 class TestDemoGPT(unittest.TestCase):
-    INSTRUCTION = "Create a system that can summarize a content taken from url then create a blog post on the summarization"
+    INSTRUCTION = TEST_CASES[1]["instruction"]
+    #"Create a system that can summarize a content taken from url then create a blog post on the summarization"
     #"Create a system that can solve any math problem"
     TITLE = "My App"
 
@@ -107,10 +108,10 @@ class TestDemoGPT(unittest.TestCase):
 
         self.writeToFile("TASK LIST",json.dumps(task_list, indent=4),instruction)
     
-        code_snippets = utils.IMPORTS_CODE_SNIPPET + f"\nst.title({title})\n"
+        code_snippets = utils.IMPORTS_CODE_SNIPPET + f"\nst.title('{title}')\n"
 
         for task in tqdm(task_list):
-            code = utils.getCodeSnippet(task)
+            code = utils.getCodeSnippet(task,code_snippets)
             code = "#"+task["description"] + "\n" + code
             code_snippets += code
 
