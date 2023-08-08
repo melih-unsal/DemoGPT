@@ -107,7 +107,7 @@ ALL_TASKS = [
     },
 ]
 
-TASKS = ALL_TASKS[:4]  # first 5 of them has been implemented yet.
+TASKS = ALL_TASKS[:4]  # first 4 of them has been implemented yet.
 
 TASK_DESCRIPTIONS = json.dumps(TASKS, indent=4)
 
