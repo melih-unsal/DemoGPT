@@ -87,15 +87,17 @@ class TestDemoGPT(unittest.TestCase):
             res = TaskChains.promptChatTemplate(instruction=instruction,inputs=inputs)
             self.writeToFile("PROMPT CHAT TEMPLATE",res,instruction)
 
-    @classmethod
-    def test(self,instruction):
+    def test(self,instruction="Create a system that can solve any math problem"):
         title = "My App"
 
         plan = Chains.plan(instruction)
 
+        print(plan)
+
         self.writeToFile("PLAN",plan,instruction)
 
         task_list = Chains.tasks(instruction=instruction, plan=plan)
+        print("Task list:",task_list)
 
         self.writeToFile("TASK LIST",json.dumps(task_list, indent=4),instruction)
     

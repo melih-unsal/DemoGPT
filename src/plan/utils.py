@@ -42,6 +42,7 @@ def refine(code):
 
 def getPromptChatTemplateCode(res, task):
     inputs = task["input_key"]
+    print("res:",res,sep="\n")
     templates = json.loads(res)
     variable = task["output_key"]
     button_text = templates["button_text"]

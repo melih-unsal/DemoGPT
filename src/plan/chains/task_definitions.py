@@ -29,9 +29,33 @@ ALL_TASKS = [
     {
         "name": "prompt_chat_template",
         "description": "Generate intelligent text output, such as questions or responses, from a given context or input.",
-        "good_at": "Creating context-aware questions, responses, or instructions.",
+        "good_at": "Creating context-aware questions, responses, role play, or instructions.",
         "input": "string, context",
         "output": "string",
+    },
+    {
+        "name": "hub_summarize",
+        "description": "Summarize long text.",
+        "good_at": "Summarizing long text into concise and relevant information.",
+        "input": "string",
+        "output": "string",
+        "purpose": "Creating shorter versions of lengthy content.",
+    },
+    {
+        "name": "hub_question_answering",
+        "description": "Answer questions related to the file.",
+        "good_at": "Question answering on files or documents.",
+        "input": ["string", "file"],
+        "output": "memory",
+        "purpose": "Extracting and providing specific information from files in response to questions.",
+    },
+    {
+        "name": "memory",
+        "description": "Returns memory that could be attached as an input to any prompt_chat_template.",
+        "good_at": "Memorizing the conversation history or context.",
+        "input": "none",
+        "output": "memory",
+        "purpose": "Storing and retrieving conversation history or contextual information.",
     },
     {
         "name": "prompt_list_parser",
@@ -58,36 +82,12 @@ ALL_TASKS = [
         "purpose": "Finding information online to answer user queries.",
     },
     {
-        "name": "memory",
-        "description": "Returns memory that could be attached as an input to any prompt_chat_template.",
-        "good_at": "Memorizing the conversation history or context.",
-        "input": "none",
-        "output": "memory",
-        "purpose": "Storing and retrieving conversation history or contextual information.",
-    },
-    {
-        "name": "hub_summarize",
-        "description": "Summarize long text.",
-        "good_at": "Summarizing long text into concise and relevant information.",
-        "input": "string",
+        "name": "cpal_chain",
+        "description": "Solve math problems end to end",
+        "good_at": "Directly solving any math problems",
+        "input": "math_question",
         "output": "string",
-        "purpose": "Creating shorter versions of lengthy content.",
-    },
-    {
-        "name": "hub_question_answering",
-        "description": "Answer questions related to the file.",
-        "good_at": "Question answering on files or documents.",
-        "input": ["string", "file"],
-        "output": "memory",
-        "purpose": "Extracting and providing specific information from files in response to questions.",
-    },
-    {
-        "name": "hub_pal_math",
-        "description": "Solve and give answers for math problems.",
-        "good_at": "Solving complex math problems and equations.",
-        "input": "string",
-        "output": "string",
-        "purpose": "Performing mathematical calculations and solving problems.",
+        "purpose": "Performing mathematical calculations and solving problems based on the input question",
     },
     {
         "name": "hub_bash",
@@ -107,7 +107,7 @@ ALL_TASKS = [
     },
 ]
 
-TASKS = ALL_TASKS[:4]  # first 4 of them has been implemented yet.
+TASKS = ALL_TASKS[:4]  # first 5 of them has been implemented yet.
 
 TASK_DESCRIPTIONS = json.dumps(TASKS, indent=4)
 

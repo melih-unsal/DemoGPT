@@ -1,9 +1,16 @@
-system_template = """
+from chains.task_definitions import TASK_DESCRIPTIONS
+
+system_template = f"""
 Create a plan to fulfill the given instruction. 
 The plan should be broken down into clear, logical steps that detail how to accomplish the task. 
 Consider all necessary user interactions, system processes, and validations, 
 and ensure that the steps are in a logical sequence that corresponds to the given instruction.
 Also, don't generate redundant steps in the plan.
+Don't generate impossible steps in the plan because all those tasks are available:
+{TASK_DESCRIPTIONS}
+
+Always select the most efficient pathway to generate the plan.
+If a step is redundant, don't add it.
 """
 
 human_template = """
