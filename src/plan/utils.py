@@ -29,6 +29,10 @@ def getCodeSnippet(task):
         code = getPromptChatTemplateCode(res, task)
     elif task_type == "ui_input_file":
         code = TaskChains.uiInputFile(task=task)
+    elif task_type == "doc_load":
+        code = TaskChains.docLoad(task=task)
+    elif task_type == "summarize":
+        code = TaskChains.summarize(task=task)
     return code.strip() + "\n"
 
 
@@ -51,6 +55,7 @@ def getPromptChatTemplateCode(res, task):
 
     if inputs == "none":
         signature = f"{templates['function_name']}()"
+        function_call = f"{variable} = {signature}"
     else:
         if isinstance(inputs, str):
             if inputs.startswith("["):
@@ -59,8 +64,11 @@ def getPromptChatTemplateCode(res, task):
         if len(inputs) > 0:
             run_call = ", ".join([f"{var}={var}" for var in inputs])
         signature = f"{templates['function_name']}({','.join(inputs)})"
+        function_call = f"""
+if {' and '.join(inputs)}:
+    {variable} = {signature}
+"""
 
-    function_call = f"{variable} = {signature}"
     temperature = 0 if templates.get("variety", "False") == "False" else 0.7
 
     code = f"""\n

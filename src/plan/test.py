@@ -14,6 +14,10 @@ from tqdm import tqdm
 
 
 class TestDemoGPT(unittest.TestCase):
+    INSTRUCTION = "Create a system that can summarize a content taken from url then create a blog post on the summarization"
+    #"Create a system that can solve any math problem"
+    TITLE = "My App"
+
     @classmethod
     def setUpClass(cls):
         cls.f = open("test.log", "w")
@@ -43,20 +47,20 @@ class TestDemoGPT(unittest.TestCase):
         cls.f.flush()
 
     def test_plan(self):
-        for test_case in TEST_CASES:
+        for test_case in tqdm(TEST_CASES):
             instruction = test_case["instruction"]
             plan = Chains.plan(instruction)
             self.writeToFile("PLAN",plan,instruction)
 
     def test_tasks(self):
-        for test_case in TEST_CASES:
+        for test_case in tqdm(TEST_CASES):
             instruction = test_case["instruction"]
             plan = test_case["plan"]
             task_list = Chains.tasks(instruction=instruction,plan=plan)
             self.writeToFile("TASK LIST",json.dumps(task_list, indent=4),instruction)
 
     def test_final(self):
-        for test_case in TEST_CASES:
+        for test_case in tqdm(TEST_CASES):
             instruction = test_case["instruction"]
             plan = test_case["plan"]
             code_snippets = test_case["code_snippets"]
@@ -87,8 +91,10 @@ class TestDemoGPT(unittest.TestCase):
             res = TaskChains.promptChatTemplate(instruction=instruction,inputs=inputs)
             self.writeToFile("PROMPT CHAT TEMPLATE",res,instruction)
 
-    def test(self,instruction="Create a system that can solve any math problem"):
-        title = "My App"
+    def test(self):
+        title = TestDemoGPT.TITLE
+
+        instruction = TestDemoGPT.INSTRUCTION
 
         plan = Chains.plan(instruction)
 
@@ -105,6 +111,7 @@ class TestDemoGPT(unittest.TestCase):
 
         for task in tqdm(task_list):
             code = utils.getCodeSnippet(task)
+            code = "#"+task["description"] + "\n" + code
             code_snippets += code
 
         self.writeToFile("CODE SNIPPETS",code_snippets,instruction)
@@ -124,4 +131,6 @@ class TestDemoGPT(unittest.TestCase):
         
     
 if __name__ == '__main__':
-    unittest.main()
+    TestDemoGPT.INSTRUCTION = os.environ.get('instruction', TestDemoGPT.INSTRUCTION)
+    TestDemoGPT.TITLE = os.environ.get('title', TestDemoGPT.TITLE)
+    unittest.test()

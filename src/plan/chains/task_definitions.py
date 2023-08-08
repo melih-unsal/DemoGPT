@@ -34,12 +34,20 @@ ALL_TASKS = [
         "output": "string",
     },
     {
-        "name": "hub_summarize",
-        "description": "Summarize long text.",
-        "good_at": "Summarizing long text into concise and relevant information.",
+        "name": "doc_load",
+        "description": "Load from url or pdf file path or csv file path or powerpoint file path and generate docs",
+        "good_at": "Loadding from external sources including url, pdf, csv, excel and powerpoint and generate a docs",
         "input": "string",
+        "output": "docs",
+        "purpose": "Loading external files",
+    },
+    {
+        "name": "summarize",
+        "description": "Summarize docs",
+        "good_at": "Summarizing docs into concise and relevant information.",
+        "input": "docs",
         "output": "string",
-        "purpose": "Creating shorter versions of lengthy content.",
+        "purpose": "Creating shorter versions of lengthy docs",
     },
     {
         "name": "hub_question_answering",
@@ -107,7 +115,7 @@ ALL_TASKS = [
     },
 ]
 
-TASKS = ALL_TASKS[:4]  # first 4 of them has been implemented yet.
+TASKS = ALL_TASKS[:6]  # first 6 of them has been implemented yet.
 
 TASK_DESCRIPTIONS = json.dumps(TASKS, indent=4)
 

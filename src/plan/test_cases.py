@@ -55,7 +55,7 @@ TEST_CASES = [
             }
         ]
         """,
-        "code_snippet": """
+        "code_snippets": """
         import streamlit as st
         from langchain import LLMChain
         from langchain.chat_models import ChatOpenAI
@@ -113,7 +113,7 @@ TEST_CASES = [
                 st.markdown(horoscope_prediction)
 
         show_horoscope_prediction(horoscope_prediction)
-        """,
+        """
     },
     {
         "instruction": """
@@ -164,7 +164,7 @@ TEST_CASES = [
             }
         ]
         """,
-        "code_snippet": """
+        "code_snippets": """
         import streamlit as st
         from langchain import LLMChain
         from langchain.chat_models import ChatOpenAI
@@ -200,7 +200,7 @@ TEST_CASES = [
                 st.markdown("Translated Text: " + translated_text)
 
         show_translated_text(translated_text)
-        """,
+        """
     },
     {
         "instruction": """
@@ -305,7 +305,7 @@ TEST_CASES = [
 
         if melody != "" and lyrics != "":
             show_text(melody, lyrics)
-        """,
+        """
     },
     {
         "instruction": """

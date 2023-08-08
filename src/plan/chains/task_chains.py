@@ -80,3 +80,34 @@ class TaskChains:
         )
         start_index = res.find("{")
         return res[start_index:]
+    
+    @classmethod
+    def docLoad(cls, task):
+        instruction = task["description"]
+        argument = task["input_key"]
+        variable = task["output_key"]
+
+        code = cls.getChain(
+            system_template=prompts.doc_load.system_template,
+            human_template=prompts.doc_load.human_template,
+            instruction=instruction,
+            argument=argument,
+            variable=variable
+        )
+        return utils.refine(code)
+    
+    @classmethod
+    def summarize(cls, task):
+        instruction = task["description"]
+        argument = task["input_key"]
+        variable = task["output_key"]
+
+        code = cls.getChain(
+            system_template=prompts.summarize.system_template,
+            human_template=prompts.summarize.human_template,
+            instruction=instruction,
+            argument=argument,
+            variable=variable
+        )
+        return utils.refine(code)
+
