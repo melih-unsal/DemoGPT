@@ -14,7 +14,7 @@ from tqdm import tqdm
 
 
 class TestDemoGPT(unittest.TestCase):
-    INSTRUCTION = TEST_CASES[1]["instruction"]
+    INSTRUCTION = TEST_CASES[0]["instruction"]
     #"Create a system that can summarize a content taken from url then create a blog post on the summarization"
     #"Create a system that can solve any math problem"
     TITLE = "My App"
@@ -50,8 +50,10 @@ class TestDemoGPT(unittest.TestCase):
     def test_plan(self):
         for test_case in tqdm(TEST_CASES):
             instruction = test_case["instruction"]
+            instruction = "Create a system that can summarize a website from the given URL."
             plan = Chains.plan(instruction)
             self.writeToFile("PLAN",plan,instruction)
+            break
 
     def test_tasks(self):
         for test_case in tqdm(TEST_CASES):
@@ -99,12 +101,9 @@ class TestDemoGPT(unittest.TestCase):
 
         plan = Chains.plan(instruction)
 
-        print(plan)
-
         self.writeToFile("PLAN",plan,instruction)
 
         task_list = Chains.tasks(instruction=instruction, plan=plan)
-        print("Task list:",task_list)
 
         self.writeToFile("TASK LIST",json.dumps(task_list, indent=4),instruction)
     

@@ -9,7 +9,6 @@ Generate nothing else but only the code so that it can be directly used.
 """
 
 human_template = """
-Don't change the execution order.
 When needed, use state variables because streamlit is a stateless libray.
 You can define state variables like in the following:
 if <key> not in st.session_state:
@@ -17,6 +16,7 @@ if <key> not in st.session_state:
 # you can use and modify st.session_state[<key>] 
 Make all global variables as state variables not to miss anything and initialize them as empty string.
 When you call a function, check if any of them is empty string. If then, don't call the function on an empty string.
+First put the function then call the function, don't call the function which is implemented below!
 
 Instruction: {instruction}
 ################################

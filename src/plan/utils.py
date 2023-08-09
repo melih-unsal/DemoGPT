@@ -27,9 +27,13 @@ def getCodeSnippet(task,code_snippets):
     elif task_type == "prompt_chat_template":
         res = TaskChains.promptChatTemplate(task=task,code_snippets=code_snippets)
         code = getPromptChatTemplateCode(res, task)
+    elif task_type == "path_to_content":
+        code = TaskChains.pathToContent(task=task,code_snippets=code_snippets)
+    elif task_type == "doc_to_string":
+        code = TaskChains.docToString(task=task,code_snippets=code_snippets)
     elif task_type == "ui_input_file":
         code = TaskChains.uiInputFile(task=task,code_snippets=code_snippets)
-    elif task_type == "doc_load":
+    elif task_type == "doc_loader":
         code = TaskChains.docLoad(task=task,code_snippets=code_snippets)
     elif task_type == "summarize":
         code = TaskChains.summarize(task=task,code_snippets=code_snippets)
@@ -46,7 +50,6 @@ def refine(code):
 
 def getPromptChatTemplateCode(res, task):
     inputs = task["input_key"]
-    print("res:",res,sep="\n")
     templates = json.loads(res)
     variable = task["output_key"]
     button_text = templates["button_text"]

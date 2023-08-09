@@ -33,27 +33,30 @@ loader = UnstructuredExcelLoader(<excel_file_path>, mode="elements")
 """
 
 system_template = f"""
-You will summarization code with a strict structure like in the below but 
-loader will change depending on the input
-###
-def getDoc(argument):
-    loader = Loader(path) # it changes depending on the path
-    return loader.load()
-if argument:
-    variable = summarize(argument)
-else:
-    out_variable = ""
-###
-
-These are the Loader classes that you should select dependent on the url
-
+These are the Loader classes that you should select.
+Select the loader according to the input type unless the input type is ambiguous.
 {loaders}
 """
 
 human_template = """
-Write a loader function to load the document for the argument name, variable and instruction below:
-Instruction:{instruction}
-Argument Name : {argument}
-Variable Name : {variable}
-Summarization Code:
+Write a loader function using langchain.document_loaders 
+to load the document for the argument name, variable and instruction 
+below like in the below format:
+
+###
+def {function_name}(argument):
+    loader = Loader(path) # Select the appropriate Loader
+    docs = loader.load()
+    return docs
+
+if {argument}:
+    {variable} = {function_name}({argument})
+###
+    
+While using the loader, don't change "mode" and "strategy" arguments, they need to be constant as stated.
+If there are no such arguments, ignore it.
+
+Instruction:{instruction}    
+
+Document Loader Code:
 """

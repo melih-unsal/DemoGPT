@@ -69,6 +69,22 @@ class TaskChains:
             code_snippets=code_snippets
         )
         return utils.refine(code)
+    
+    @classmethod
+    def pathToContent(cls, task,code_snippets):
+        instruction = task["description"]
+        argument = task["input_key"]
+        variable = task["output_key"]
+
+        code = cls.getChain(
+            system_template=prompts.path_to_file.system_template,
+            human_template=prompts.path_to_file.human_template,
+            instruction=instruction,
+            argument=argument,
+            variable=variable,
+            code_snippets=code_snippets
+        )
+        return utils.refine(code)
 
     @classmethod
     def promptChatTemplate(cls, task,code_snippets):
@@ -90,6 +106,7 @@ class TaskChains:
         instruction = task["description"]
         argument = task["input_key"]
         variable = task["output_key"]
+        function_name = task["task_name"]
 
         code = cls.getChain(
             system_template=prompts.doc_load.system_template,
@@ -97,23 +114,37 @@ class TaskChains:
             instruction=instruction,
             argument=argument,
             variable=variable,
+            function_name=function_name,
             code_snippets=code_snippets
         )
         return utils.refine(code)
     
     @classmethod
-    def summarize(cls, task,code_snippets):
-        instruction = task["description"]
+    def docToString(cls, task, code_snippets):
         argument = task["input_key"]
         variable = task["output_key"]
+        code = f"""
+{argument} = str({variable})
+"""
+        return code
+    
+    @classmethod
+    def summarize(cls, task,code_snippets):
+        argument = task["input_key"]
+        variable = task["output_key"]
+        function_name = task["task_name"]
 
-        code = cls.getChain(
-            system_template=prompts.summarize.system_template,
-            human_template=prompts.summarize.human_template,
-            instruction=instruction,
-            argument=argument,
-            variable=variable,
-            code_snippets=code_snippets
-        )
-        return utils.refine(code)
+        code = f"""
+from langchain.chat_models import ChatOpenAI
+from langchain.chains.summarize import load_summarize_chain
+def {function_name}(docs):
+    llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
+    chain = load_summarize_chain(llm, chain_type="stuff")
+    return chain.run(docs)
+if {argument}:
+    {variable} = summarize(argument)
+else:
+    variable = ""
+"""
+        return code
 
