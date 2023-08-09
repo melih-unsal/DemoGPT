@@ -21,6 +21,7 @@ python = "^3.7"
 streamlit = "*"
 altair = "<5"
 langchain = "*"
+langchain_experimental = "*"
 openai = "*"
 python-dotenv = "*"
 

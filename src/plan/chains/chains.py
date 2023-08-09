@@ -16,7 +16,7 @@ class Chains:
     def setLlm(
         cls, model, openai_api_key=os.getenv("OPENAI_API_KEY", ""), temperature=0
     ):
-        Chains.llm = ChatOpenAI(
+        cls.llm = ChatOpenAI(
             model=model, openai_api_key=openai_api_key, temperature=temperature
         )
 

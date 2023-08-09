@@ -11,6 +11,9 @@ After defining the function, call it with "{args}".
 Assume that, they have been already defined but only call the function by checking if the input is not an empty string.
 use st.markdown to show the main text
 
+Here is the part of the code that you are supposed to continue:
+{code_snippets}
+
 Instruction:{instruction}
 Streamlit Code:
 """

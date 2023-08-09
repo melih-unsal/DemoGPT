@@ -1,5 +1,8 @@
 TEST_CASES = [
     {
+        "instruction":"Create a system that can generate blog post related to a website then summarize it"
+    },
+    {
         "instruction": """
         create a system that can predict horoscope by asking intelligent question 
         to the user and analyzing user's answer without birth date or explicit question directly related to horoscope.
@@ -55,7 +58,7 @@ TEST_CASES = [
             }
         ]
         """,
-        "code_snippet": """
+        "code_snippets": """
         import streamlit as st
         from langchain import LLMChain
         from langchain.chat_models import ChatOpenAI
@@ -113,7 +116,7 @@ TEST_CASES = [
                 st.markdown(horoscope_prediction)
 
         show_horoscope_prediction(horoscope_prediction)
-        """,
+        """
     },
     {
         "instruction": """
@@ -164,7 +167,7 @@ TEST_CASES = [
             }
         ]
         """,
-        "code_snippet": """
+        "code_snippets": """
         import streamlit as st
         from langchain import LLMChain
         from langchain.chat_models import ChatOpenAI
@@ -200,17 +203,16 @@ TEST_CASES = [
                 st.markdown("Translated Text: " + translated_text)
 
         show_translated_text(translated_text)
-        """,
+        """
     },
     {
         "instruction": """
-        create a song melody and its lyrics from a song title
+        create lyrics from a song title
         """,
         "plan": """
         1. Get song title from the user.
-        2. Use AI to generate a melody for the song.
-        3. Use AI to generate lyrics for the song.
-        4. If melody and lyrics are ready, return them to the user.
+        3. Use AI to generate lyrics appropriate for the song title.
+        4. If lyrics is ready, display it to the user.
         """,
         "task": """
         [
@@ -225,26 +227,18 @@ TEST_CASES = [
             {
                 "step": 2,
                 "task_type": "prompt_chat_template",
-                "task_name": "generate_melody",
-                "input_key": "song_title",
-                "output_key": "melody",
-                "description": "Use AI to generate a melody for the song."
-            },
-            {
-                "step": 3,
-                "task_type": "prompt_chat_template",
                 "task_name": "generate_lyrics",
                 "input_key": "song_title",
                 "output_key": "lyrics",
                 "description": "Use AI to generate lyrics for the song."
             },
             {
-                "step": 4,
+                "step": 3,
                 "task_type": "ui_output_text",
                 "task_name": "return_song",
-                "input_key": "melody, lyrics",
+                "input_key": "lyrics",
                 "output_key": "none",
-                "description": "If melody and lyrics are ready, return them to the user."
+                "description": "If lyrics is ready, return it to the user."
             }
         ]
         """,
@@ -305,7 +299,7 @@ TEST_CASES = [
 
         if melody != "" and lyrics != "":
             show_text(melody, lyrics)
-        """,
+        """
     },
     {
         "instruction": """

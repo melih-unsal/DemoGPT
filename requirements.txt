@@ -1,6 +1,7 @@
 streamlit
 altair<5
 langchain
+langchain_experimental
 openai
 tiktoken
 python-dotenv
