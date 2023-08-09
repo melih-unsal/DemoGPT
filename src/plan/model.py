@@ -78,7 +78,7 @@ class Model:
         num_of_tasks = len(task_list)
 
         for i, task in enumerate(task_list):
-            code = utils.getCodeSnippet(task)
+            code = utils.getCodeSnippet(task,code_snippets)
             code_snippets += code
             yield {
                 "stage": "draft",
