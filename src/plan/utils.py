@@ -79,6 +79,7 @@ else:
     code = f"""\n
 def {signature}:
     chat = ChatOpenAI(
+        model="gpt-3.5-turbo-16k",
         temperature={temperature}
     )
     system_template = "{templates['system_template']}"

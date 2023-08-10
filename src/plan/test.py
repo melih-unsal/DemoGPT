@@ -8,7 +8,6 @@ import unittest
 import utils
 from chains.chains import Chains
 from chains.task_chains import TaskChains
-from termcolor import colored
 from test_cases import TEST_CASES, TOOL_EXAMPLES, INSTRUCTIONS, CODE_SNIPPETS
 from tqdm import tqdm
 
@@ -45,14 +44,6 @@ class TestDemoGPT(unittest.TestCase):
             f.write("#"+instruction+"\n")
             f.write(res)
             f.flush()
-
-    @classmethod
-    def printRes(cls,title,res,instruction):
-        print(colored(title,'red', 'on_light_blue', ['bold', 'dark']))
-        print(colored(instruction,'green', 'on_light_blue', ['bold', 'dark']))
-        print(colored(res,"light_green"))
-        print(colored("#"*100,"blue"))
-        cls.f.flush()
 
     def test_plan(self):
         for test_case in tqdm(TEST_CASES):

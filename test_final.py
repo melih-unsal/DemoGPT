@@ -16,11 +16,12 @@ def load_pdf(pdf_path):
 
 def pdfReader(pdf_doc, question):
     chat = ChatOpenAI(
+        model="gpt-3.5-turbo-16k",
         temperature=0
     )
-    system_template = "You are an AI assistant designed to extract information from a PDF document to answer a given question."
+    system_template = "You are an AI assistant designed to extract information from a PDF document and answer questions based on it."
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-    human_template = "Using the PDF document '{pdf_doc}', please answer the following question: '{question}'."
+    human_template = "Please find the answer to the following question from the PDF document: '{question}' in the given PDF document: '{pdf_doc}'."
     human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
     chat_prompt = ChatPromptTemplate.from_messages(
         [system_message_prompt, human_message_prompt]
@@ -57,10 +58,8 @@ if st.button("Submit"):
         answer = pdfReader(pdf_doc, question)
     else:
         answer = ""
-else:
-    answer = ""
 
-if answer != "":
-    st.markdown(f"**Answer:** {answer}")
-else:
-    st.markdown("Please upload a PDF file and ask a question to generate an answer.")
+    if answer != "":
+        st.markdown(f"**Answer:** {answer}")
+    else:
+        st.markdown("Please upload a PDF file and ask a question to generate an answer.")
