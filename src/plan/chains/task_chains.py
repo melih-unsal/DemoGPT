@@ -105,6 +105,8 @@ class TaskChains:
     def docLoad(cls, task,code_snippets):
         instruction = task["description"]
         argument = task["input_key"]
+        if isinstance(argument,list):
+            argument = argument[0]
         variable = task["output_key"]
         function_name = task["task_name"]
 
@@ -123,9 +125,7 @@ class TaskChains:
     def docToString(cls, task, code_snippets):
         argument = task["input_key"]
         variable = task["output_key"]
-        code = f"""
-{argument} = str({variable})
-"""
+        code =f'{variable} = "\".join([doc.page_content for doc in {argument}])'
         return code
     
     @classmethod

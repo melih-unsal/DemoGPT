@@ -9,12 +9,12 @@ import utils
 from chains.chains import Chains
 from chains.task_chains import TaskChains
 from termcolor import colored
-from test_cases import TEST_CASES, TOOL_EXAMPLES
+from test_cases import TEST_CASES, TOOL_EXAMPLES, INSTRUCTIONS, CODE_SNIPPETS
 from tqdm import tqdm
 
 
 class TestDemoGPT(unittest.TestCase):
-    INSTRUCTION = TEST_CASES[0]["instruction"]
+    INSTRUCTION = INSTRUCTIONS[4]
     #"Create a system that can summarize a content taken from url then create a blog post on the summarization"
     #"Create a system that can solve any math problem"
     TITLE = "My App"
@@ -40,6 +40,13 @@ class TestDemoGPT(unittest.TestCase):
         cls.f.flush()
 
     @classmethod
+    def writeFinalToFile(cls,res,instruction):
+        with open("test_final.py","w") as f:
+            f.write("#"+instruction+"\n")
+            f.write(res)
+            f.flush()
+
+    @classmethod
     def printRes(cls,title,res,instruction):
         print(colored(title,'red', 'on_light_blue', ['bold', 'dark']))
         print(colored(instruction,'green', 'on_light_blue', ['bold', 'dark']))
@@ -63,15 +70,17 @@ class TestDemoGPT(unittest.TestCase):
             self.writeToFile("TASK LIST",json.dumps(task_list, indent=4),instruction)
 
     def test_final(self):
-        for test_case in tqdm(TEST_CASES):
+        for test_case in tqdm(CODE_SNIPPETS):
             instruction = test_case["instruction"]
             plan = test_case["plan"]
             code_snippets = test_case["code_snippets"]
+            code_snippets = utils.IMPORTS_CODE_SNIPPET + code_snippets
             final_code = Chains.final(instruction=instruction,
                                       code_snippets=code_snippets,
                                       plan=plan
                                       )
-            self.writeToFile("CODE",final_code,instruction)            
+            self.writeFinalToFile(final_code,instruction)     
+            break       
     
     def test_task_ui_input_text(self):
         for example in TOOL_EXAMPLES["ui_input_text"]:
@@ -109,19 +118,20 @@ class TestDemoGPT(unittest.TestCase):
     
         code_snippets = utils.IMPORTS_CODE_SNIPPET + f"\nst.title('{title}')\n"
 
+        self.writeToFile("CODE SNIPPETS","",instruction)
+
         for task in tqdm(task_list):
             code = utils.getCodeSnippet(task,code_snippets)
             code = "#"+task["description"] + "\n" + code
             code_snippets += code
-
-        self.writeToFile("CODE SNIPPETS",code_snippets,instruction)
+            self.writeToFile("",code,"")
 
         final_code = Chains.final(instruction=instruction,
                                   code_snippets=code_snippets,
                                   plan=plan
                                   )
 
-        self.writeToFile("CODE",final_code,instruction)
+        self.writeFinalToFile(final_code,instruction)
 
     def test_all(self):
         for test_case in tqdm(TEST_CASES):

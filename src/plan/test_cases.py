@@ -1,3 +1,172 @@
+INSTRUCTIONS = [
+    "generate a system that reads uploaded text file and translates its content into the language that user prompted",
+    "Create a system that can translate from any language to any language",
+    "Create a system that can generate blog post related to a website then summarize it",
+    "create lyrics from a song title",
+    "Create a system that gets pdf and question from user then answer the question by using the pdf."
+]
+
+CODE_SNIPPETS=[
+    {
+        "instruction":"generate a system that reads uploaded text file and translates its content into the language that user prompted",
+        "plan":"""
+1. Get the file path from the user by 'ui_input_file'
+2. Use 'doc_loader' to load the text file as Document from the file path.
+3. Use 'doc_to_string' to convert Document to string
+4. Get the output language from the user by 'ui_input_text'
+5. If all inputs are filled, use 'prompt_chat_template' to translate the text to the output language.
+6. If the translation is ready, display it to the user by 'ui_output_text'.
+""",
+        "code_snippets":"""
+#Get the file path from the user
+file = st.file_uploader("Upload file", type=["txt", "pdf", "docx"])
+if file is not None:
+    file_path = file.name
+    st.session_state['file_path'] = file_path
+else:
+    st.warning("Please upload a file.")
+    
+# Return the file path as a string
+if 'file_path' in st.session_state:
+    file_path = st.session_state['file_path']
+    st.write(f"File path: {file_path}")
+    st.write(f"Type: {type(file_path).__name__}")
+
+
+
+#Load the text file as Document from the file path
+from langchain.document_loaders import TextLoader
+
+def load_document(file_path):
+    loader = TextLoader(file_path)
+    docs = loader.load()
+    return docs
+
+
+
+#Convert Document to string
+text = str(document)
+
+
+
+#Get the output language from the user
+output_language = st.text_input("Enter the output language:")
+
+
+
+#Translate the text to the output language
+def translator(text,output_language):
+    chat = ChatOpenAI(
+        temperature=0
+    )
+    system_template = "You are a language translator. Your task is to translate text to {output_language}."
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_template = "Please translate the following text to {output_language}: '{text}'."
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages(
+        [system_message_prompt, human_message_prompt]
+    )
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(text=text, output_language=output_language)
+    return result # returns string   
+
+
+if text and output_language:
+    translation = translator(text,output_language)
+else:
+    translation = ""
+
+
+
+#Display the translated text to the user
+if translation:
+    st.markdown(f"Translated Text: {translation}")
+"""
+    },
+    {
+        "instruction":"Create a system that can generate blog post related to a website then summarize it",
+        "plan":"""
+1. Get website URL from the user by 'ui_input_text'
+2. Use 'doc_loader' to load the website as Document from URL
+3. Use 'doc_to_string' to convert Document to string
+4. If doc_to_string generated the content as string, use 'prompt_chat_template' to generate a blog post related to that content.
+5. If blog post is generated, use 'prompt_chat_template' to summarize the blog post.
+6. If summarization is ready, display it to the user by 'ui_output_text'.
+""",
+        "code_snippets":"""
+#Get website url from the user
+url = st.text_input('Enter website URL:')
+
+#Load the document from the website url
+from langchain.document_loaders import WebBaseLoader
+
+def doc_loader(url):
+    loader = WebBaseLoader(url)
+    docs = loader.load()
+    return docs
+
+#Convert docs to string
+docs_string = str(docs)
+
+#Write blog post related to the context of docs_string
+def blogPostWriter(docs_string):
+    chat = ChatOpenAI(
+        temperature=0.7
+    )
+    system_template = "You are a blogger tasked with writing a blog post related to the following topic: '{docs_string}'."
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_template = "Please write a blog post related to the following topic: '{docs_string}'."
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages(
+        [system_message_prompt, human_message_prompt]
+    )
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(docs_string=docs_string)
+    return result # returns string   
+
+
+if docs_string:
+    blog = blogPostWriter(docs_string)
+else:
+    blog = ""
+
+#Summarize the blog post
+def blogSummarizer(blog):
+    chat = ChatOpenAI(
+        temperature=0
+    )
+    system_template = "You are an AI assistant tasked with summarizing a blog post."
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_template = "Please summarize the following blog post: '{blog}'."
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages(
+        [system_message_prompt, human_message_prompt]
+    )
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(blog=blog)
+    return result # returns string   
+
+
+if blog:
+    summarization = blogSummarizer(blog)
+else:
+    summarization = ""
+
+#Display the generated summarization to the user
+def show_summarization(summarization):
+    if summarization:
+        st.markdown(f"## Summarization:\n{summarization}")
+    else:
+        st.markdown("Please enter a valid input to generate a summarization.")
+
+show_summarization(summarization)
+    """
+    }
+]
+
 TEST_CASES = [
     {
         "instruction":"Create a system that can generate blog post related to a website then summarize it"
