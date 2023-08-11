@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 
 class TestDemoGPT(unittest.TestCase):
-    INSTRUCTION = INSTRUCTIONS[4]
+    INSTRUCTION = INSTRUCTIONS[-4]
     #"Create a system that can summarize a content taken from url then create a blog post on the summarization"
     #"Create a system that can solve any math problem"
     TITLE = "My App"
@@ -23,7 +23,7 @@ class TestDemoGPT(unittest.TestCase):
         cls.f = open("test.log", "w")
         
         # it sets the model name
-        model_name = "gpt-3.5-turbo-0301"
+        model_name = "gpt-3.5-turbo-0613"
 
         Chains.setLlm(model_name)
         TaskChains.setLlm(model_name)

@@ -3,7 +3,8 @@ INSTRUCTIONS = [
     "Create a system that can translate from any language to any language",
     "Create a system that can generate blog post related to a website then summarize it",
     "create lyrics from a song title",
-    "Create a system that gets pdf and question from user then answer the question by using the pdf."
+    "Create a system that gets pdf and question from user then answer the question by using the pdf.",
+    "Create an application that gets csv file as an input then shows the summarization of that file."
 ]
 
 CODE_SNIPPETS=[

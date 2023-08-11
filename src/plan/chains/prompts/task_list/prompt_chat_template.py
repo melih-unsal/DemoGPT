@@ -9,10 +9,8 @@ Components:
 5. "button_text": Text for a user interface button linked to the instruction, if applicable.
 
 IMPORTANT NOTE:
-- ONLY the variables listed under "Inputs" MUST be included in either the "system_template" or "template" section within curly braces (e.g., '{{variable_name}}'). Do NOT include any other parameters within curly braces.
-- Ensure that the exact variable names listed in "Inputs" are used without any modifications.
-- If a variable is listed in "Inputs," it must appear within curly braces in at least one of the "system_template" or "template" sections.
-- "system_template" and "template" will be formatted with .format(inpu1=inpu1,inpu2=inpu2,...) so use all inputs in the combination of system_template and template.
+- Write "system_template" and "template" in a way that, (system_template+template).format(input=something for input in inputs) work.
+What I mean is that, put all the elements of Inputs inside of either template or system_template with curly braces so that I can format it with predefined parameters.
 """
 
 human_template = """

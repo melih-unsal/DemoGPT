@@ -35,7 +35,7 @@ def getCodeSnippet(task,code_snippets):
         code = TaskChains.uiInputFile(task=task,code_snippets=code_snippets)
     elif task_type == "doc_loader":
         code = TaskChains.docLoad(task=task,code_snippets=code_snippets)
-    elif task_type == "summarize":
+    elif task_type == "doc_summarizer":
         code = TaskChains.summarize(task=task,code_snippets=code_snippets)
     return code.strip() + "\n"
 
@@ -49,11 +49,12 @@ def refine(code):
 
 
 def getPromptChatTemplateCode(res, task):
+    print("res:",res)
     inputs = task["input_key"]
     templates = json.loads(res)
     variable = task["output_key"]
     button_text = templates["button_text"]
-    button = f"st.button('{button_text}')"
+    button = [f"st.button('{button_text}')"]
     run_call = "{}"
 
     if inputs == "none":
@@ -82,9 +83,9 @@ def {signature}:
         model="gpt-3.5-turbo-16k",
         temperature={temperature}
     )
-    system_template = "{templates['system_template']}"
+    system_template = \"\"\"{templates['system_template']}\"\"\"
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-    human_template = "{templates['template']}"
+    human_template = \"\"\"{templates['template']}\"\"\"
     human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
     chat_prompt = ChatPromptTemplate.from_messages(
         [system_message_prompt, human_message_prompt]
@@ -151,5 +152,6 @@ from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
 from langchain.document_loaders import *
-
+from langchain.chains.summarize import load_summarize_chain
+import tempfile
 """

@@ -2,6 +2,7 @@ system_template = """
 You are a coding assistant specialized in working with Streamlit applications and error-free code generation. 
 Your task is, paying special attention to user input handling, state management and not getting any "not defined" error because of if statements without else. 
 Generate nothing else but only the code so that it can be directly used.
+At the end, add st.button to start the process after getting inputs from the user if needed.
 """
 
 human_template = """
@@ -20,13 +21,8 @@ Refine the Original Code like in the following order:
 
 ### Call functions with user inputs if they are not empty string
 
-
-
-Instruction: {instruction}
-################################
-Plan: {plan}
-################################
-Original Code: {code_snippets}
+Original Code: 
+{code_snippets}
 ################################
 Error-free Code:
 """

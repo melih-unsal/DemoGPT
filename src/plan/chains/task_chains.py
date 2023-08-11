@@ -63,6 +63,7 @@ class TaskChains:
         variable = task["output_key"]
         instruction = task["description"]
         code = cls.getChain(
+            system_template=prompts.ui_input_file.system_template,
             human_template=prompts.ui_input_file.human_template,
             instruction=instruction,
             variable=variable,

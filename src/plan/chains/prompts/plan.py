@@ -1,22 +1,27 @@
-from chains.task_definitions import TASK_DESCRIPTIONS, TASK_NAMES
+from chains.task_definitions import TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES
 
 system_template = f"""
 Create a plan to fulfill the given instruction. 
 The plan should be broken down into clear, logical steps that detail how to accomplish the task. 
 Consider all necessary user interactions, system processes, and validations, 
 and ensure that the steps are in a logical sequence that corresponds to the given instruction.
-Also, don't generate redundant steps in the plan.
 Don't generate impossible steps in the plan because only those tasks are available:
 {TASK_DESCRIPTIONS}
 
-Always select the most efficient pathway to generate the plan.
-If a step is redundant, don't add it.
 Pay attention to the input_data_type and the output_data_type.
 If one of the task's output is  input of another, then output_data_type of previous one
 should be the same as input_data_type of successor.
 
 Only those task types are allowed to be used:
 {TASK_NAMES}
+
+Highly pay attention to the input data type and the output data type of the tasks while creating the plan. These are the data types:
+
+{TASK_DTYPES}
+
+When you create a step in the plan, its input data type 
+either should be none or the output data type of the caller step. 
+
 """
 
 human_template = """
@@ -37,14 +42,6 @@ Let’s think step by step.
 2. Get source text which will be translated from the user by 'ui_input_text'
 3. If all the inputs are filled, use 'prompt_chat_template' to translate text to output language
 4. If translated text is ready, show it to the user by 'ui_output_text'
-
-Instruction: Generate a math teacher which can solve a multiple-choice math problem given the choices
-Let’s think step by step by.
-1. Get question from the user by 'ui_input_text'
-2. Get choices from the user by 'ui_input_text'
-3. If all the inputs are filled, use 'prompt_chat_template' to generate a solution for that question
-4. If solution is ready, use 'prompt_chat_template' to generate multiple choice from the solution.
-5. If the choice is ready, display it to the user by 'ui_output_text'
 
 Instruction: Generate a system that can generate tweet from hashtags and give a score for the tweet.
 Let’s think step by step.
@@ -69,21 +66,27 @@ Instruction: Create a system that can generate blog post related to a website
 Let’s think step by step.
 1. Get website URL from the user by 'ui_input_text'
 2. Use 'doc_loader' to load the website as Document from URL
-3. Use 'doc_to_string' to convert Document to string
-4. If doc_to_string generated the content as string, use 'prompt_chat_template' to generate a blog post related to that content.
+3. Use 'doc_to_string' to convert Document to string content
+4. If string content is generated, use 'prompt_chat_template' to generate a blog post related to that string content.
 5. If blog post is generated, display it to the user by 'ui_output_text'.
 
 Instruction: Create a system that can summarize a powerpoint file
 Let’s think step by step.
 1. Get file path from the user by 'ui_input_file' for the powerpoint file
 2. Use 'doc_loader' to load the powerpoint file as Document from the file path.
-3. Use 'summarize' to generate summarization of the the Document. 
+3. Use 'doc_summarizer' to generate summarization from the Document. 
 5. If summarization is ready, display it to the user by 'ui_output_text'.
 
 Instruction: Summarize a text taken from the user
 Let’s think step by step.
 1. Get text from the user by 'ui_input_text' 
 2. Use 'prompt_chat_template' to summarize the given text.
+3. If summarization is ready, display it to the user by 'ui_output_text'.
+
+Instruction: Summarize a powerpoint file taken from the user
+Let’s think step by step.
+1. Get powerpoint file path with 'ui_input_file' 
+2. Use 'doc_summarizer' to summarize the file from file path.
 3. If summarization is ready, display it to the user by 'ui_output_text'.
 
 Instruction: {instruction}

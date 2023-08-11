@@ -32,6 +32,7 @@ description: Provide a brief description of the task's goal, mirroring the plan 
 Ensure that each task corresponds to each step in the plan, and that no step in the plan is omitted.
 Ensure that output_key is unique for each task.
 Ensure that each task corresponds to each step in the plan
+Ensure that an output type of task does not change.
 
 ##########################
 Instruction: Create a system that can analyze the user
@@ -203,7 +204,7 @@ List of Task Objects (Python List of JSON):
         "task_name": "summarizeDoc",
         "input_key": "docs",
         "input_data_type": "Document",
-        "output_key": "summarization",
+        "output_key": "summarization_result",
         "output_data_type": "string",
         "description": "Summarize the document"
     }},
@@ -211,7 +212,7 @@ List of Task Objects (Python List of JSON):
         "step": 5,
         "task_type": "prompt_chat_template",
         "task_name": "translate",
-        "input_key": ["summarization",language],
+        "input_key": ["summarization_result","language"],
         "input_data_type": ["string","string"],
         "output_key": "translation",
         "output_data_type": "string",
