@@ -18,7 +18,7 @@ def init(title=""):
     return IMPORTS_CODE_SNIPPET
 
 
-def getCodeSnippet(task,code_snippets):
+def getCodeSnippet(task,code_snippets,iters):
     task = refineKeyTypeCompatiblity(task)
     task_type = task["task_type"]
     code = ""
@@ -30,16 +30,18 @@ def getCodeSnippet(task,code_snippets):
         res = ""
         is_valid = False
         res = TaskChains.promptChatTemplate(task=task,code_snippets=code_snippets)
-        print("first res:",res,sep="\n")
+        index = 0
         while not is_valid:
             check = checkPromptTemplates(res,task)
             is_valid = check["valid"]
             feedback = check["feedback"]
             if not is_valid:
                 res = TaskChains.promptTemplateRefiner(res,feedback)
-                print("refined res:",res,sep="\n")
             else:
                 break   
+            index += 1
+            if index == iters:
+                break
         code = getPromptChatTemplateCode(res, task)
     elif task_type == "path_to_content":
         code = TaskChains.pathToContent(task=task,code_snippets=code_snippets)
