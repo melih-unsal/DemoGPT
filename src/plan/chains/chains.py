@@ -62,9 +62,7 @@ class Chains:
             tasks=tasks,
             feedback=feedback
         )
-        
-        print("new task list:",task_list,sep="\n")
-        
+                
         return json.loads(task_list)
     
     @classmethod
