@@ -13,14 +13,16 @@ from tqdm import tqdm
 
 
 class TestDemoGPT(unittest.TestCase):
-    INSTRUCTION = INSTRUCTIONS[-4]
+    TEST_INDEX = 6
+    INSTRUCTION = INSTRUCTIONS[TEST_INDEX]
+    REFINE_ITERATIONS = 10
     #"Create a system that can summarize a content taken from url then create a blog post on the summarization"
     #"Create a system that can solve any math problem"
     TITLE = "My App"
 
     @classmethod
     def setUpClass(cls):
-        cls.f = open("test.log", "w")
+        cls.f = open(f"test_{TestDemoGPT.TEST_INDEX}.log", "w")
         
         # it sets the model name
         model_name = "gpt-3.5-turbo-0613"
@@ -106,8 +108,23 @@ class TestDemoGPT(unittest.TestCase):
         task_list = Chains.tasks(instruction=instruction, plan=plan)
 
         self.writeToFile("TASK LIST",json.dumps(task_list, indent=4),instruction)
+        
+        task_controller_result = Chains.taskController(tasks=task_list)
+        
+        self.writeToFile("TASK CONTROLLER RESULT",json.dumps(task_controller_result, indent=4),instruction)
+        for _ in range(TestDemoGPT.REFINE_ITERATIONS):
+            if not task_controller_result["valid"]:
+                task_list = Chains.refineTasks(instruction=instruction, tasks=task_list, feedback = task_controller_result["feedback"])
+                self.writeToFile("REFINED TASK LIST",json.dumps(task_list, indent=4),instruction)
+                task_controller_result = Chains.taskController(tasks=task_list)
+            else:
+                break
+        
+            self.writeToFile("FEEDBACK",task_controller_result["feedback"],instruction)
+            
+        
     
-        code_snippets = utils.IMPORTS_CODE_SNIPPET + f"\nst.title('{title}')\n"
+        code_snippets = utils.init(title)
 
         self.writeToFile("CODE SNIPPETS","",instruction)
 
@@ -117,11 +134,15 @@ class TestDemoGPT(unittest.TestCase):
             code_snippets += code
             self.writeToFile("",code,"")
 
-        final_code = Chains.final(instruction=instruction,
+        draft_code = Chains.draft(instruction=instruction,
                                   code_snippets=code_snippets,
                                   plan=plan
                                   )
-
+        
+        self.writeToFile("COMBINED CODE",draft_code,instruction)
+        
+        final_code = Chains.final(draft_code=draft_code)
+        
         self.writeFinalToFile(final_code,instruction)
 
     def test_all(self):

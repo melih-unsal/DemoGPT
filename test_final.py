@@ -1,4 +1,4 @@
-#Create a system that can generate blog post related to a website then summarize it
+#Create a system that generates random programming related humors when 'laugh' button is clicked without any user input by AI
 import streamlit as st
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
@@ -8,71 +8,38 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 from langchain.document_loaders import *
 from langchain.chains.summarize import load_summarize_chain
 import tempfile
+from langchain.docstore.document import Document
 
-st.title('My App')
+def generate_humor():
+    st.markdown("### Programming Humor")
+    st.write("Why do programmers prefer dark mode?")
+    st.write("Because light attracts bugs!")
 
-# Get website URL from the user
-url = st.text_input("Enter website URL")
-
-# Load the website as a Document from the given URL
-def load_website(url):
-    from langchain.document_loaders import WebBaseLoader
-    loader = WebBaseLoader(url)
-    docs = loader.load()
-    return docs
-
-# Convert the Document to string content
-content = ""
-if url:
-    website = load_website(url)
-    content = "".join([doc.page_content for doc in website])
-
-# Generate a blog post related to the string content
-def blogPostGenerator(content):
+def randomHumorGenerator():
     chat = ChatOpenAI(
         model="gpt-3.5-turbo-16k",
         temperature=0.7
     )
-    system_template = """You are an assistant designed to write a blog post related to the given content: '{content}'."""
+    system_template = """You are a programming humor generator. Your task is to generate a random programming-related joke or humorous statement when the 'Laugh' button is clicked."""
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-    human_template = """Please compose a blog post based on the following content: '{content}'."""
+    human_template = """Click the 'Laugh' button to generate a random programming-related joke or humorous statement."""
     human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
     chat_prompt = ChatPromptTemplate.from_messages(
         [system_message_prompt, human_message_prompt]
     )
 
     chain = LLMChain(llm=chat, prompt=chat_prompt)
-    result = chain.run(content=content)
+    result = chain.run({})
     return result # returns string   
 
-blog_post = ""
-if content:
-    blog_post = blogPostGenerator(content)
+st.title('My App')
 
-# Display the generated blog post to the user
-st.markdown(blog_post)
+laugh_button = st.button("Laugh")
 
-# Summarize the blog post
-def summarize_blog_post(docs):
-    llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
-    chain = load_summarize_chain(llm, chain_type="stuff")
-    return chain.run(docs)
+if laugh_button:
+    generate_humor()
 
-summary = ""
-if blog_post:
-    summary = summarize_blog_post(blog_post)
-
-# Display the summarized blog post to the user
-st.markdown(summary)
-
-# Add a button to start the process
-if st.button("Generate Blog Post and Summary"):
-    if url:
-        website = load_website(url)
-        content = "".join([doc.page_content for doc in website])
-        if content:
-            blog_post = blogPostGenerator(content)
-            if blog_post:
-                summary = summarize_blog_post(blog_post)
-                st.markdown(blog_post)
-                st.markdown(summary)
+if laugh_button:
+    humor = randomHumorGenerator()
+    st.markdown("### Generated Humor")
+    st.write(humor)

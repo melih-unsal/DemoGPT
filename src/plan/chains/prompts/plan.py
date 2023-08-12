@@ -22,6 +22,8 @@ Highly pay attention to the input data type and the output data type of the task
 When you create a step in the plan, its input data type 
 either should be none or the output data type of the caller step. 
 
+If you use a task in a step, highly pay attention to the input data type and the output data type of the task because it should be compatible with the step.
+
 """
 
 human_template = """

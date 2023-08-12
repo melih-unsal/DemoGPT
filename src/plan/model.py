@@ -11,6 +11,7 @@ class Model:
     def __init__(self, openai_api_key="sk-", model_name="gpt-3.5-turbo"):
         self.model_name = model_name
         self.openai_api_key = openai_api_key
+        self.REFINE_ITERATIONS = 10
         Chains.setLlm(self.model_name, self.openai_api_key)
         TaskChains.setLlm(self.model_name, self.openai_api_key)
 
@@ -62,7 +63,26 @@ class Model:
             "message": "Tasks have been generated.",
             "tasks": task_list,
         }
-
+        
+        sleep(1)
+        
+        yield {
+            "stage": "task",
+            "completed": True,
+            "percentage": 55,
+            "done": False,
+            "message": "Tasks are being controlled."
+        }
+        
+        task_controller_result = Chains.taskController(tasks=task_list)
+        
+        for _ in range(self.REFINE_ITERATIONS):
+            if not task_controller_result["valid"]:
+                task_list = Chains.refineTasks(instruction=instruction, tasks=task_list, feedback = task_controller_result["feedback"])
+                task_controller_result = Chains.taskController(tasks=task_list)
+            else:
+                break
+        
         code_snippets = utils.init(title)
 
         sleep(1)
@@ -79,6 +99,7 @@ class Model:
 
         for i, task in enumerate(task_list):
             code = utils.getCodeSnippet(task,code_snippets)
+            code = "#"+task["description"] + "\n" + code
             code_snippets += code
             yield {
                 "stage": "draft",
@@ -90,18 +111,29 @@ class Model:
             }
 
         sleep(1)
-
+        
         yield {
-            "stage": "final",
+            "stage": "draft",
+            "completed": False,
+            "percentage": 85,
+            "done": False,
+            "message": "Code snippets are being combined...",
+        }
+        
+        draft_code = Chains.draft(instruction=instruction,
+                                  code_snippets=code_snippets,
+                                  plan=plan
+                                  )
+        
+        yield {
+            "stage": "draft",
             "completed": False,
             "percentage": 90,
             "done": False,
-            "message": "Final code generation has started...",
+            "message": "Code snippets combined. Now code is being finalized...",
         }
 
-        final_code = Chains.final(
-            instruction=instruction, code_snippets=code_snippets, plan=plan
-        )
+        final_code = Chains.final(draft_code=draft_code)
 
         yield {
             "stage": "final",

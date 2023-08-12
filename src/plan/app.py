@@ -47,9 +47,9 @@ openai_api_key = st.sidebar.text_input(
 )
 
 models = (
+    "gpt-3.5-turbo-0613",
     "gpt-3.5-turbo-0301",
     "gpt-3.5-turbo",
-    "gpt-3.5-turbo-0613",
     "gpt-3.5-turbo-16k",
     "gpt-3.5-turbo-16k-0613",
     "gpt-4",
@@ -97,7 +97,10 @@ if submitted:
 
         if st.session_state["pid"] != -1:
             logging.info(f"Terminating the previous applicaton ...")
-            os.kill(st.session_state["pid"], signal.SIGTERM)
+            try:
+                os.kill(st.session_state["pid"], signal.SIGTERM)
+            except Exception as e:
+                pass
             st.session_state["pid"] = -1
 
         code_empty = st.empty()

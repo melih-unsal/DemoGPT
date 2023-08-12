@@ -7,7 +7,7 @@ Here is the part of the code that you are supposed to continue:
 """ 
 
 human_template = """
-Write a function to load the file from the path for the argument name, variable and instruction below:
+Write a function to load the file from the path for the argument name, variable and instruction below and also check if the path is not empty:
 Instruction:{instruction}
 Argument Name : {argument}
 Variable Name : {variable}

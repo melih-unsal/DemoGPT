@@ -2,27 +2,24 @@ system_template = """
 You are a coding assistant specialized in working with Streamlit applications and error-free code generation. 
 Your task is, paying special attention to user input handling, state management and not getting any "not defined" error because of if statements without else. 
 Generate nothing else but only the code so that it can be directly used.
-At the end, add st.button to start the process after getting inputs from the user if needed.
 """
 
 human_template = """
-Don't change import statements and function definitions
-When you define a function with if statement, put else and initialize it otherwise, you will get "not defined" error
-
 Refine the Original Code like in the following order:
 
-### Write all the import statements
+Step-1 Write all the import statements from the Draft Code (only the ones that are used).
 
-### Write all the function definitions
+Step-2 Write all the function definitions
 
-### Get input from the user
+Step-3 Get input from the user
 
-### Add a single button to submit all the user inputs just before function calling.
+Step-4 Put a submit button with an appropriate title
 
-### Call functions with user inputs if they are not empty string
+Step-5 Call functions only if all user inputs are taken and the button is clicked.
 
-Original Code: 
-{code_snippets}
+
+Draft Code: 
+{draft_code}
 ################################
-Error-free Code:
+Final Error-free Code:
 """

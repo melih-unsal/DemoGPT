@@ -99,8 +99,19 @@ class TaskChains:
             inputs=inputs,
             code_snippets=code_snippets
         )
-        start_index = res.find("{")
-        return res[start_index:]
+        res = res[res.find("{"):res.rfind("}")+1]
+        return json.loads(res)
+    
+    @classmethod
+    def promptTemplateRefiner(cls, templates,feedback):
+        res = cls.getChain(
+            system_template=prompts.prompt_chat_refiner.system_template,
+            human_template=prompts.prompt_chat_refiner.human_template,
+            templates=templates,
+            feedback=feedback
+        )
+        res = res[res.find("{"):res.rfind("}")+1]
+        return json.loads(res)
     
     @classmethod
     def docLoad(cls, task,code_snippets):
@@ -121,6 +132,17 @@ class TaskChains:
             code_snippets=code_snippets
         )
         return utils.refine(code)
+    
+    @classmethod
+    def stringToDoc(cls, task, code_snippets):
+        argument = task["input_key"]
+        variable = task["output_key"]
+        code =f'{variable} = "\".join([doc.page_content for doc in {argument}])'
+        code = f"""
+from langchain.docstore.document import Document
+{variable} =  [Document(page_content={argument}, metadata={{'source': 'local'}})]
+        """
+        return code
     
     @classmethod
     def docToString(cls, task, code_snippets):

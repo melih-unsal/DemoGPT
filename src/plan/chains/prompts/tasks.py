@@ -120,8 +120,8 @@ List of Task Objects (Python List of JSON):
         "step": 2,
         "task_type": "doc_loader",
         "task_name": "doc_loader",
-        "input_key": ["url"],
-        "input_data_type": ["string"],
+        "input_key": "url",
+        "input_data_type": "string",
         "output_key": "docs",
         "output_data_type": "Document",
         "description": "Load the document from the website url"
@@ -192,8 +192,8 @@ List of Task Objects (Python List of JSON):
         "step": 3,
         "task_type": "doc_loader",
         "task_name": "doc_loader",
-        "input_key": ["file_path"],
-        "input_data_type": ["string"],
+        "input_key": "file_path",
+        "input_data_type": "string",
         "output_key": "docs",
         "output_data_type": "Document",
         "description": "Load the document from the given path"

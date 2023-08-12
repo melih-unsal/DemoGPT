@@ -8,6 +8,7 @@ import threading
 from subprocess import PIPE, Popen
 
 from chains.chains import Chains
+from chains.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
 from chains.task_chains import TaskChains
 
 
@@ -18,6 +19,7 @@ def init(title=""):
 
 
 def getCodeSnippet(task,code_snippets):
+    task = refineKeyTypeCompatiblity(task)
     task_type = task["task_type"]
     code = ""
     if task_type == "ui_input_text":
@@ -25,12 +27,26 @@ def getCodeSnippet(task,code_snippets):
     elif task_type == "ui_output_text":
         code = TaskChains.uiOutputText(task=task,code_snippets=code_snippets)
     elif task_type == "prompt_chat_template":
+        res = ""
+        is_valid = False
         res = TaskChains.promptChatTemplate(task=task,code_snippets=code_snippets)
+        print("first res:",res,sep="\n")
+        while not is_valid:
+            check = checkPromptTemplates(res,task)
+            is_valid = check["valid"]
+            feedback = check["feedback"]
+            if not is_valid:
+                res = TaskChains.promptTemplateRefiner(res,feedback)
+                print("refined res:",res,sep="\n")
+            else:
+                break   
         code = getPromptChatTemplateCode(res, task)
     elif task_type == "path_to_content":
         code = TaskChains.pathToContent(task=task,code_snippets=code_snippets)
     elif task_type == "doc_to_string":
         code = TaskChains.docToString(task=task,code_snippets=code_snippets)
+    elif task_type == "string_to_doc":
+        code = TaskChains.stringToDoc(task=task,code_snippets = code_snippets)
     elif task_type == "ui_input_file":
         code = TaskChains.uiInputFile(task=task,code_snippets=code_snippets)
     elif task_type == "doc_loader":
@@ -48,13 +64,9 @@ def refine(code):
     return code
 
 
-def getPromptChatTemplateCode(res, task):
-    print("res:",res)
+def getPromptChatTemplateCode(templates, task):
     inputs = task["input_key"]
-    templates = json.loads(res)
     variable = task["output_key"]
-    button_text = templates["button_text"]
-    button = [f"st.button('{button_text}')"]
     run_call = "{}"
 
     if inputs == "none":
@@ -154,4 +166,5 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 from langchain.document_loaders import *
 from langchain.chains.summarize import load_summarize_chain
 import tempfile
+from langchain.docstore.document import Document
 """

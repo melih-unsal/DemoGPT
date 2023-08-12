@@ -3,6 +3,7 @@ import os
 
 import chains.prompts as prompts
 import utils
+from chains.controllers import checkDTypes
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
@@ -44,17 +45,44 @@ class Chains:
             system_template=prompts.tasks.system_template,
             human_template=prompts.tasks.human_template,
             instruction=instruction,
-            plan=plan,
+            plan=plan
         )
         return json.loads(task_list)
-
+    
     @classmethod
-    def final(cls, instruction, code_snippets, plan):
+    def taskController(cls, tasks):
+        return checkDTypes(tasks)
+    
+    @classmethod
+    def refineTasks(cls, instruction, tasks, feedback):
+        task_list = cls.getChain(
+            system_template=prompts.task_refiner.system_template,
+            human_template=prompts.task_refiner.human_template,
+            instruction=instruction,
+            tasks=tasks,
+            feedback=feedback
+        )
+        
+        print("new task list:",task_list,sep="\n")
+        
+        return json.loads(task_list)
+    
+    @classmethod
+    def draft(cls, instruction, code_snippets, plan):
         code = cls.getChain(
-            system_template=prompts.final.system_template,
-            human_template=prompts.final.human_template,
+            system_template=prompts.combine.system_template,
+            human_template=prompts.combine.human_template,
             instruction=instruction,
             code_snippets=code_snippets,
             plan=plan,
+        )
+        return utils.refine(code)
+
+    @classmethod
+    def final(cls, draft_code):
+        code = cls.getChain(
+            system_template=prompts.final.system_template,
+            human_template=prompts.final.human_template,
+            draft_code=draft_code
         )
         return utils.refine(code)
