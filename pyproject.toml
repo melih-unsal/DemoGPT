@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "demogpt"
-version = "1.1.2.6"
+version = "1.1.2.7"
 description = "Auto Gen-AI App Generator with the Power of Llama 2"
 authors = ["Melih Unsal <melih@demogpt.io>"]
 license = "MIT"
