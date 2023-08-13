@@ -181,6 +181,7 @@ print(code)
 Example Output (truncated):
 
 ```bash
+# phases
 {'stage': 'draft', 'completed': False, 'percentage': 60, ...}
 {'stage': 'draft', 'completed': False, 'percentage': 64, 'code': '#Get the source language ...'}
 ...
@@ -188,6 +189,7 @@ Example Output (truncated):
 ```
 
 ```python
+# Code
 import streamlit as st
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
