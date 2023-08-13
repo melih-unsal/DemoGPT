@@ -167,7 +167,7 @@ You can now use DemoGPT as a library in your Python applications:
 
 ```python
 from demogpt import DemoGPT
-agent = DemoGPT(model_name="gpt-3.5-turbo")
+agent = DemoGPT(model_name="gpt-3.5-turbo") # if OPENAI_API_KEY is not set in env variables, put it with openai_api_key argument
 instruction = "Your instruction here"
 title = "Your title here"
 code = ""
