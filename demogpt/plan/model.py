@@ -1,4 +1,4 @@
-import json
+import os
 from time import sleep
 
 from plan.utils import init, getCodeSnippet
@@ -8,10 +8,11 @@ from tqdm import trange
 
 
 class DemoGPT:
-    def __init__(self, openai_api_key="sk-", model_name="gpt-3.5-turbo"):
+    def __init__(self, openai_api_key=os.getenv("OPENAI_API_KEY",""), model_name="gpt-3.5-turbo-0613",max_steps=10):
+        assert openai_api_key.startswith("sk-"), "Either give openai_api_key as an argument or put it in the environment variable"
         self.model_name = model_name
         self.openai_api_key = openai_api_key
-        self.REFINE_ITERATIONS = 10
+        self.max_steps = max_steps # max iteration for refining the model purpose
         Chains.setLlm(self.model_name, self.openai_api_key)
         TaskChains.setLlm(self.model_name, self.openai_api_key)
 
@@ -19,6 +20,9 @@ class DemoGPT:
         self.model_name = model_name
         Chains.setLlm(self.model_name, self.openai_api_key)
         TaskChains.setLlm(self.model_name, self.openai_api_key)
+        
+    def __repr__(self) -> str:
+        return f"DemoGPT(model_name='{self.model_name}',max_steps={self.max_steps})"
 
     def __call__(
         self,
@@ -76,7 +80,7 @@ class DemoGPT:
         
         task_controller_result = Chains.taskController(tasks=task_list)
         
-        for _ in trange(self.REFINE_ITERATIONS):
+        for _ in trange(self.max_steps):
             if not task_controller_result["valid"]:
                 task_list = Chains.refineTasks(instruction=instruction, tasks=task_list, feedback = task_controller_result["feedback"])
                 task_controller_result = Chains.taskController(tasks=task_list)
@@ -98,7 +102,7 @@ class DemoGPT:
         num_of_tasks = len(task_list)
 
         for i, task in enumerate(task_list):
-            code = getCodeSnippet(task,code_snippets,self.REFINE_ITERATIONS)
+            code = getCodeSnippet(task,code_snippets,self.max_steps)
             code = "#"+task["description"] + "\n" + code
             code_snippets += code
             yield {
@@ -107,7 +111,7 @@ class DemoGPT:
                 "percentage": 60 + int(20 * (i + 1) / num_of_tasks),
                 "done": False,
                 "message": f"{i+1}/{num_of_tasks} tasks have been converted to code",
-                "code": code_snippets,
+                "code": code,
             }
 
         sleep(1)
@@ -127,7 +131,7 @@ class DemoGPT:
         
         yield {
             "stage": "draft",
-            "completed": False,
+            "completed": True,
             "percentage": 90,
             "done": False,
             "message": "Code snippets combined. Now code is being finalized...",
