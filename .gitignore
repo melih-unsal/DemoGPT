@@ -14,8 +14,6 @@ src/beta/goals_db/
 db_tutorials/
 src/beta/langchain_db_python/
 src/beta/langchain_code/
-prompt_chat_template.py
-
 
 quick_start.txt
 
