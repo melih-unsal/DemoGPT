@@ -7,9 +7,8 @@ import tempfile
 import threading
 from subprocess import PIPE, Popen
 
-from chains.chains import Chains
-from chains.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
-from chains.task_chains import TaskChains
+from plan.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
+from plan.chains.task_chains import TaskChains
 
 
 def init(title=""):

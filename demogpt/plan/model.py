@@ -1,13 +1,13 @@
 import json
 from time import sleep
 
-import utils
-from chains.chains import Chains
-from chains.task_chains import TaskChains
-from tqdm import tqdm
+from plan.utils import init, getCodeSnippet
+from plan.chains.chains import Chains
+from plan.chains.task_chains import TaskChains
+from tqdm import trange
 
 
-class Model:
+class DemoGPT:
     def __init__(self, openai_api_key="sk-", model_name="gpt-3.5-turbo"):
         self.model_name = model_name
         self.openai_api_key = openai_api_key
@@ -76,14 +76,14 @@ class Model:
         
         task_controller_result = Chains.taskController(tasks=task_list)
         
-        for _ in range(self.REFINE_ITERATIONS):
+        for _ in trange(self.REFINE_ITERATIONS):
             if not task_controller_result["valid"]:
                 task_list = Chains.refineTasks(instruction=instruction, tasks=task_list, feedback = task_controller_result["feedback"])
                 task_controller_result = Chains.taskController(tasks=task_list)
             else:
                 break
         
-        code_snippets = utils.init(title)
+        code_snippets = init(title)
 
         sleep(1)
 
@@ -98,7 +98,7 @@ class Model:
         num_of_tasks = len(task_list)
 
         for i, task in enumerate(task_list):
-            code = utils.getCodeSnippet(task,code_snippets,self.REFINE_ITERATIONS)
+            code = getCodeSnippet(task,code_snippets,self.REFINE_ITERATIONS)
             code = "#"+task["description"] + "\n" + code
             code_snippets += code
             yield {

@@ -1,8 +1,8 @@
 import json
 import os
 
-import chains.prompts as prompts
-import utils
+from .chains import prompts
+from .. import utils
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI

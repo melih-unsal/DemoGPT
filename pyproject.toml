@@ -10,10 +10,10 @@ authors = ["Melih Unsal <melih@demogpt.io>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/melih-unsal/DemoGPT"
-include = ["src/prompt_based/prompts.txt"]
+include = ["demogpt/prompt_based/prompts.txt"]
 packages = [
-    { include = "plan", from = "src" },
-    { include = "prompt_based", from = "src" }
+    { include = "plan", from = "demogpt" },
+    { include = "prompt_based", from = "demogpt" }
 ]
 
 [tool.poetry.dependencies]

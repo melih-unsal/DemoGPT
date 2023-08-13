@@ -5,8 +5,8 @@ import webbrowser
 from time import sleep
 
 import streamlit as st
-import utils
-from model import Model
+from utils import runStreamlit
+from model import DemoGPT
 
 # logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
 
@@ -92,7 +92,7 @@ if submitted:
         bar = progressBar(0)
         container = st.container()
 
-        agent = Model(openai_api_key=openai_api_key)
+        agent = DemoGPT(openai_api_key=openai_api_key)
         agent.setModel(model_name)
 
         if st.session_state["pid"] != -1:
@@ -118,7 +118,7 @@ if submitted:
                 with st.expander("Code"):
                     st.code(code)
                 example_submitted = False
-                st.session_state["pid"] = utils.runStreamlit(code, openai_api_key)
+                st.session_state["pid"] = runStreamlit(code, openai_api_key)
                 break
             else:
                 container.info("🧩 " + message)

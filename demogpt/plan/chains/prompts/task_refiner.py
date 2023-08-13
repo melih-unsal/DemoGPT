@@ -1,4 +1,4 @@
-from chains.task_definitions import TASK_DESCRIPTIONS
+from .task_definitions import TASK_DESCRIPTIONS
 
 system_template = f"""
 Refine the Generated Task List according to the Feedback

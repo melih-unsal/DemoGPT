@@ -1,4 +1,4 @@
-from chains.task_definitions import TASK_DESCRIPTIONS
+from .task_definitions import TASK_DESCRIPTIONS
 
 system_template = f"""
 You are helpful assistant for checking if the "Generated Tasks" are correct in terms of input_data_type, output_data_type and their connections.

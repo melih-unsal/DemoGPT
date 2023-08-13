@@ -1,16 +1,16 @@
 import json
 import os
 
-import chains.prompts as prompts
-import utils
-from chains.controllers import checkDTypes
+from . import prompts
+
+from .. import utils
+from ..controllers import checkDTypes
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
-
 
 class Chains:
     @classmethod
