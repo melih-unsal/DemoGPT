@@ -5,3 +5,4 @@ langchain_experimental
 openai
 tiktoken
 python-dotenv
+trubrics

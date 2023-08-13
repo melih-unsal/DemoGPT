@@ -38,7 +38,7 @@ class BaseModel:
         """
         self.openai_api_key = openai_api_key
         self.llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.0)
-
+        
     def refine_code(self, code):
         """
         Refines the provided code by removing unnecessary parts.
@@ -284,7 +284,33 @@ class StreamlitModel(BaseModel):
         tmp = tempfile.NamedTemporaryFile(
             "w", suffix=".py", delete=False, encoding="utf-8"
         )
-        tmp.write(self.normalize(code))
+
+        trubrics_feedback_code = """
+from trubrics.integrations.streamlit import FeedbackCollector
+
+email = st.secrets.get("TRUBRICS_EMAIL")
+password = st.secrets.get("TRUBRICS_PASSWORD")
+
+model_name = "{model_name}"
+collector = FeedbackCollector(
+        component_name="default",
+        email=email,
+        password=password,
+                        )
+
+feedback_generated_code = collector.st_feedback(
+                            feedback_type="thumbs",
+                            model=model_name,
+                            open_feedback_label="[Optional] Provide additional feedback",
+                            metadata={{"response": 'result', "prompt": 'prompt'}},
+                            tags=["generated_code"],
+                        
+)
+    """ 
+        trubrics_feedback_code = trubrics_feedback_code.format(model_name=self.llm.model_name)
+
+        tmp.write(self.normalize(code + trubrics_feedback_code))
+
         tmp.flush()
         environmental_variables = {
             "OPENAI_API_KEY": self.openai_api_key,
