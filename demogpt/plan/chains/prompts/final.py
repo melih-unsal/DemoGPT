@@ -8,7 +8,7 @@ Generate nothing else but only the code so that it can be directly used.
 human_template = """
 Refine the Original Code like in the following order:
 
-Step-1 Write all the import statements from the Draft Code (only the ones that are used).
+Step-1 Write all the import statements from the Draft Code.
 
 Step-2 Write all the function definitions
 
@@ -22,5 +22,5 @@ Step-5 Call functions only if all user inputs are taken and the button is clicke
 Draft Code: 
 {draft_code}
 ################################
-Final Error-free Code:
+Final Code:
 """

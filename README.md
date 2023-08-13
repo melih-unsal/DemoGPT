@@ -161,7 +161,43 @@ If you want to run the previous version, you can do so by using the **--basic** 
 demogpt --basic
 ```
 
-### For the Source Code Version
+## 📖 For the Library Version
+
+You can now use DemoGPT as a library in your Python applications:
+
+```python
+from demogpt import DemoGPT
+agent = DemoGPT(model_name="gpt-3.5-turbo")
+instruction = "Your instruction here"
+title = "Your title here"
+code = ""
+for phase in agent(instruction=instruction, title=title):
+    print(phase) # this will display the resulting json for each generation stage
+    if "code" in phase:
+        code = phase["code"] # final code
+print(code)
+```
+
+Example Output (truncated):
+
+```bash
+{'stage': 'draft', 'completed': False, 'percentage': 60, ...}
+{'stage': 'draft', 'completed': False, 'percentage': 64, 'code': '#Get the source language ...'}
+...
+{'stage': 'final', 'completed': True, 'percentage': 100, ... , 'code': 'import streamlit as st\n...'}
+```
+
+```python
+import streamlit as st
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (ChatPromptTemplate,
+                                    HumanMessagePromptTemplate,
+                                    SystemMessagePromptTemplate)
+...
+```
+
+### 🌐 For the Source Code Version
 
 If you have cloned the repository and wish to run the source code version, you can use DemoGPT by running the following command:
 

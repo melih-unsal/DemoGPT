@@ -1,9 +1,9 @@
 import os
 from time import sleep
 
-from plan.utils import init, getCodeSnippet
-from plan.chains.chains import Chains
-from plan.chains.task_chains import TaskChains
+from demogpt.plan.utils import init, getCodeSnippet
+from demogpt.plan.chains.chains import Chains
+from demogpt.plan.chains.task_chains import TaskChains
 from tqdm import trange
 
 

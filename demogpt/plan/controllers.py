@@ -1,4 +1,4 @@
-from plan.chains.prompts.task_definitions import TASK_TYPE2_TASK
+from demogpt.plan.chains.prompts.task_definitions import TASK_TYPE2_TASK
 
 def refineKeyTypeCompatiblity(task):
     if task["input_data_type"] == "none":

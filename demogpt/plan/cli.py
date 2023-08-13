@@ -4,7 +4,7 @@ import os
 import subprocess
 import sys
 
-from prompt_based.cli import \
+from demogpt.prompt_based.cli import \
     main as plan_main  # Make sure to import the plan.cli module appropriately
 
 

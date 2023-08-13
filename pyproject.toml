@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "demogpt"
-version = "1.1.2.9"
+version = "1.1.2.3"
 description = "Auto Gen-AI App Generator with the Power of Llama 2"
 authors = ["Melih Unsal <melih@demogpt.io>"]
 license = "MIT"
@@ -12,8 +12,7 @@ readme = "README.md"
 homepage = "https://github.com/melih-unsal/DemoGPT"
 include = ["demogpt/prompt_based/prompts.txt"]
 packages = [
-    { include = "plan", from = "demogpt" },
-    { include = "prompt_based", from = "demogpt" }
+    { include = "demogpt" }
 ]
 
 [tool.poetry.dependencies]
@@ -28,7 +27,7 @@ python-dotenv = "*"
 [tool.poetry.dev-dependencies]
 
 [tool.poetry.scripts]
-demogpt = "plan.cli:main"
+demogpt = "demogpt.plan.cli:main"
 
 [tool.poetry.urls]
 "Homepage" = "https://github.com/melih-unsal/DemoGPT"
