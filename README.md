@@ -166,13 +166,13 @@ demogpt --basic
 If you have cloned the repository and wish to run the source code version, you can use DemoGPT by running the following command:
 
 ```sh
-streamlit run src/plan/app.py
+streamlit run demogpt/plan/app.py
 ```
 
 If you want to run the previous version of DemoGPT, you can use the following command:
 
 ```sh
-streamlit run src/prompt_based/app.py
+streamlit run demogpt/prompt_based/app.py
 ```
 
 ## To-Do 📝
