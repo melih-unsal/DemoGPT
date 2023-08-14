@@ -147,7 +147,7 @@ pip install demogpt
 
 ## 🎮 Usage
 
-### For the Package Version
+### 📦 For the Package Version
 
 Once the DemoGPT package is installed, you can use it by running the following command in your terminal:
 
