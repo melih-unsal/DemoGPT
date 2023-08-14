@@ -161,7 +161,7 @@ If you want to run the previous version, you can do so by using the **--basic** 
 demogpt --basic
 ```
 
-### 📖 For the Python Interface
+### 🐍 For the Python Interface
 
 You can now use DemoGPT as a library in your Python applications:
 
