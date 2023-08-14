@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-        <title>Streamlit Application Documentation - 🧩 DemoGPT</title>
+        <title>Python Interface - 🧩 DemoGPT</title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -99,6 +99,13 @@
                 </a>
             </li>
             <li class="drac-box">
+                <a href="./"
+                    class=" active 
+                    drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
+                    Python Interface
+                </a>
+            </li>
+            <li class="drac-box">
                 <a href="../src_plan/"
                     class="
                     drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
@@ -158,6 +165,22 @@
                     <!-- block preview -->
                     <li class="nav-item">
                             
+        <div class="container">
+            <div class="row row-preview">
+                <div class="col">
+                    <a href="../pipeline/"
+                        class="btn-preview drac-btn drac-btn-outline drac-text-white drac-text-cyan-green--hover">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="../src_plan/"
+                        class="btn-preview drac-btn drac-btn-outline drac-text-white drac-text-cyan-green--hover" style="padding-left: 3%;">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
                     </li>
                     <!--  endblock -->
 
@@ -188,27 +211,113 @@
             <!-- block content -->
                 <section class="p-md-5 section-content">
     <article>
-        <p><h1 id="streamlit-application-documentation">Streamlit Application Documentation</h1>
-<h2 id="introduction">Introduction</h2>
-<p>This Python Streamlit application uses <code>LogicModel</code> and <code>StreamlitModel</code> from the <code>model</code> module to generate and execute Python code based on user input. The user can input their idea, and the application will generate code, refine it, test it, and display the results. The Streamlit web app allows users to interact with the model in real time, which is particularly useful for demonstrating the capabilities of the models.</p>
-<h2 id="application-flow">Application Flow</h2>
-<h3 id="importing-dependencies">Importing Dependencies</h3>
-<p>At the beginning of the application, all necessary modules such as <code>streamlit</code>, <code>model</code>, <code>os</code>, <code>logging</code>, <code>webbrowser</code>, and <code>signal</code> are imported. The logging level is set to DEBUG with the format 'levelname-message'.</p>
-<h3 id="loading-environment-variables">Loading Environment Variables</h3>
-<p>The application tries to load environment variables using the <code>dotenv</code> module. If the module is not present, it logs an error message but continues to execute the application.</p>
-<h3 id="generate-response">Generate Response</h3>
-<p>The function <code>generate_response</code> uses the <code>LogicModel</code> to generate responses for the given text. It's a generator function yielding the output of the <code>LogicModel</code> in each iteration.</p>
-<h3 id="streamlit-configuration">Streamlit Configuration</h3>
-<p>The title of the Streamlit page is set using <code>st.set_page_config</code>.</p>
-<h3 id="input-fields">Input Fields</h3>
-<p>Input fields for the OpenAI API Key, demo title, and demo idea are created using <code>st.sidebar.text_input</code>, <code>st.text_input</code>, and <code>st.text_area</code> respectively. The OpenAI API Key defaults to the value of the environment variable 'OPENAI_API_KEY'.</p>
-<h3 id="submission-form">Submission Form</h3>
-<p>A form is created to handle the submission of user input. If the user submits the form, the application checks if a valid OpenAI API Key is entered. If not, it displays a warning message.</p>
-<p>If the input is valid, instances of <code>LogicModel</code> and <code>StreamlitModel</code> are created with the provided OpenAI API Key.</p>
-<h3 id="running-the-model">Running the Model</h3>
-<p>The application then enters a loop where it generates, refines, tests and executes code using the <code>LogicModel</code>. The progress of this process is displayed on a Streamlit progress bar.</p>
-<p>If the code execution is successful, it launches a new Streamlit application running the generated code and opens the new application in the web browser.</p>
-<p>In case the execution was not successful, the application refines the code and retries. If all attempts are unsuccessful, it reports a failure.</p></p>
+        <p><h1 id="demogpt-python-interface">DemoGPT Python Interface</h1>
+<p>DemoGPT now offers a Python interface, enabling seamless integration into your Python applications.</p>
+<h2 id="using-the-python-interface">🐍 Using the Python Interface</h2>
+<p>To incorporate DemoGPT into your Python applications, follow the steps below.</p>
+<h3 id="integration-steps">Integration Steps:</h3>
+<h4 id="1-import-the-necessary-module">1. Import the necessary module:</h4>
+<pre><code class="language-python">from demogpt import DemoGPT
+</code></pre>
+<h4 id="2instantiate-the-demogpt-agent">2.Instantiate the DemoGPT agent:</h4>
+<p>To initialize the DemoGPT agent, use the <code>DemoGPT</code> class. It accepts three arguments:</p>
+<ul>
+<li><strong><code>model_name</code></strong>: Specifies the name of the model you wish to use. By default, this is set to <code>"gpt-3.5-turbo-0613"</code>.</li>
+<li><strong><code>openai_api_key</code></strong>: This is where you input your OpenAI API key. If you haven't set the <code>OPENAI_API_KEY</code> in your environment variables, you can pass it directly using this argument.</li>
+<li><strong><code>max_steps</code></strong>: This determines the number of steps used for refining the model's response during the internal workflow. By default, this is set 10</li>
+</ul>
+<pre><code class="language-python">agent = DemoGPT(model_name=&quot;gpt-3.5-turbo-0613&quot;, openai_api_key=&quot;YOUR_API_KEY&quot;, max_steps=10)
+</code></pre>
+<h4 id="3set-your-instruction-and-title">3.Set your instruction and title:</h4>
+<pre><code class="language-python">instruction = &quot;Your instruction here&quot;
+title = &quot;Your title here&quot;
+</code></pre>
+<h4 id="4iterate-through-the-generation-stages-and-extract-the-final-code">4.Iterate through the generation stages and extract the final code:</h4>
+<pre><code class="language-python">code = &quot;&quot;
+for phase in agent(instruction=instruction, title=title):
+    print(phase)  # This will display the resulting JSON for each generation stage.
+    if phase[&quot;done&quot;]:
+        code = phase[&quot;code&quot;]  # Extract the final code.
+print(code)
+</code></pre>
+<h3 id="generation-stages">Generation Stages:</h3>
+<p>DemoGPT progresses through various stages to produce the final code. During each stage, it returns a JSON object containing the following key-value pairs:</p>
+<ul>
+<li><code>stage</code>: The current stage, which could be "plan", "task", "draft", or "final".</li>
+<li><code>completed</code>: A boolean indicating whether the stage has completed.</li>
+<li><code>percentage</code>: Represents the progress percentage of the code generation.</li>
+<li><code>done</code>: A boolean indicating if the entire process has been completed.</li>
+<li><code>message</code>: An informational message about the current stage's status.</li>
+</ul>
+<h3 id="example-output">Example Output:</h3>
+<p>Upon executing the steps mentioned above, you will receive outputs pertaining to each stage. Here's a condensed example of what you might see:</p>
+<pre><code class="language-bash"># phases
+{'stage': 'draft', 'completed': False, 'percentage': 60, ...}
+{'stage': 'draft', 'completed': False, 'percentage': 64, 'code': '#Get the source language ...'}
+...
+{'stage': 'final', 'completed': True, 'percentage': 100, ... , 'code': 'import streamlit as st\n...'}
+</code></pre>
+<pre><code class="language-python">&quot;&quot;&quot;
+Code response for the following arguments:
+instruction = &quot;Create a system that can translate from one language to another&quot;
+title = &quot;My Translator&quot;
+&quot;&quot;&quot;
+
+import streamlit as st
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (ChatPromptTemplate,
+                                    HumanMessagePromptTemplate,
+                                    SystemMessagePromptTemplate)
+from langchain.document_loaders import *
+from langchain.chains.summarize import load_summarize_chain
+import tempfile
+from langchain.docstore.document import Document
+
+def translator(text, source_language, target_language):
+    chat = ChatOpenAI(
+        model=&quot;gpt-3.5-turbo-16k&quot;,
+        temperature=0
+    )
+    system_template = &quot;&quot;&quot;You are a language translator. Your task is to translate text from {source_language} to {target_language}.&quot;&quot;&quot;
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_template = &quot;&quot;&quot;Please translate the following text from {source_language} to {target_language}: '{text}'.&quot;&quot;&quot;
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages(
+        [system_message_prompt, human_message_prompt]
+    )
+
+    chain = LLMChain(llm=chat, prompt=chat_prompt)
+    result = chain.run(text=text, source_language=source_language, target_language=target_language)
+    return result  # returns string
+
+st.title(&quot;My Translator&quot;)
+
+# Initialize state variables
+source_language = &quot;&quot;
+target_language = &quot;&quot;
+text = &quot;&quot;
+translated_text = &quot;&quot;
+
+# Get the source language from the user
+source_language = st.text_input(&quot;Enter the source language&quot;)
+
+# Get the target language from the user
+target_language = st.text_input(&quot;Enter the target language&quot;)
+
+# Get the text to be translated from the user
+text = st.text_area(&quot;Enter the text to be translated&quot;)
+
+# Create a button to trigger the translation
+if st.button(&quot;Translate&quot;):
+    if text and source_language and target_language:
+        translated_text = translator(text, source_language, target_language)
+    else:
+        translated_text = &quot;&quot;
+
+# Display the translated text to the user
+st.markdown(translated_text)
+</code></pre></p>
     </article>
 </section>
             <!-- endblock -->
