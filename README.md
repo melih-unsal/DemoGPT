@@ -173,7 +173,7 @@ title = "Your title here"
 code = ""
 for phase in agent(instruction=instruction, title=title):
     print(phase) # this will display the resulting json for each generation stage
-    if "code" in phase:
+    if phase["done"]:
         code = phase["code"] # final code
 print(code)
 ```
