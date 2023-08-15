@@ -7,6 +7,7 @@ from time import sleep
 import streamlit as st
 from utils import runStreamlit
 from model import DemoGPT
+from time import sleep
 
 # logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
 
@@ -30,8 +31,14 @@ def generate_response(txt, title):
     """
     for data in agent(txt, title):
         yield data
-
-
+    
+def initCode():
+    if "code" not in st.session_state:
+        st.session_state["code"] = "" 
+        st.session_state.edit_mode = False
+        
+initCode()
+    
 # Page title
 title = "🧩 DemoGPT"
 
@@ -79,46 +86,76 @@ def progressBar(percentage, bar=None):
 
 if "pid" not in st.session_state:
     st.session_state["pid"] = -1
-
+    
+if "done" not in st.session_state:
+    st.session_state["done"] = False
 
 with st.form("a", clear_on_submit=True):
     submitted = st.form_submit_button("Submit")
+    
+def kill():
+    if st.session_state["pid"] != -1:
+        logging.info(f"Terminating the previous applicaton ...")
+        try:
+            os.kill(st.session_state["pid"], signal.SIGTERM)
+        except Exception as e:
+            pass
+        st.session_state["pid"] = -1
+    
 
 if submitted:
-
+    st.session_state.messages = []
     if not openai_api_key.startswith("sk-"):
         st.warning("Please enter your OpenAI API Key!", icon="⚠️")
     else:
         bar = progressBar(0)
-        container = st.container()
-
+        st.session_state.container = st.container()
         agent = DemoGPT(openai_api_key=openai_api_key)
         agent.setModel(model_name)
-
-        if st.session_state["pid"] != -1:
-            logging.info(f"Terminating the previous applicaton ...")
-            try:
-                os.kill(st.session_state["pid"], signal.SIGTERM)
-            except Exception as e:
-                pass
-            st.session_state["pid"] = -1
-
+        kill()
         code_empty = st.empty()
+        st.session_state.container = st.container()
         for data in generate_response(demo_idea, demo_title):
-            done = data["done"]
-            message = data["message"]
-            stage = data["stage"]
-            completed = data["completed"]
-            code = data.get("code")
-
+            done = data.get("done",False)
+            message = data.get("message","")
+            st.session_state["message"] = message
+            stage = data.get("stage","stage")
+            code = data.get("code","")
             progressBar(data["percentage"], bar)
+            
+            st.session_state["done"] = True
 
             if done:
-                container.success(message)
-                with st.expander("Code"):
-                    st.code(code)
-                example_submitted = False
-                st.session_state["pid"] = runStreamlit(code, openai_api_key)
+                st.session_state.code = code
                 break
-            else:
-                container.info("🧩 " + message)
+            
+            st.info(message,icon="🧩") 
+            st.session_state.messages.append(message)  
+            
+elif "messages" in st.session_state:
+    for message in st.session_state.messages:
+        st.info(message,icon="🧩")                
+
+if st.session_state.done:
+    st.success(st.session_state.message)
+    with st.expander("Code",expanded=True):
+        code_empty = st.empty()
+        if st.session_state.edit_mode:
+            new_code = code_empty.text_area("", st.session_state.code,height=500)
+            if st.button("Save & Rerun"):
+                st.session_state.code = new_code  # Save the edited code to session state
+                st.session_state.edit_mode = False  # Exit edit mode
+                code_empty.code(new_code)
+                kill()
+                st.session_state["pid"] = runStreamlit(new_code, openai_api_key) 
+                st.experimental_rerun()
+                
+        else:
+            print("st.session_state.code:",st.session_state.code)
+            code_empty.code(st.session_state.code)
+            if st.button("Edit"):
+                st.session_state.edit_mode = True  # Enter edit mode
+                st.experimental_rerun()    
+    example_submitted = False
+    if submitted:
+        st.session_state["pid"] = runStreamlit(code, openai_api_key)         
