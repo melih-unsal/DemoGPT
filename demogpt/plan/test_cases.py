@@ -3,7 +3,7 @@ INSTRUCTIONS = [
     "Create a system that can translate from any language to any language",
     "Create a system that can generate blog post related to a website then summarize the generated blog post and show only the summarization",
     "create lyrics from a song title",
-    "Create a system that gets pdf and question from user then answer the question by using the pdf.",
+    "Create a system that answers question related to the uploaded pdf.",
     "Create an application that gets csv file as an input then shows the summarization of that file.",
     "Create a system that generates random programming related humors when 'laugh' button is clicked without any user input by AI"
 ]

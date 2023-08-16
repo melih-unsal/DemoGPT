@@ -75,6 +75,26 @@ class Chains:
             plan=plan,
         )
         return utils.refine(code)
+    
+    @classmethod
+    def feedback(cls, instruction, code):
+        return cls.getChain(
+            system_template=prompts.feedback.system_template,
+            human_template=prompts.feedback.human_template,
+            instruction=instruction,
+            code=code
+        )
+    
+    @classmethod
+    def refine(cls, instruction, code, feedback):
+        code = cls.getChain(
+            system_template=prompts.refine.system_template,
+            human_template=prompts.refine.human_template,
+            instruction=instruction,
+            code=code,
+            feedback=feedback
+        )
+        return utils.refine(code)
 
     @classmethod
     def final(cls, draft_code):

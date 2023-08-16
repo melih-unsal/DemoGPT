@@ -16,6 +16,8 @@ src/beta/langchain_db_python/
 src/beta/langchain_code/
 
 quick_start.txt
+test_final_4.py
+test_final_5.py
 
 # docs
 src/docs/*

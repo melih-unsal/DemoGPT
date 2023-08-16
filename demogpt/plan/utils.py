@@ -17,7 +17,7 @@ def init(title=""):
     return IMPORTS_CODE_SNIPPET
 
 
-def getCodeSnippet(task,code_snippets,iters):
+def getCodeSnippet(task,code_snippets,iters=10):
     task = refineKeyTypeCompatiblity(task)
     task_type = task["task_type"]
     code = ""

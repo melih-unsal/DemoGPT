@@ -5,15 +5,15 @@ sys.path.append(os.path.abspath('src/plan/'))
 import json
 import unittest
 
-import utils
-from chains.chains import Chains
-from chains.task_chains import TaskChains
-from test_cases import TEST_CASES, TOOL_EXAMPLES, INSTRUCTIONS, CODE_SNIPPETS
+from . import utils
+from .chains.chains import Chains
+from .chains.task_chains import TaskChains
+from .test_cases import TEST_CASES, TOOL_EXAMPLES, INSTRUCTIONS, CODE_SNIPPETS
 from tqdm import tqdm
 
 
 class TestDemoGPT(unittest.TestCase):
-    TEST_INDEX = 6
+    TEST_INDEX = 5
     INSTRUCTION = INSTRUCTIONS[TEST_INDEX]
     REFINE_ITERATIONS = 10
     #"Create a system that can summarize a content taken from url then create a blog post on the summarization"
@@ -42,7 +42,7 @@ class TestDemoGPT(unittest.TestCase):
 
     @classmethod
     def writeFinalToFile(cls,res,instruction):
-        with open("test_final.py","w") as f:
+        with open(f"test_final_{TestDemoGPT.TEST_INDEX}.py","w") as f:
             f.write("#"+instruction+"\n")
             f.write(res)
             f.flush()
@@ -61,6 +61,23 @@ class TestDemoGPT(unittest.TestCase):
             plan = test_case["plan"]
             task_list = Chains.tasks(instruction=instruction,plan=plan)
             self.writeToFile("TASK LIST",json.dumps(task_list, indent=4),instruction)
+            
+    def test_feedback(self):
+        for test_id in range(4,5):
+            instruction = INSTRUCTIONS[test_id]
+            with open(f"test_final_{test_id}.py") as f:
+                code = f.read()
+            feedback = Chains.feedback(instruction=instruction,code=code)
+            self.writeToFile("FEEDBACK",feedback,instruction)
+            
+    def test_refine(self):
+        for test_id in range(4,5):
+            instruction = INSTRUCTIONS[test_id]
+            with open(f"test_final_{test_id}.py") as f:
+                code = f.read()
+            feedback = Chains.feedback(instruction=instruction,code=code)
+            refined_code = Chains.refine(instruction=instruction,code=code,feedback=feedback)
+            self.writeToFile("REFINED CODE",refined_code,instruction)
 
     def test_final(self):
         for test_case in tqdm(CODE_SNIPPETS):
@@ -134,14 +151,15 @@ class TestDemoGPT(unittest.TestCase):
             code_snippets += code
             self.writeToFile("",code,"")
 
-        draft_code = Chains.draft(instruction=instruction,
+        """draft_code = Chains.draft(instruction=instruction,
                                   code_snippets=code_snippets,
                                   plan=plan
                                   )
         
-        self.writeToFile("COMBINED CODE",draft_code,instruction)
+        self.writeToFile("COMBINED CODE",code_snippets,instruction)
+        """
         
-        final_code = Chains.final(draft_code=draft_code)
+        final_code = Chains.final(draft_code=code_snippets)
         
         self.writeFinalToFile(final_code,instruction)
 
