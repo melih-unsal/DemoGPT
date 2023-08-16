@@ -1,15 +1,10 @@
 import logging
 import os
 import signal
-import webbrowser
-from time import sleep
 
 import streamlit as st
-from utils import runStreamlit
-from model import DemoGPT
-from time import sleep
-
-# logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
+from demogpt.plan.utils import runStreamlit
+from demogpt import DemoGPT
 
 try:
     from dotenv import load_dotenv
