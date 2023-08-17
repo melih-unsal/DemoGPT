@@ -1,1 +1,0 @@
-python -m unittest src.plan.test.TestDemoGPT.test

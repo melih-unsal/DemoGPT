@@ -3,8 +3,9 @@ import os
 import signal
 
 import streamlit as st
-from demogpt.plan.utils import runStreamlit
+from utils import runStreamlit
 from demogpt import DemoGPT
+import requests
 
 try:
     from dotenv import load_dotenv
@@ -26,6 +27,15 @@ def generate_response(txt, title):
     """
     for data in agent(txt, title):
         yield data
+        
+SERVER_URL = "http://3.71.189.238:5000/"
+        
+def getLink(code):
+    res = requests.post(SERVER_URL, data={
+        "code": code
+    })
+    
+    return "http://3.71.189.238:8501/"
     
 def initCode():
     if "code" not in st.session_state:
@@ -88,15 +98,6 @@ if "done" not in st.session_state:
 with st.form("a", clear_on_submit=True):
     submitted = st.form_submit_button("Submit")
     
-def kill():
-    if st.session_state["pid"] != -1:
-        logging.info(f"Terminating the previous applicaton ...")
-        try:
-            os.kill(st.session_state["pid"], signal.SIGTERM)
-        except Exception as e:
-            pass
-        st.session_state["pid"] = -1
-    
 
 if submitted:
     st.session_state.messages = []
@@ -107,7 +108,6 @@ if submitted:
         st.session_state.container = st.container()
         agent = DemoGPT(openai_api_key=openai_api_key)
         agent.setModel(model_name)
-        kill()
         code_empty = st.empty()
         st.session_state.container = st.container()
         for data in generate_response(demo_idea, demo_title):
@@ -141,7 +141,6 @@ if st.session_state.done:
                 st.session_state.code = new_code  # Save the edited code to session state
                 st.session_state.edit_mode = False  # Exit edit mode
                 code_empty.code(new_code)
-                kill()
                 st.session_state["pid"] = runStreamlit(new_code, openai_api_key) 
                 st.experimental_rerun()
                 
