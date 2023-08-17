@@ -65,6 +65,12 @@ python -m unittest src.plan.test.TestDemoGPT.$function_name
 ```
 Then, the test result will be available in the **test.log**.
 
+## Modifying The Main Prompts.
+
+Main prompts are inside of `demogpt/plan/chains/prompts` folder whose names are `combine.py`, `feedback.py`, `plan.py`, `refine.py`, `tasks.py` and `final.py`
+
+You can also modify those prompts according to their goal which you can check their usage in `demogpt/plan/model.py`
+
 ## Upcoming Tasks
 We are planning to integrate 🦍 Gorilla, a model specifically designed for API calls, as a task. Stay tuned for more details on this exciting addition.
 
