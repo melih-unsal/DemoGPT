@@ -10,11 +10,11 @@ Refine the Original Code like in the following order:
 
 Step-1 Write all the import statements from the Draft Code.
 
-Step-2 Write all the function definitions
+Step-2 Write all the function definitions from the Draft Code.
 
-Step-3 Get input from the user
+Step-3 Get input from the user.
 
-Step-4 Put a submit button with an appropriate title
+Step-4 Put a submit button with an appropriate title.
 
 Step-5 Call functions only if all user inputs are taken and the button is clicked.
 

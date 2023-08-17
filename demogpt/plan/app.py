@@ -1,13 +1,17 @@
 import logging
 import os
 import signal
-import webbrowser
-from time import sleep
+import sys
+
+current_file_path = os.path.abspath(__file__)
+current_directory = os.path.dirname(current_file_path)
+parent_directory = os.path.dirname(current_directory)
+grandparent_directory = os.path.dirname(parent_directory)
+sys.path.append(grandparent_directory)
 
 import streamlit as st
 from utils import runStreamlit
 from model import DemoGPT
-from time import sleep
 
 # logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
 
