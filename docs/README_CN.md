@@ -28,7 +28,6 @@
 </p>
 
 <p align="center">
-<a href="./resources/WeChat.jpeg"><img src="https://img.shields.io/badge/WeChat-微信-blue" alt="roadmap"></a>
 <a href="https://twitter.com/demo_gpt"><img src="https://img.shields.io/twitter/follow/demo_gpt?style=social" alt="Twitter Follow"></a>
 </p>
 
