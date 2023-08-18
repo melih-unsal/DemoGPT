@@ -82,15 +82,10 @@ class TestDemoGPT(unittest.TestCase):
     def test_final(self):
         for test_case in tqdm(CODE_SNIPPETS):
             instruction = test_case["instruction"]
-            plan = test_case["plan"]
             code_snippets = test_case["code_snippets"]
             code_snippets = utils.IMPORTS_CODE_SNIPPET + code_snippets
-            final_code = Chains.final(instruction=instruction,
-                                      code_snippets=code_snippets,
-                                      plan=plan
-                                      )
-            self.writeFinalToFile(final_code,instruction)     
-            break       
+            final_code = Chains.final(draft_code=code_snippets)
+            self.writeToFile("FINAL CODE",final_code,instruction)         
     
     def test_task_ui_input_text(self):
         for example in TOOL_EXAMPLES["ui_input_text"]:
