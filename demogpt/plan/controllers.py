@@ -19,6 +19,10 @@ def checkDTypes(tasks):
         output_data_type = task["output_data_type"]
         input_key = task["input_key"]
         
+        if name not in TASK_TYPE2_TASK:
+            feedback += f"There is no task with a name {name}.Please find another way.\n"
+            continue
+        
         reference = TASK_TYPE2_TASK[name]
         reference_input = reference["input_data_type"]
         reference_output = reference["output_data_type"]

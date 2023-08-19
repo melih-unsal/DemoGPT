@@ -5,3 +5,7 @@ langchain_experimental
 openai
 tiktoken
 python-dotenv
+unstructured
+pdf2image
+pdfminer
+pdfminer-six
