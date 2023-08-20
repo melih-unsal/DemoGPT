@@ -1,11 +1,11 @@
-# ![favicon](assets/puzzle.png) DemoGPT: Auto Gen-AI App Generator with the Power of Llama 2
+# ![favicon](assets/puzzle.png) DemoGPT: Auto Gen-AI App Generator with the Power of Foundation Models
 
 <p align="center">
 <a href=""><img src="assets/banner_small.png" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="450px"></a>
 </p>
 
 <p align="center">
-<b>⚡ With just a prompt, you can create interactive Streamlit apps via 🦜️🔗 LangChain's transformative capabilities & Llama 2.⚡</b>
+<b>⚡ With just a prompt, you can create interactive Streamlit apps via 🦜️🔗 LangChain's transformative capabilities.⚡</b>
 </p>
 <p align="center">
 <a href="https://pepy.tech/project/demogpt"><img src="https://static.pepy.tech/badge/demogpt/month" alt="Downloads"></a>
@@ -56,7 +56,8 @@ For quick demo, you can visit [our website](https://demogpt.io)
 
 See our documentation site [here](https://docs.demogpt.io/) for full how-to docs and guidelines
 
-⚡ The new release with the power of **Llama 2** is within a week. ⚡
+⚡ With DemoGPT v1.3, API usage will be possible with the power of **Gorilla** within 2 weeks.
+After this release, you will be able use external APIs autonomously. ⚡
 
 ## 📦 Using DemoGPT Package
 
@@ -112,7 +113,7 @@ By transcending traditional coding paradigms, DemoGPT is pioneering a new era in
 
 In summary, DemoGPT is more than a project; it's a visionary approach, pushing the boundaries of what's possible in LLM-based application development.
 
-In the next release, we are gonna add **Llama 2** inside of DemoGPT to make the whole system runnable completely locally. The future is bright, and the journey has just begun. Join us in this exciting adventure!
+In the next release, we are gonna integrate **Gorilla** to DemoGPT to enable DemoGPT to use external APIs autonomously. The future is bright, and the journey has just begun. Join us in this exciting adventure!
 
 
 ## ⚙️ Architecture
