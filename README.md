@@ -50,7 +50,7 @@
 
 For quick demo, you can visit [our website](https://demogpt.io)
 
-![Tweet Generator](assets/demogpt_new_version.gif)
+![Tweet Generator](assets/web_blogger.gif)
 
 ## 📚 Documentation
 
