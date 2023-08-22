@@ -23,6 +23,10 @@ langchain = "*"
 langchain_experimental = "*"
 openai = "*"
 python-dotenv = "*"
+unstructured = "*"
+pdf2image = "*"
+pdfminer = "*"
+pdfminer-six = "*"
 
 [tool.poetry.dev-dependencies]
 
