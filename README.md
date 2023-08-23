@@ -223,6 +223,7 @@ streamlit run demogpt/prompt_based/app.py
 - [ ] Implement self-refining strategy for model response refinement.
 - [ ] Integrate 🦍 Gorilla model for API calls.
 - [ ] Add Rapid API for expanding available API calls. 
+- [ ] Add Llama2 integration
 - [ ] Implement publicly available database to accelerate the generation process by retrieving similar examples during the refining process.
 - [ ] Add all successfully generated steps to a DB to eliminate redundant refinement.
 
