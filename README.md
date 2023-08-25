@@ -88,7 +88,7 @@ demogpt
 
 Welcome to DemoGPT, a revolutionary open-source initiative that is reshaping the landscape of Large Language Model (LLM) based application development.
 
-At the core of DemoGPT lies the synergy of GPT-3.5-turbo & Llama 2, which powers the auto-generation of LangChain code. This process is enriched with a sophisticated architecture that translates user instructions into interactive Streamlit applications.
+At the heart of DemoGPT, the capabilities of GPT-3.5-turbo come to life, driving the automatic generation of LangChain code. This process is enriched with a sophisticated architecture that translates user instructions into interactive Streamlit applications.
 
 ### How DemoGPT Works
 
