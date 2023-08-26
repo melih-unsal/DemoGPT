@@ -57,6 +57,11 @@ openai_api_key = st.sidebar.text_input(
     type="password",
 )
 
+openai_api_base = st.sidebar.text_input(
+    "Open AI base URL",
+    placeholder="https://api.openai.com/v1",
+)
+
 models = (
     "gpt-3.5-turbo-0613",
     "gpt-3.5-turbo-0301",
@@ -109,12 +114,12 @@ def kill():
 
 if submitted:
     st.session_state.messages = []
-    if not openai_api_key.startswith("sk-"):
+    if not openai_api_key:
         st.warning("Please enter your OpenAI API Key!", icon="⚠️")
     else:
         bar = progressBar(0)
         st.session_state.container = st.container()
-        agent = DemoGPT(openai_api_key=openai_api_key)
+        agent = DemoGPT(openai_api_key=openai_api_key, openai_api_base=openai_api_base)
         agent.setModel(model_name)
         kill()
         code_empty = st.empty()
@@ -151,7 +156,7 @@ if st.session_state.done:
                 st.session_state.edit_mode = False  # Exit edit mode
                 code_empty.code(new_code)
                 kill()
-                st.session_state["pid"] = runStreamlit(new_code, openai_api_key) 
+                st.session_state["pid"] = runStreamlit(new_code, openai_api_key, openai_api_base)
                 st.experimental_rerun()
                 
         else:
@@ -162,4 +167,4 @@ if st.session_state.done:
                 st.experimental_rerun()    
     example_submitted = False
     if submitted:
-        st.session_state["pid"] = runStreamlit(code, openai_api_key)         
+        st.session_state["pid"] = runStreamlit(code, openai_api_key, openai_api_base)

@@ -16,10 +16,10 @@ class TaskChains:
 
     @classmethod
     def setLlm(
-        cls, model, openai_api_key=os.getenv("OPENAI_API_KEY", ""), temperature=0
+        cls, model, openai_api_key=os.getenv("OPENAI_API_KEY", ""), temperature=0.0, openai_api_base=None
     ):
         cls.llm = ChatOpenAI(
-            model=model, openai_api_key=openai_api_key, temperature=temperature
+            model=model, openai_api_key=openai_api_key, temperature=temperature, openai_api_base=openai_api_base
         )
 
     @classmethod

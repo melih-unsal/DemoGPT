@@ -118,7 +118,7 @@ def runThread(proc):
     proc.communicate()
 
 
-def runStreamlit(code, openai_api_key):
+def runStreamlit(code, openai_api_key, openai_api_base=None):
     """
     Runs the provided code as a Streamlit application and returns the process ID.
 
@@ -134,6 +134,7 @@ def runStreamlit(code, openai_api_key):
     environmental_variables = {
         "OPENAI_API_KEY": openai_api_key,
         "STREAMLIT_SERVER_PORT": "8502",
+        "OPENAI_API_BASE": openai_api_base
     }
     streamlit_path = shutil.which("streamlit")
     if True or platform.system() == "Windows":
@@ -141,6 +142,7 @@ def runStreamlit(code, openai_api_key):
         env["PYTHONPATH"] = ""
         env["OPENAI_API_KEY"] = openai_api_key
         env["STREAMLIT_SERVER_PORT"] = "8502"
+        if openai_api_base: env["OPENAI_API_BASE"] = openai_api_base
         python_path = sys.executable
         process = Popen(
             [python_path, "-m", "streamlit", "run", tmp.name],

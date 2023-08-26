@@ -8,18 +8,19 @@ from tqdm import trange
 
 
 class DemoGPT:
-    def __init__(self, openai_api_key=os.getenv("OPENAI_API_KEY",""), model_name="gpt-3.5-turbo-0613",max_steps=10):
-        assert openai_api_key.startswith("sk-"), "Either give openai_api_key as an argument or put it in the environment variable"
+    def __init__(self, openai_api_key=os.getenv("OPENAI_API_KEY",""), model_name="gpt-3.5-turbo-0613",max_steps=10, openai_api_base=""):
+        assert len(openai_api_key.strip()), "Either give openai_api_key as an argument or put it in the environment variable"
         self.model_name = model_name
         self.openai_api_key = openai_api_key
         self.max_steps = max_steps # max iteration for refining the model purpose
-        Chains.setLlm(self.model_name, self.openai_api_key)
-        TaskChains.setLlm(self.model_name, self.openai_api_key)
+        self.openai_api_base = openai_api_base
+        Chains.setLlm(self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base)
+        TaskChains.setLlm(self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base)
 
     def setModel(self, model_name):
         self.model_name = model_name
-        Chains.setLlm(self.model_name, self.openai_api_key)
-        TaskChains.setLlm(self.model_name, self.openai_api_key)
+        Chains.setLlm(self.model_name, self.openai_api_key, openai_api_base= self.openai_api_base)
+        TaskChains.setLlm(self.model_name, self.openai_api_key, openai_api_base= self.openai_api_base)
         
     def __repr__(self) -> str:
         return f"DemoGPT(model_name='{self.model_name}',max_steps={self.max_steps})"
