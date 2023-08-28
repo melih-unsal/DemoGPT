@@ -2,6 +2,7 @@ import logging
 import os
 import signal
 import sys
+import streamlit as st
 
 current_file_path = os.path.abspath(__file__)
 current_directory = os.path.dirname(current_file_path)
@@ -9,7 +10,6 @@ parent_directory = os.path.dirname(current_directory)
 grandparent_directory = os.path.dirname(parent_directory)
 sys.path.append(grandparent_directory)
 
-import streamlit as st
 from model import DemoGPT
 from utils import runStreamlit
 
@@ -43,13 +43,14 @@ def initCode():
         st.session_state.edit_mode = False
 
 
-initCode()
-
 # Page title
 title = "🧩 DemoGPT"
 
 st.set_page_config(page_title=title)
 st.title(title)
+
+initCode()
+
 # Text input
 
 openai_api_key = st.sidebar.text_input(

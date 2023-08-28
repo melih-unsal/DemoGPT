@@ -7,8 +7,8 @@ from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
 
-from .. import utils
-from ..controllers import checkDTypes
+from demogpt.utils import refine
+from demogpt.controllers import checkDTypes
 from . import prompts
 
 
@@ -81,7 +81,7 @@ class Chains:
             code_snippets=code_snippets,
             plan=plan,
         )
-        return utils.refine(code)
+        return refine(code)
 
     @classmethod
     def feedback(cls, instruction, code):
@@ -101,7 +101,7 @@ class Chains:
             code=code,
             feedback=feedback,
         )
-        return utils.refine(code)
+        return refine(code)
 
     @classmethod
     def final(cls, draft_code):
@@ -110,4 +110,4 @@ class Chains:
             human_template=prompts.final.human_template,
             draft_code=draft_code,
         )
-        return utils.refine(code)
+        return refine(code)

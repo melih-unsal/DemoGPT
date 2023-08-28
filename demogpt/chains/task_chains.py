@@ -7,8 +7,8 @@ from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
 
-from .. import utils
-from .chains import prompts
+from demogpt import utils
+from demogpt.chains import prompts
 
 
 class TaskChains:
