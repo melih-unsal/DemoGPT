@@ -141,7 +141,7 @@ pip install demogpt
     ```sh
     cd DemoGPT
     ```
-3. Install the necessary dependencies: 
+3. Install DemoGPT: 
     ```sh
     pip install -e .
     ```
