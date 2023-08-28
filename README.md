@@ -143,7 +143,7 @@ pip install demogpt
     ```
 3. Install DemoGPT: 
     ```sh
-    pip install -e .
+    pip install .
     ```
 
 ## 🎮 Usage
