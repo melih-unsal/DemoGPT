@@ -1,14 +1,14 @@
 import json
 import os
 
-from .chains import prompts
-from .. import utils
-
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
+
+from .. import utils
+from .chains import prompts
 
 
 class TaskChains:
@@ -16,10 +16,17 @@ class TaskChains:
 
     @classmethod
     def setLlm(
-        cls, model, openai_api_key=os.getenv("OPENAI_API_KEY", ""), temperature=0.0, openai_api_base=None
+        cls,
+        model,
+        openai_api_key=os.getenv("OPENAI_API_KEY", ""),
+        temperature=0.0,
+        openai_api_base=None,
     ):
         cls.llm = ChatOpenAI(
-            model=model, openai_api_key=openai_api_key, temperature=temperature, openai_api_base=openai_api_base
+            model=model,
+            openai_api_key=openai_api_key,
+            temperature=temperature,
+            openai_api_base=openai_api_base,
         )
 
     @classmethod
@@ -33,19 +40,19 @@ class TaskChains:
         return LLMChain(llm=cls.llm, prompt=chat_prompt).run(**kwargs)
 
     @classmethod
-    def uiInputText(cls, task,code_snippets):
+    def uiInputText(cls, task, code_snippets):
         variable = task["output_key"]
         instruction = task["description"]
         code = cls.getChain(
             human_template=prompts.ui_input_text.human_template,
             instruction=instruction,
             variable=variable,
-            code_snippets=code_snippets
+            code_snippets=code_snippets,
         )
         return utils.refine(code)
 
     @classmethod
-    def uiOutputText(cls, task,code_snippets):
+    def uiOutputText(cls, task, code_snippets):
         args = task["input_key"]
         if isinstance(args, list):
             args = ",".join(args)
@@ -54,12 +61,12 @@ class TaskChains:
             human_template=prompts.ui_output_text.human_template,
             instruction=instruction,
             args=args,
-            code_snippets=code_snippets
+            code_snippets=code_snippets,
         )
         return utils.refine(code)
 
     @classmethod
-    def uiInputFile(cls, task,code_snippets):
+    def uiInputFile(cls, task, code_snippets):
         variable = task["output_key"]
         instruction = task["description"]
         code = cls.getChain(
@@ -67,12 +74,12 @@ class TaskChains:
             human_template=prompts.ui_input_file.human_template,
             instruction=instruction,
             variable=variable,
-            code_snippets=code_snippets
+            code_snippets=code_snippets,
         )
         return utils.refine(code)
-    
+
     @classmethod
-    def pathToContent(cls, task,code_snippets):
+    def pathToContent(cls, task, code_snippets):
         instruction = task["description"]
         argument = task["input_key"]
         variable = task["output_key"]
@@ -83,12 +90,12 @@ class TaskChains:
             instruction=instruction,
             argument=argument,
             variable=variable,
-            code_snippets=code_snippets
+            code_snippets=code_snippets,
         )
         return utils.refine(code)
 
     @classmethod
-    def promptChatTemplate(cls, task,code_snippets):
+    def promptChatTemplate(cls, task, code_snippets):
         inputs = task["input_key"]
         instruction = task["description"]
 
@@ -97,27 +104,27 @@ class TaskChains:
             human_template=prompts.prompt_chat_template.human_template,
             instruction=instruction,
             inputs=inputs,
-            code_snippets=code_snippets
+            code_snippets=code_snippets,
         )
-        res = res[res.find("{"):res.rfind("}")+1]
+        res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res)
-    
+
     @classmethod
-    def promptTemplateRefiner(cls, templates,feedback):
+    def promptTemplateRefiner(cls, templates, feedback):
         res = cls.getChain(
             system_template=prompts.prompt_chat_refiner.system_template,
             human_template=prompts.prompt_chat_refiner.human_template,
             templates=templates,
-            feedback=feedback
+            feedback=feedback,
         )
-        res = res[res.find("{"):res.rfind("}")+1]
+        res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res)
-    
+
     @classmethod
-    def docLoad(cls, task,code_snippets):
+    def docLoad(cls, task, code_snippets):
         instruction = task["description"]
         argument = task["input_key"]
-        if isinstance(argument,list):
+        if isinstance(argument, list):
             argument = argument[0]
         variable = task["output_key"]
         function_name = task["task_name"]
@@ -129,30 +136,30 @@ class TaskChains:
             argument=argument,
             variable=variable,
             function_name=function_name,
-            code_snippets=code_snippets
+            code_snippets=code_snippets,
         )
         return utils.refine(code)
-    
+
     @classmethod
     def stringToDoc(cls, task, code_snippets):
         argument = task["input_key"]
         variable = task["output_key"]
-        code =f'{variable} = "\".join([doc.page_content for doc in {argument}])'
+        code = f'{variable} = "".join([doc.page_content for doc in {argument}])'
         code = f"""
 from langchain.docstore.document import Document
 {variable} =  [Document(page_content={argument}, metadata={{'source': 'local'}})]
         """
         return code
-    
+
     @classmethod
     def docToString(cls, task, code_snippets):
         argument = task["input_key"]
         variable = task["output_key"]
-        code =f'{variable} = "\".join([doc.page_content for doc in {argument}])'
+        code = f'{variable} = "".join([doc.page_content for doc in {argument}])'
         return code
-    
+
     @classmethod
-    def summarize(cls, task,code_snippets):
+    def summarize(cls, task, code_snippets):
         argument = task["input_key"]
         variable = task["output_key"]
         function_name = task["task_name"]
@@ -170,4 +177,3 @@ else:
     variable = ""
 """
         return code
-

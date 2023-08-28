@@ -7,8 +7,8 @@ import tempfile
 import threading
 from subprocess import PIPE, Popen
 
-from demogpt.plan.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
-from demogpt.plan.chains.task_chains import TaskChains
+from demogpt.chains.task_chains import TaskChains
+from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
 
 
 def init(title=""):
@@ -17,43 +17,43 @@ def init(title=""):
     return IMPORTS_CODE_SNIPPET
 
 
-def getCodeSnippet(task,code_snippets,iters=10):
+def getCodeSnippet(task, code_snippets, iters=10):
     task = refineKeyTypeCompatiblity(task)
     task_type = task["task_type"]
     code = ""
     if task_type == "ui_input_text":
-        code = TaskChains.uiInputText(task=task,code_snippets=code_snippets)
+        code = TaskChains.uiInputText(task=task, code_snippets=code_snippets)
     elif task_type == "ui_output_text":
-        code = TaskChains.uiOutputText(task=task,code_snippets=code_snippets)
+        code = TaskChains.uiOutputText(task=task, code_snippets=code_snippets)
     elif task_type == "prompt_chat_template":
         res = ""
         is_valid = False
-        res = TaskChains.promptChatTemplate(task=task,code_snippets=code_snippets)
+        res = TaskChains.promptChatTemplate(task=task, code_snippets=code_snippets)
         index = 0
         while not is_valid:
-            check = checkPromptTemplates(res,task)
+            check = checkPromptTemplates(res, task)
             is_valid = check["valid"]
             feedback = check["feedback"]
             if not is_valid:
-                res = TaskChains.promptTemplateRefiner(res,feedback)
+                res = TaskChains.promptTemplateRefiner(res, feedback)
             else:
-                break   
+                break
             index += 1
             if index == iters:
                 break
         code = getPromptChatTemplateCode(res, task)
     elif task_type == "path_to_content":
-        code = TaskChains.pathToContent(task=task,code_snippets=code_snippets)
+        code = TaskChains.pathToContent(task=task, code_snippets=code_snippets)
     elif task_type == "doc_to_string":
-        code = TaskChains.docToString(task=task,code_snippets=code_snippets)
+        code = TaskChains.docToString(task=task, code_snippets=code_snippets)
     elif task_type == "string_to_doc":
-        code = TaskChains.stringToDoc(task=task,code_snippets = code_snippets)
+        code = TaskChains.stringToDoc(task=task, code_snippets=code_snippets)
     elif task_type == "ui_input_file":
-        code = TaskChains.uiInputFile(task=task,code_snippets=code_snippets)
+        code = TaskChains.uiInputFile(task=task, code_snippets=code_snippets)
     elif task_type == "doc_loader":
-        code = TaskChains.docLoad(task=task,code_snippets=code_snippets)
+        code = TaskChains.docLoad(task=task, code_snippets=code_snippets)
     elif task_type == "doc_summarizer":
-        code = TaskChains.summarize(task=task,code_snippets=code_snippets)
+        code = TaskChains.summarize(task=task, code_snippets=code_snippets)
     return code.strip() + "\n"
 
 
@@ -134,7 +134,7 @@ def runStreamlit(code, openai_api_key, openai_api_base=None):
     environmental_variables = {
         "OPENAI_API_KEY": openai_api_key,
         "STREAMLIT_SERVER_PORT": "8502",
-        "OPENAI_API_BASE": openai_api_base
+        "OPENAI_API_BASE": openai_api_base,
     }
     streamlit_path = shutil.which("streamlit")
     if True or platform.system() == "Windows":
@@ -142,7 +142,8 @@ def runStreamlit(code, openai_api_key, openai_api_base=None):
         env["PYTHONPATH"] = ""
         env["OPENAI_API_KEY"] = openai_api_key
         env["STREAMLIT_SERVER_PORT"] = "8502"
-        if openai_api_base: env["OPENAI_API_BASE"] = openai_api_base
+        if openai_api_base:
+            env["OPENAI_API_BASE"] = openai_api_base
         python_path = sys.executable
         process = Popen(
             [python_path, "-m", "streamlit", "run", tmp.name],

@@ -1,1 +1,1 @@
-from demogpt.plan.model import DemoGPT
+from demogpt.model import DemoGPT

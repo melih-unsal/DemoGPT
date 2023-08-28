@@ -1,4 +1,4 @@
-from .task_definitions import TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES
+from .task_definitions import TASK_DESCRIPTIONS, TASK_DTYPES, TASK_NAMES
 
 system_template = f"""
 Create a plan to fulfill the given instruction. 

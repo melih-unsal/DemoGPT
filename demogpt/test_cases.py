@@ -5,13 +5,13 @@ INSTRUCTIONS = [
     "create lyrics from a song title",
     "Create a system that answers question related to the uploaded pdf.",
     "Create an application that gets csv file as an input then shows the summarization of that file.",
-    "Create a system that generates random programming related humors when 'laugh' button is clicked without any user input by AI"
+    "Create a system that generates random programming related humors when 'laugh' button is clicked without any user input by AI",
 ]
 
-CODE_SNIPPETS=[
+CODE_SNIPPETS = [
     {
-        "instruction":"generate a system that reads uploaded text file and translates its content into the language that user prompted",
-        "plan":"""
+        "instruction": "generate a system that reads uploaded text file and translates its content into the language that user prompted",
+        "plan": """
 1. Get the file path from the user by 'ui_input_file'
 2. Use 'doc_loader' to load the text file as Document from the file path.
 3. Use 'doc_to_string' to convert Document to string
@@ -19,7 +19,7 @@ CODE_SNIPPETS=[
 5. If all inputs are filled, use 'prompt_chat_template' to translate the text to the output language.
 6. If the translation is ready, display it to the user by 'ui_output_text'.
 """,
-        "code_snippets":"""
+        "code_snippets": """
 #Get the file path from the user
 file = st.file_uploader("Upload file", type=["txt", "pdf", "docx"])
 if file is not None:
@@ -84,11 +84,11 @@ else:
 #Display the translated text to the user
 if translation:
     st.markdown(f"Translated Text: {translation}")
-"""
+""",
     },
     {
-        "instruction":"Create a system that can generate blog post related to a website then summarize it",
-        "plan":"""
+        "instruction": "Create a system that can generate blog post related to a website then summarize it",
+        "plan": """
 1. Get website URL from the user by 'ui_input_text'
 2. Use 'doc_loader' to load the website as Document from URL
 3. Use 'doc_to_string' to convert Document to string
@@ -96,7 +96,7 @@ if translation:
 5. If blog post is generated, use 'prompt_chat_template' to summarize the blog post.
 6. If summarization is ready, display it to the user by 'ui_output_text'.
 """,
-        "code_snippets":"""
+        "code_snippets": """
 #Get website url from the user
 url = st.text_input('Enter website URL:')
 
@@ -165,13 +165,13 @@ def show_summarization(summarization):
         st.markdown("Please enter a valid input to generate a summarization.")
 
 show_summarization(summarization)
-    """
-    }
+    """,
+    },
 ]
 
 TEST_CASES = [
     {
-        "instruction":"Create a system that can generate blog post related to a website then summarize it"
+        "instruction": "Create a system that can generate blog post related to a website then summarize it"
     },
     {
         "instruction": """
@@ -287,7 +287,7 @@ TEST_CASES = [
                 st.markdown(horoscope_prediction)
 
         show_horoscope_prediction(horoscope_prediction)
-        """
+        """,
     },
     {
         "instruction": """
@@ -374,7 +374,7 @@ TEST_CASES = [
                 st.markdown("Translated Text: " + translated_text)
 
         show_translated_text(translated_text)
-        """
+        """,
     },
     {
         "instruction": """
@@ -470,7 +470,7 @@ TEST_CASES = [
 
         if melody != "" and lyrics != "":
             show_text(melody, lyrics)
-        """
+        """,
     },
     {
         "instruction": """

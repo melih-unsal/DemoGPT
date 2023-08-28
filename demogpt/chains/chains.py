@@ -1,24 +1,31 @@
 import json
 import os
 
-from . import prompts
-
-from .. import utils
-from ..controllers import checkDTypes
-
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
 
+from .. import utils
+from ..controllers import checkDTypes
+from . import prompts
+
+
 class Chains:
     @classmethod
     def setLlm(
-        cls, model, openai_api_key=os.getenv("OPENAI_API_KEY", ""), temperature=0.0, openai_api_base=None
+        cls,
+        model,
+        openai_api_key=os.getenv("OPENAI_API_KEY", ""),
+        temperature=0.0,
+        openai_api_base=None,
     ):
         cls.llm = ChatOpenAI(
-            model=model, openai_api_key=openai_api_key, temperature=temperature, openai_api_base=openai_api_base
+            model=model,
+            openai_api_key=openai_api_key,
+            temperature=temperature,
+            openai_api_base=openai_api_base,
         )
 
     @classmethod
@@ -45,14 +52,14 @@ class Chains:
             system_template=prompts.tasks.system_template,
             human_template=prompts.tasks.human_template,
             instruction=instruction,
-            plan=plan
+            plan=plan,
         )
         return json.loads(task_list)
-    
+
     @classmethod
     def taskController(cls, tasks):
         return checkDTypes(tasks)
-    
+
     @classmethod
     def refineTasks(cls, instruction, tasks, feedback):
         task_list = cls.getChain(
@@ -60,11 +67,11 @@ class Chains:
             human_template=prompts.task_refiner.human_template,
             instruction=instruction,
             tasks=tasks,
-            feedback=feedback
+            feedback=feedback,
         )
-                
+
         return json.loads(task_list)
-    
+
     @classmethod
     def draft(cls, instruction, code_snippets, plan):
         code = cls.getChain(
@@ -75,16 +82,16 @@ class Chains:
             plan=plan,
         )
         return utils.refine(code)
-    
+
     @classmethod
     def feedback(cls, instruction, code):
         return cls.getChain(
             system_template=prompts.feedback.system_template,
             human_template=prompts.feedback.human_template,
             instruction=instruction,
-            code=code
+            code=code,
         )
-    
+
     @classmethod
     def refine(cls, instruction, code, feedback):
         code = cls.getChain(
@@ -92,7 +99,7 @@ class Chains:
             human_template=prompts.refine.human_template,
             instruction=instruction,
             code=code,
-            feedback=feedback
+            feedback=feedback,
         )
         return utils.refine(code)
 
@@ -101,6 +108,6 @@ class Chains:
         code = cls.getChain(
             system_template=prompts.final.system_template,
             human_template=prompts.final.human_template,
-            draft_code=draft_code
+            draft_code=draft_code,
         )
         return utils.refine(code)

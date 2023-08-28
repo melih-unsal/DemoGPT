@@ -1,1 +1,1 @@
-python -m unittest src.plan.test.TestDemoGPT.test
+python -m unittest src.test.TestDemoGPT.test

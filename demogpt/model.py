@@ -1,27 +1,44 @@
 import os
 from time import sleep
 
-from demogpt.plan.utils import init, getCodeSnippet
-from demogpt.plan.chains.chains import Chains
-from demogpt.plan.chains.task_chains import TaskChains
 from tqdm import trange
+
+from demogpt.chains.chains import Chains
+from demogpt.chains.task_chains import TaskChains
+from demogpt.utils import getCodeSnippet, init
 
 
 class DemoGPT:
-    def __init__(self, openai_api_key=os.getenv("OPENAI_API_KEY",""), model_name="gpt-3.5-turbo-0613",max_steps=10, openai_api_base=""):
-        assert len(openai_api_key.strip()), "Either give openai_api_key as an argument or put it in the environment variable"
+    def __init__(
+        self,
+        openai_api_key=os.getenv("OPENAI_API_KEY", ""),
+        model_name="gpt-3.5-turbo-0613",
+        max_steps=10,
+        openai_api_base="",
+    ):
+        assert len(
+            openai_api_key.strip()
+        ), "Either give openai_api_key as an argument or put it in the environment variable"
         self.model_name = model_name
         self.openai_api_key = openai_api_key
-        self.max_steps = max_steps # max iteration for refining the model purpose
+        self.max_steps = max_steps  # max iteration for refining the model purpose
         self.openai_api_base = openai_api_base
-        Chains.setLlm(self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base)
-        TaskChains.setLlm(self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base)
+        Chains.setLlm(
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+        )
+        TaskChains.setLlm(
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+        )
 
     def setModel(self, model_name):
         self.model_name = model_name
-        Chains.setLlm(self.model_name, self.openai_api_key, openai_api_base= self.openai_api_base)
-        TaskChains.setLlm(self.model_name, self.openai_api_key, openai_api_base= self.openai_api_base)
-        
+        Chains.setLlm(
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+        )
+        TaskChains.setLlm(
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+        )
+
     def __repr__(self) -> str:
         return f"DemoGPT(model_name='{self.model_name}',max_steps={self.max_steps})"
 
@@ -68,26 +85,30 @@ class DemoGPT:
             "message": "Tasks have been generated.",
             "tasks": task_list,
         }
-        
+
         sleep(1)
-        
+
         yield {
             "stage": "task",
             "completed": True,
             "percentage": 55,
             "done": False,
-            "message": "Tasks are being controlled."
+            "message": "Tasks are being controlled.",
         }
-        
+
         task_controller_result = Chains.taskController(tasks=task_list)
-        
+
         for _ in trange(self.max_steps):
             if not task_controller_result["valid"]:
-                task_list = Chains.refineTasks(instruction=instruction, tasks=task_list, feedback = task_controller_result["feedback"])
+                task_list = Chains.refineTasks(
+                    instruction=instruction,
+                    tasks=task_list,
+                    feedback=task_controller_result["feedback"],
+                )
                 task_controller_result = Chains.taskController(tasks=task_list)
             else:
                 break
-        
+
         code_snippets = init(title)
 
         sleep(1)
@@ -103,8 +124,8 @@ class DemoGPT:
         num_of_tasks = len(task_list)
 
         for i, task in enumerate(task_list):
-            code = getCodeSnippet(task,code_snippets,self.max_steps)
-            code = "#"+task["description"] + "\n" + code
+            code = getCodeSnippet(task, code_snippets, self.max_steps)
+            code = "#" + task["description"] + "\n" + code
             code_snippets += code
             yield {
                 "stage": "draft",
@@ -116,7 +137,7 @@ class DemoGPT:
             }
 
         sleep(1)
-        
+
         yield {
             "stage": "draft",
             "completed": False,
@@ -124,12 +145,11 @@ class DemoGPT:
             "done": False,
             "message": "Code snippets are being combined...",
         }
-        
-        draft_code = Chains.draft(instruction=instruction,
-                                  code_snippets=code_snippets,
-                                  plan=plan
-                                  )
-        
+
+        draft_code = Chains.draft(
+            instruction=instruction, code_snippets=code_snippets, plan=plan
+        )
+
         yield {
             "stage": "draft",
             "completed": True,

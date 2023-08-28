@@ -143,7 +143,7 @@ pip install demogpt
     ```
 3. Install the necessary dependencies: 
     ```sh
-    pip install -r requirements.txt
+    pip install -e .
     ```
 
 ## 🎮 Usage
@@ -154,12 +154,6 @@ Once the DemoGPT package is installed, you can use it by running the following c
 
 ```sh
 demogpt
-```
-
-If you want to run the previous version, you can do so by using the **--basic** flag:
-
-```sh
-demogpt --basic
 ```
 
 ### 🐍 For the Python Interface
@@ -205,13 +199,7 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 If you have cloned the repository and wish to run the source code version, you can use DemoGPT by running the following command:
 
 ```sh
-streamlit run demogpt/plan/app.py
-```
-
-If you want to run the previous version of DemoGPT, you can use the following command:
-
-```sh
-streamlit run demogpt/prompt_based/app.py
+streamlit run demogpt/app.py
 ```
 
 ## To-Do 📝
