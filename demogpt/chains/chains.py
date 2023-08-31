@@ -3,12 +3,15 @@ import os
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts.chat import (ChatPromptTemplate,
-                                    HumanMessagePromptTemplate,
-                                    SystemMessagePromptTemplate)
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+)
 
-from demogpt.utils import refine
 from demogpt.controllers import checkDTypes
+from demogpt.utils import refine
+
 from . import prompts
 
 

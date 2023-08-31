@@ -1,8 +1,9 @@
 import os
+import sys
 from time import sleep
 
 from tqdm import trange
-import sys
+
 from demogpt.chains.chains import Chains
 from demogpt.chains.task_chains import TaskChains
 from demogpt.utils import getCodeSnippet, init

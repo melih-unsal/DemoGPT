@@ -7,8 +7,8 @@ import tempfile
 import threading
 from subprocess import PIPE, Popen
 
-from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
 from demogpt.chains.task_chains import TaskChains
+from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
 
 
 def init(title=""):
