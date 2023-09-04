@@ -13,6 +13,7 @@ sys.path.append(grandparent_directory)
 
 from model import DemoGPT
 from utils import runStreamlit
+from model_config import llm_model_dict
 
 # logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
 
@@ -52,32 +53,38 @@ st.title(title)
 
 initCode()
 
+
+llm = st.sidebar.selectbox(
+    "LLM models",
+    llm_model_dict.keys(),
+)
+
 # Text input
 
-openai_api_key = st.sidebar.text_input(
-    "OpenAI API Key",
-    placeholder="sk-...",
-    value=os.getenv("OPENAI_API_KEY", ""),
-    type="password",
-)
+# openai_api_key = st.sidebar.text_input(
+#     "OpenAI API Key",
+#     placeholder="sk-...",
+#     value=os.getenv("OPENAI_API_KEY", ""),
+#     type="password",
+# )
+#
+# openai_api_base = st.sidebar.text_input(
+#     "Open AI base URL",
+#     placeholder="https://api.openai.com/v1",
+# )
 
-openai_api_base = st.sidebar.text_input(
-    "Open AI base URL",
-    placeholder="https://api.openai.com/v1",
-)
-
-models = (
-    "gpt-3.5-turbo-0613",
-    "gpt-3.5-turbo-0301",
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-16k",
-    "gpt-3.5-turbo-16k-0613",
-    "gpt-4",
-    "gpt-4-0314",
-    "gpt-4-0613",
-)
-
-model_name = st.sidebar.selectbox("Model", models)
+# models = (
+#     "gpt-3.5-turbo-0613",
+#     "gpt-3.5-turbo-0301",
+#     "gpt-3.5-turbo",
+#     "gpt-3.5-turbo-16k",
+#     "gpt-3.5-turbo-16k-0613",
+#     "gpt-4",
+#     "gpt-4-0314",
+#     "gpt-4-0613",
+# )
+#
+# model_name = st.sidebar.selectbox("Model", models)
 
 empty_idea = st.empty()
 demo_idea = empty_idea.text_area(
@@ -119,13 +126,14 @@ def kill():
 
 if submitted:
     st.session_state.messages = []
-    if not openai_api_key:
-        st.warning("Please enter your OpenAI API Key!", icon="⚠️")
+    if not llm:
+        st.warning("Please choose llm model!", icon="⚠️")
     else:
         bar = progressBar(0)
         st.session_state.container = st.container()
-        agent = DemoGPT(openai_api_key=openai_api_key, openai_api_base=openai_api_base)
-        agent.setModel(model_name)
+        agent = DemoGPT(llm_config=llm_model_dict[llm])
+        # agent = DemoGPT(openai_api_key=openai_api_key, openai_api_base=openai_api_base)
+        # agent.setModel(model_name)
         kill()
         code_empty = st.empty()
         st.session_state.container = st.container()

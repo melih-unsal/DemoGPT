@@ -12,18 +12,13 @@ from demogpt.utils import getCodeSnippet, init
 class DemoGPT:
     def __init__(
         self,
-        openai_api_key=os.getenv("OPENAI_API_KEY", ""),
-        model_name="gpt-3.5-turbo-0613",
+        llm_config,
         max_steps=10,
-        openai_api_base="",
     ):
-        assert len(
-            openai_api_key.strip()
-        ), "Either give openai_api_key as an argument or put it in the environment variable"
-        self.model_name = model_name
-        self.openai_api_key = openai_api_key
+        self.model_name = llm_config["model_name"]
+        self.openai_api_base = llm_config["api_base_url"]
+        self.openai_api_key = llm_config["api_key"]
         self.max_steps = max_steps  # max iteration for refining the model purpose
-        self.openai_api_base = openai_api_base
         Chains.setLlm(
             self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
         )
