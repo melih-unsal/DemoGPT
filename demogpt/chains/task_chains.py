@@ -3,11 +3,9 @@ import os
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    SystemMessagePromptTemplate,
-)
+from langchain.prompts.chat import (ChatPromptTemplate,
+                                    HumanMessagePromptTemplate,
+                                    SystemMessagePromptTemplate)
 
 from demogpt import utils
 from demogpt.chains import prompts
@@ -48,7 +46,7 @@ class TaskChains:
         code = cls.getChain(
             human_template=prompts.ui_input_text.human_template,
             instruction=instruction,
-            variable=variable
+            variable=variable,
         )
         return utils.refine(code)
 
@@ -61,7 +59,7 @@ class TaskChains:
         code = cls.getChain(
             human_template=prompts.ui_output_text.human_template,
             instruction=instruction,
-            args=args
+            args=args,
         )
         return utils.refine(code)
 

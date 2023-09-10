@@ -3,11 +3,9 @@ import os
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    SystemMessagePromptTemplate,
-)
+from langchain.prompts.chat import (ChatPromptTemplate,
+                                    HumanMessagePromptTemplate,
+                                    SystemMessagePromptTemplate)
 
 from demogpt.controllers import checkDTypes
 from demogpt.utils import refine
@@ -40,13 +38,13 @@ class Chains:
             prompts.append(HumanMessagePromptTemplate.from_template(human_template))
         chat_prompt = ChatPromptTemplate.from_messages(prompts)
         return LLMChain(llm=cls.llm, prompt=chat_prompt).run(**kwargs)
-    
+
     @classmethod
     def systemInputs(cls, instruction):
         return cls.getChain(
             system_template=prompts.system_inputs.system_template,
             human_template=prompts.system_inputs.human_template,
-            instruction=instruction
+            instruction=instruction,
         )
 
     @classmethod
@@ -54,16 +52,16 @@ class Chains:
         return cls.getChain(
             system_template=prompts.plan.system_template,
             human_template=prompts.plan.human_template,
-            instruction=instruction
+            instruction=instruction,
         )
-        
+
     @classmethod
     def planWithInputs(cls, instruction, system_inputs):
         return cls.getChain(
             system_template=prompts.plan_with_inputs.system_template,
             human_template=prompts.plan_with_inputs.human_template,
             instruction=instruction,
-            system_inputs=system_inputs
+            system_inputs=system_inputs,
         )
 
     @classmethod
@@ -102,7 +100,7 @@ class Chains:
             plan=plan,
         )
         return refine(code)
-    
+
     @classmethod
     def combine_v2(cls, code_snippets):
         code = cls.getChain(

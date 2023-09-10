@@ -48,7 +48,7 @@ class DemoGPT:
         instruction="Create a translation system that converts English to French",
         title="",
     ):
-                
+
         yield {
             "stage": "system_inputs",
             "completed": False,
@@ -56,9 +56,9 @@ class DemoGPT:
             "done": False,
             "message": "System inputs are being detected...",
         }
-        
+
         system_inputs = Chains.systemInputs(instruction=instruction)
-        
+
         yield {
             "stage": "plan",
             "completed": False,
@@ -67,7 +67,9 @@ class DemoGPT:
             "message": "Plan creation has started...",
         }
 
-        plan = Chains.planWithInputs(instruction=instruction, system_inputs=system_inputs)
+        plan = Chains.planWithInputs(
+            instruction=instruction, system_inputs=system_inputs
+        )
 
         yield {
             "stage": "plan",
@@ -157,7 +159,7 @@ class DemoGPT:
             "done": False,
             "message": "Code snippets are being combined...",
         }
-        
+
         final_code = Chains.combine_v2(code_snippets=code_snippets)
 
         yield {
@@ -168,7 +170,7 @@ class DemoGPT:
             "message": "Final code has been generated. Directing to the demo page...",
             "code": final_code,
         }
-            
+
         """draft_code = Chains.combine(
             instruction=instruction, code_snippets=code_snippets, plan=plan
         )
