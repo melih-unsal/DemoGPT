@@ -1,3 +1,4 @@
+import re
 from demogpt.chains.prompts.task_definitions import TASK_TYPE2_TASK
 
 
@@ -81,7 +82,22 @@ def checkPromptTemplates(templates, task):
     for input_key in inputs:
         if f"{{{input_key}}}" not in templates:
             feedback += f"{{{input_key}}} is not included in any of the templates. Please add it.\n"
-
+    
+    # now detect extras
+    
+    matches = set(re.findall(r'\{([^}]+)\}', templates))
+    
+    for match in matches:
+        if match not in inputs:
+            feedback += f"{{{match}}} cannot be included in any of the templates. Please remove it.\n"
+            
+    print("templates:"+templates)
+    print("matches:",matches)
+    print("inputs:",inputs)
+    print("feedback:",feedback)
+        
     valid = len(feedback) == 0
+    
+    print("valid:",valid)
 
     return {"feedback": feedback, "valid": valid}

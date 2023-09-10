@@ -18,6 +18,7 @@ src/beta/langchain_code/
 quick_start.txt
 test_final_4.py
 test_final_5.py
+test_plan_refiner.py
 
 # docs
 src/docs/*

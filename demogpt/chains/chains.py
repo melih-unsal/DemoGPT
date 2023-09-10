@@ -40,13 +40,30 @@ class Chains:
             prompts.append(HumanMessagePromptTemplate.from_template(human_template))
         chat_prompt = ChatPromptTemplate.from_messages(prompts)
         return LLMChain(llm=cls.llm, prompt=chat_prompt).run(**kwargs)
+    
+    @classmethod
+    def systemInputs(cls, instruction):
+        return cls.getChain(
+            system_template=prompts.system_inputs.system_template,
+            human_template=prompts.system_inputs.human_template,
+            instruction=instruction
+        )
 
     @classmethod
     def plan(cls, instruction):
         return cls.getChain(
             system_template=prompts.plan.system_template,
             human_template=prompts.plan.human_template,
+            instruction=instruction
+        )
+        
+    @classmethod
+    def planWithInputs(cls, instruction, system_inputs):
+        return cls.getChain(
+            system_template=prompts.plan_with_inputs.system_template,
+            human_template=prompts.plan_with_inputs.human_template,
             instruction=instruction,
+            system_inputs=system_inputs
         )
 
     @classmethod
@@ -76,13 +93,22 @@ class Chains:
         return json.loads(task_list)
 
     @classmethod
-    def draft(cls, instruction, code_snippets, plan):
+    def combine(cls, instruction, code_snippets, plan):
         code = cls.getChain(
             system_template=prompts.combine.system_template,
             human_template=prompts.combine.human_template,
             instruction=instruction,
             code_snippets=code_snippets,
             plan=plan,
+        )
+        return refine(code)
+    
+    @classmethod
+    def combine_v2(cls, code_snippets):
+        code = cls.getChain(
+            system_template=prompts.combine_v2.system_template,
+            human_template=prompts.combine_v2.human_template,
+            code_snippets=code_snippets,
         )
         return refine(code)
 

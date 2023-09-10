@@ -48,8 +48,7 @@ class TaskChains:
         code = cls.getChain(
             human_template=prompts.ui_input_text.human_template,
             instruction=instruction,
-            variable=variable,
-            code_snippets=code_snippets,
+            variable=variable
         )
         return utils.refine(code)
 
@@ -62,8 +61,7 @@ class TaskChains:
         code = cls.getChain(
             human_template=prompts.ui_output_text.human_template,
             instruction=instruction,
-            args=args,
-            code_snippets=code_snippets,
+            args=args
         )
         return utils.refine(code)
 

@@ -13,7 +13,7 @@ from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
 
 def init(title=""):
     if title:
-        return IMPORTS_CODE_SNIPPET + f"\nst.title({title})\n"
+        return IMPORTS_CODE_SNIPPET + f"\nst.title('{title}')\n"
     return IMPORTS_CODE_SNIPPET
 
 
@@ -29,6 +29,8 @@ def getCodeSnippet(task, code_snippets, iters=10):
         res = ""
         is_valid = False
         res = TaskChains.promptChatTemplate(task=task, code_snippets=code_snippets)
+        function_name = res.get("function_name")
+        variety = res.get("variety")
         index = 0
         while not is_valid:
             check = checkPromptTemplates(res, task)
@@ -41,6 +43,8 @@ def getCodeSnippet(task, code_snippets, iters=10):
             index += 1
             if index == iters:
                 break
+        res["function_name"] = function_name
+        res["variety"] = variety
         code = getPromptChatTemplateCode(res, task)
     elif task_type == "path_to_content":
         code = TaskChains.pathToContent(task=task, code_snippets=code_snippets)
