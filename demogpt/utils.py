@@ -58,6 +58,12 @@ def getCodeSnippet(task, code_snippets, iters=10):
         code = TaskChains.docLoad(task=task, code_snippets=code_snippets)
     elif task_type == "doc_summarizer":
         code = TaskChains.summarize(task=task, code_snippets=code_snippets)
+    elif task_type == "memory":
+        code = TaskChains.memory(task=task)
+    elif task_type == "ui_input_chat":
+        code = TaskChains.uiInputChat(task=task)
+    elif task_type == "ui_output_chat":
+        code = TaskChains.uiOutputChat(task=task)
     return code.strip() + "\n"
 
 
@@ -66,6 +72,70 @@ def refine(code):
         code = code.split("```")[1]
         if code.startswith("python"):
             code = code[len("python") :].strip()
+    return code
+
+def getMemoryCode(template, task):
+    inputs = task["input_key"]
+    variable = task["output_key"]
+    temperature = 0 if template.get("variety", "False") == "False" else 0.7
+    system_template = template["system_template"]
+    run_call = "{}"
+
+    if inputs == "none":
+        signature = f"{template['function_name']}()"
+        function_call = f"{variable} = {signature}"
+        inputs = []
+    else:
+        if isinstance(inputs, str):
+            if inputs.startswith("["):
+                inputs = inputs[1:-1]
+            inputs = [var.strip() for var in inputs.split(",")]
+        if len(inputs) > 0:
+            run_call = ", ".join([f"{var}={var}" for var in inputs])
+        signature = f"{template['function_name']}({','.join(inputs)})"
+        function_call = f"""
+if {' and '.join(inputs)}:
+    chat_llm_chain = {signature}
+    {variable} = chat_llm_chain.run({run_call})
+else:
+    {variable} = ""
+"""
+    input_variables = ["chat_history", "human_input"] + inputs
+    code = f"""
+from langchain.memory import ConversationBufferMemory
+from langchain.chains.question_answering import load_qa_chain
+from langchain import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain.chat_models import ChatOpenAI
+import time
+
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Display chat messages from history on app rerun
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):  
+        st.markdown(message["content"])
+
+def {signature}:
+    prompt = PromptTemplate(
+        input_variables={input_variables}, template='''{system_template}'''
+    )
+    memory = ConversationBufferMemory(memory_key="chat_history", input_key="human_input")
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k",temperature={temperature})
+    chat_llm_chain = LLMChain(
+        llm=llm,
+        prompt=prompt,
+        verbose=False,
+        memory=memory,
+    )
+    return chat_llm_chain
+    
+{function_call} 
+
+    """
+    
     return code
 
 

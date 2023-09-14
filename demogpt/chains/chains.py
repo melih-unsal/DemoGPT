@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
@@ -57,12 +58,13 @@ class Chains:
 
     @classmethod
     def planWithInputs(cls, instruction, system_inputs):
-        return cls.getChain(
+        plan = cls.getChain(
             system_template=prompts.plan_with_inputs.system_template,
             human_template=prompts.plan_with_inputs.human_template,
             instruction=instruction,
             system_inputs=system_inputs,
         )
+        return cls.refinePlan(plan)
 
     @classmethod
     def tasks(cls, instruction, plan):
@@ -118,7 +120,23 @@ class Chains:
             instruction=instruction,
             code=code,
         )
-
+        
+    @classmethod
+    def refinePlan(cls, plan):
+        pattern = r'\[[a-zA-Z0-9_]+\(.*\)'
+        steps = plan.strip().split("\n")
+        refined_plan = []
+        index = 1
+        for i in range(len(steps)):
+            step = steps[i]
+            # If current step contains the pattern or next step contains the pattern, then retain
+            if re.search(pattern, step):
+                # Remove existing numbering
+                current_step = re.sub(r'^\d+\.', "", step).strip()
+                refined_plan.append(f"{index}. {current_step}")
+                index += 1
+        return "\n".join(refined_plan)
+    
     @classmethod
     def refine(cls, instruction, code, feedback):
         code = cls.getChain(

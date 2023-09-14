@@ -1,7 +1,7 @@
 import json
 import re
 
-AVAILABLE_TASKS_COUNT = 9
+AVAILABLE_TASKS_COUNT = 13
 
 ################################
 
@@ -87,6 +87,22 @@ ALL_TASKS = [
         "purpose": "Extracting and providing specific information from files in response to questions.",
     },
     {
+        "name": "ui_input_chat",
+        "description": "Get user message/text input for conversation",
+        "good_at": "Getting text input from the user for conversation",
+        "input_data_type": "none",
+        "output_data_type": "string",
+        "purpose": "For chat interface, get user text input. It does not need to be included multiple times",
+    },
+    {
+        "name": "ui_output_chat",
+        "description": "Display the conversation history",
+        "good_at": "Displaying chat history",
+        "input_data_type": "string",
+        "output_data_type": "none",
+        "purpose": "For conversation-based apps, it displays the conversation history.",
+    },
+    {
         "name": "memory",
         "description": "Returns memory that could be attached as an input to any prompt_chat_template.",
         "good_at": "Memorizing the conversation history or context.",
@@ -155,6 +171,8 @@ TASKS = ALL_TASKS[:AVAILABLE_TASKS_COUNT]
 TASK_NAMES = [task["name"] for task in TASKS]
 
 TASK_DESCRIPTIONS = jsonFixer(TASKS)
+
+print("TASK_DESCRIPTIONS:",TASK_DESCRIPTIONS)
 
 TASK_DTYPES = {
     task["name"]: {

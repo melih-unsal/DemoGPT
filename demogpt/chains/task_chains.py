@@ -106,6 +106,53 @@ class TaskChains:
         )
         res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res)
+    
+    @classmethod
+    def uiInputChat(cls, task):
+        variable = task["output_key"]
+        instruction = task["description"]
+
+        code = cls.getChain(
+            human_template=prompts.ui_input_chat.human_template,
+            instruction=instruction,
+            variable=variable
+        )
+        return utils.refine(code)
+    
+    @classmethod
+    def uiOutputChat(cls, task):
+        res = task["input_key"]
+
+        code = f"""
+with st.chat_message("assistant"):
+    message_placeholder = st.empty()
+    full_response = ""
+    # Simulate stream of response with milliseconds delay
+    for chunk in {res}.split():
+        full_response += chunk + " "
+        time.sleep(0.05)
+        # Add a blinking cursor to simulate typing
+        message_placeholder.markdown(full_response + "▌")
+    message_placeholder.markdown(full_response)
+    # Add assistant response to chat history
+    st.session_state.messages.append({{"role": "assistant", "content": full_response}})        
+        """
+        return code
+    
+    @classmethod
+    def memory(cls, task):
+        inputs = task["input_key"]
+        instruction = task["description"]
+
+        res = cls.getChain(
+            system_template=prompts.memory.system_template,
+            human_template=prompts.memory.human_template,
+            instruction=instruction,
+            inputs=inputs
+        )
+        res = res.replace("'''",'"""')
+        res = res[res.find("{") : res.rfind("}") + 1]
+        return json.loads(res,strict=False)
 
     @classmethod
     def promptTemplateRefiner(cls, templates, feedback):
