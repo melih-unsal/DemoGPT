@@ -135,7 +135,8 @@ with st.chat_message("assistant"):
         message_placeholder.markdown(full_response + "▌")
     message_placeholder.markdown(full_response)
     # Add assistant response to chat history
-    st.session_state.messages.append({{"role": "assistant", "content": full_response}})        
+    if full_response:
+        st.session_state.messages.append({{"role": "assistant", "content": full_response}})        
         """
         return code
     

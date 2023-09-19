@@ -8,7 +8,7 @@ Components:
 
 IMPORTANT NOTE:
 - Write "system_template" in a way that, system_template.format(input=something for input in inputs) work.
-It should also have {{chat_history}} and {{human_input}}
+It should also have {{chat_history}}
 What I mean is that, put all the elements of Inputs inside of system_template with curly braces so that I can format it with predefined parameters.
 """
 
@@ -28,17 +28,17 @@ You are a chatbot having a conversation with a human. You are supposed to write 
 }}
 ##########################################
 Instruction: Talk like a psychologist with a given tone.
-Inputs: ["human_input","tone"]
+Inputs: ["talk_input","tone"]
 Args: {{
-"system_template": "You are a psychologist. Reply to your patience with the given tone\n\nTone:{{tone}}\n\n{{chat_history}}\nPatience: {{human_input}}\nPsychologist:",
+"system_template": "You are a psychologist. Reply to your patience with the given tone\n\nTone:{{tone}}\n\n{{chat_history}}\nPatience: {{talk_input}}\nPsychologist:",
 "variety": "False",
 "function_name": "talk_like_a_psychologist"
 }}
 ##########################################
 Instruction: Answer question related to the uploaded powerpoint file.
-Inputs: ["human_input","powerpoint_doc"]
+Inputs: ["question","powerpoint_doc"]
 Args: {{
-"system_template": "You are a chatbot having a conversation with a human.\n\nGiven the following extracted parts of a long document and a question, create a final answer.\n\n{{context}}\n\n{{chat_history}}\nHuman: {{human_input}}\nChatbot:",
+"system_template": "You are a chatbot having a conversation with a human.\n\nGiven the following extracted parts of a long document and a question, create a final answer.\n\n{{powerpoint_doc}}\n\n{{chat_history}}\nHuman: {{question}}\nChatbot:",
 "variety": "False",
 "function_name": "talk_like_a_psychologist"
 }}

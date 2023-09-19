@@ -63,6 +63,13 @@ Let’s think step by step.
 3. If tweet is created, generate a score from the tweet [prompt_chat_template(tweet) ---> score]
 4. If score is created, display tweet and score to the user [ui_output_text(score)]
 
+Instruction: Create an app that enable me to make conversation with a mathematician 
+System Inputs:[text]
+Let’s think step by step.
+1. Get message from the user [ui_input_chat() ---> text] 
+2. Generate the response coming from the mathematician [memory(text) ---> mathematician_response]
+3. If response is ready, display it to the user with chat interface [ui_output_chat(mathematician_response)]
+
 Instruction: Summarize a text taken from the user
 System Inputs:[text]
 Let’s think step by step.

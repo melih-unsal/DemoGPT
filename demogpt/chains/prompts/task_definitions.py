@@ -1,7 +1,7 @@
 import json
 import re
 
-AVAILABLE_TASKS_COUNT = 13
+AVAILABLE_TASKS_COUNT = 12
 
 ################################
 
@@ -79,24 +79,16 @@ ALL_TASKS = [
         "purpose": "Retrieving the content of the file from given path",
     },
     {
-        "name": "hub_question_answering",
-        "description": "Answer questions related to the file.",
-        "good_at": "Question answering on files",
-        "input_data_type": ["string", "file"],
-        "output_data_type": "string",
-        "purpose": "Extracting and providing specific information from files in response to questions.",
-    },
-    {
         "name": "ui_input_chat",
-        "description": "Get user message/text input for conversation",
-        "good_at": "Getting text input from the user for conversation",
+        "description": "Get user message/text input for conversation-based application",
+        "good_at": "Getting text input from the user for chat-based application",
         "input_data_type": "none",
         "output_data_type": "string",
         "purpose": "For chat interface, get user text input. It does not need to be included multiple times",
     },
     {
         "name": "ui_output_chat",
-        "description": "Display the conversation history",
+        "description": "Display the conversation history in a chat-based application",
         "good_at": "Displaying chat history",
         "input_data_type": "string",
         "output_data_type": "none",
@@ -104,11 +96,11 @@ ALL_TASKS = [
     },
     {
         "name": "memory",
-        "description": "Returns memory that could be attached as an input to any prompt_chat_template.",
-        "good_at": "Memorizing the conversation history or context.",
-        "input_data_type": "none",
-        "output_data_type": "Memory",
-        "purpose": "Storing and retrieving conversation history or contextual information.",
+        "description": "Chat version of prompt_chat_template that can remember the conversation history while responding",
+        "good_at": "Chatbot like applications and any application requiring chat property.",
+        "input_data_type": "*string",
+        "output_data_type": "string",
+        "purpose": "For conversation-based apps, it generates the responses while remembering the conversation history",
     },
     {
         "name": "prompt_list_parser",
@@ -171,8 +163,6 @@ TASKS = ALL_TASKS[:AVAILABLE_TASKS_COUNT]
 TASK_NAMES = [task["name"] for task in TASKS]
 
 TASK_DESCRIPTIONS = jsonFixer(TASKS)
-
-print("TASK_DESCRIPTIONS:",TASK_DESCRIPTIONS)
 
 TASK_DTYPES = {
     task["name"]: {

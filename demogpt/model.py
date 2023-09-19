@@ -159,8 +159,14 @@ class DemoGPT:
             "done": False,
             "message": "Code snippets are being combined...",
         }
+        
+        chat_app = any([task["task_type"] in ["ui_input_chat","ui_output_chat","memory"] for task in task_list])
 
-        final_code = Chains.combine_v2(code_snippets=code_snippets)
+        if chat_app:
+            final_code = code_snippets
+            sleep(1)
+        else:
+            final_code = Chains.combine_v2(code_snippets=code_snippets)
 
         yield {
             "stage": "final",

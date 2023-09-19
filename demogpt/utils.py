@@ -59,13 +59,21 @@ def getCodeSnippet(task, code_snippets, iters=10):
     elif task_type == "doc_summarizer":
         code = TaskChains.summarize(task=task, code_snippets=code_snippets)
     elif task_type == "memory":
-        code = TaskChains.memory(task=task)
+        template = TaskChains.memory(task=task)
+        code = getMemoryCode(template=template, task=task)
     elif task_type == "ui_input_chat":
-        code = TaskChains.uiInputChat(task=task)
+        code = getChatInputCode(TaskChains.uiInputChat(task=task))
     elif task_type == "ui_output_chat":
         code = TaskChains.uiOutputChat(task=task)
     return code.strip() + "\n"
 
+def getChatInputCode(code):
+    prefix = """
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):  
+        st.markdown(message["content"])\n
+"""
+    return prefix + code
 
 def refine(code):
     if "```" in code:
@@ -95,34 +103,20 @@ def getMemoryCode(template, task):
         signature = f"{template['function_name']}({','.join(inputs)})"
         function_call = f"""
 if {' and '.join(inputs)}:
-    chat_llm_chain = {signature}
-    {variable} = chat_llm_chain.run({run_call})
+    if 'chat_llm_chain' not in st.session_state:
+        st.session_state.chat_llm_chain = {signature}
+    {variable} = st.session_state.chat_llm_chain.run({run_call})
 else:
     {variable} = ""
 """
-    input_variables = ["chat_history", "human_input"] + inputs
+    input_variables = ["chat_history"] + inputs
     code = f"""
-from langchain.memory import ConversationBufferMemory
-from langchain.chains.question_answering import load_qa_chain
-from langchain import LLMChain
-from langchain.prompts import PromptTemplate
-from langchain.chat_models import ChatOpenAI
-import time
-
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Display chat messages from history on app rerun
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):  
-        st.markdown(message["content"])
 
 def {signature}:
     prompt = PromptTemplate(
         input_variables={input_variables}, template='''{system_template}'''
     )
-    memory = ConversationBufferMemory(memory_key="chat_history", input_key="human_input")
+    memory = ConversationBufferMemory(memory_key="chat_history", input_key="{inputs[0]}")
     llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k",temperature={temperature})
     chat_llm_chain = LLMChain(
         llm=llm,
@@ -187,7 +181,6 @@ def {signature}:
 """
     return code
 
-
 def runThread(proc):
     proc.communicate()
 
@@ -245,4 +238,12 @@ from langchain.document_loaders import *
 from langchain.chains.summarize import load_summarize_chain
 import tempfile
 from langchain.docstore.document import Document
+import time
+from langchain.memory import ConversationBufferMemory
+from langchain.chains.question_answering import load_qa_chain
+from langchain.prompts import PromptTemplate
+
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 """
