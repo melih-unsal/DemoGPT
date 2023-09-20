@@ -102,7 +102,10 @@ def getChatCode(template, task):
             run_call = ", ".join([f"{var}={var}" for var in inputs])
         signature = f"{template['function_name']}({','.join(inputs)})"
         function_call = f"""
-if {' and '.join(inputs)}:
+if not openai_api_key.startswith('sk-'):
+    st.warning('Please enter your OpenAI API key!', icon='⚠')
+    {variable} = ""
+elif {' and '.join(inputs)}:
     if 'chat_llm_chain' not in st.session_state:
         st.session_state.chat_llm_chain = {signature}
     {variable} = st.session_state.chat_llm_chain.run({run_call})
@@ -117,7 +120,7 @@ def {signature}:
         input_variables={input_variables}, template='''{system_template}'''
     )
     memory = ConversationBufferMemory(memory_key="chat_history", input_key="{inputs[0]}")
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k",temperature={temperature})
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key, temperature={temperature})
     chat_llm_chain = LLMChain(
         llm=llm,
         prompt=prompt,
@@ -150,7 +153,10 @@ def getPromptChatTemplateCode(templates, task):
             run_call = ", ".join([f"{var}={var}" for var in inputs])
         signature = f"{templates['function_name']}({','.join(inputs)})"
         function_call = f"""
-if {' and '.join(inputs)}:
+if not openai_api_key.startswith('sk-'):
+    st.warning('Please enter your OpenAI API key!', icon='⚠')
+    {variable} = ""
+elif {' and '.join(inputs)}:
     {variable} = {signature}
 else:
     {variable} = ""
@@ -162,6 +168,7 @@ else:
 def {signature}:
     chat = ChatOpenAI(
         model="gpt-3.5-turbo-16k",
+        openai_api_key=openai_api_key,
         temperature={temperature}
     )
     system_template = \"\"\"{templates['system_template']}\"\"\"
@@ -228,6 +235,7 @@ def runStreamlit(code, openai_api_key, openai_api_base=None):
 
 
 IMPORTS_CODE_SNIPPET = """
+import os
 import streamlit as st
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
@@ -246,4 +254,11 @@ from langchain.prompts import PromptTemplate
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+openai_api_key = st.sidebar.text_input(
+    "OpenAI API Key",
+    placeholder="sk-...",
+    value=os.getenv("OPENAI_API_KEY", ""),
+    type="password",
+)
 """
