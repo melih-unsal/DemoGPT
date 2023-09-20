@@ -31,7 +31,7 @@ DemoGPT works through the following steps:
 
 ### Task List Folder (`demogpt/chains/prompts`)
 
-Contains task files. Only `prompt_chat_template.py`, `ui_input_file.py`, `ui_input_text.py`, `ui_output_text.py` are filled. Others need to be filled according to their needs.
+Contains task files. Only `prompt_template.py`, `ui_input_file.py`, `ui_input_text.py`, `ui_output_text.py` are filled. Others need to be filled according to their needs.
 
 ## Adding a New Task
 

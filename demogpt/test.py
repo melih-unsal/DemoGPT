@@ -106,7 +106,7 @@ class TestDemoGPT(unittest.TestCase):
             res = TaskChains.uiOutputText(instruction=instruction, args=args)
             self.writeToFile("UI OUTPUT TEXT", res, instruction)
 
-    def test_task_prompt_chat_template(self):
+    def test_task_prompt_template(self):
         for example in TOOL_EXAMPLES["ui_input_text"]:
             instruction = example["instruction"]
             inputs = example["inputs"]

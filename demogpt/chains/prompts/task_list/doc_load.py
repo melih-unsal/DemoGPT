@@ -44,13 +44,15 @@ to load the document for the argument name, variable and instruction
 below like in the below format:
 
 ###
-def {function_name}(argument):
+def {function_name}({argument}):
     loader = Loader(path) # Select the appropriate Loader
     docs = loader.load()
     return docs
 
 if {argument}:
     {variable} = {function_name}({argument})
+else:
+    {variable} = ''
 ###
     
 While using the loader, don't change "mode" and "strategy" arguments, they need to be constant as stated.

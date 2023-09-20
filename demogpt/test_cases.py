@@ -16,7 +16,7 @@ CODE_SNIPPETS = [
 2. Use 'doc_loader' to load the text file as Document from the file path.
 3. Use 'doc_to_string' to convert Document to string
 4. Get the output language from the user by 'ui_input_text'
-5. If all inputs are filled, use 'prompt_chat_template' to translate the text to the output language.
+5. If all inputs are filled, use 'prompt_template' to translate the text to the output language.
 6. If the translation is ready, display it to the user by 'ui_output_text'.
 """,
         "code_snippets": """
@@ -92,8 +92,8 @@ if translation:
 1. Get website URL from the user by 'ui_input_text'
 2. Use 'doc_loader' to load the website as Document from URL
 3. Use 'doc_to_string' to convert Document to string
-4. If doc_to_string generated the content as string, use 'prompt_chat_template' to generate a blog post related to that content.
-5. If blog post is generated, use 'prompt_chat_template' to summarize the blog post.
+4. If doc_to_string generated the content as string, use 'prompt_template' to generate a blog post related to that content.
+5. If blog post is generated, use 'prompt_template' to summarize the blog post.
 6. If summarization is ready, display it to the user by 'ui_output_text'.
 """,
         "code_snippets": """
@@ -189,7 +189,7 @@ TEST_CASES = [
         [
             {
                 "step": 1,
-                "task_type": "prompt_chat_template",
+                "task_type": "prompt_template",
                 "task_name": "generate_intelligent_questions",
                 "input_key": "none",
                 "output_key": "generated_questions",
@@ -213,7 +213,7 @@ TEST_CASES = [
             },
             {
                 "step": 4,
-                "task_type": "prompt_chat_template",
+                "task_type": "prompt_template",
                 "task_name": "analyze_user_answer",
                 "input_key": "user_answer, context",
                 "output_key": "horoscope_prediction",
@@ -319,7 +319,7 @@ TEST_CASES = [
             },
             {
                 "step": 3,
-                "task_type": "prompt_chat_template",
+                "task_type": "prompt_template",
                 "task_name": "translate_text",
                 "input_key": [
                     "source_text",
@@ -397,7 +397,7 @@ TEST_CASES = [
             },
             {
                 "step": 2,
-                "task_type": "prompt_chat_template",
+                "task_type": "prompt_template",
                 "task_name": "generate_lyrics",
                 "input_key": "song_title",
                 "output_key": "lyrics",
@@ -520,7 +520,7 @@ TEST_CASES = [
             },
             {
                 "step": 5,
-                "task_type": "prompt_chat_template",
+                "task_type": "prompt_template",
                 "task_name": "translate_content",
                 "input_key": "file_content, input_language, output_language",
                 "output_key": "translated_content",
@@ -613,7 +613,7 @@ TOOL_EXAMPLES = {
         },
         {"instruction": "Show the generated questions to the user", "args": "question"},
     ],
-    "prompt_chat_template": [
+    "prompt_template": [
         {
             "instruction": "Generate intelligent questions related to horoscope",
             "inputs": "user",

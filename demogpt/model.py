@@ -160,7 +160,7 @@ class DemoGPT:
             "message": "Code snippets are being combined...",
         }
         
-        chat_app = any([task["task_type"] in ["ui_input_chat","ui_output_chat","memory"] for task in task_list])
+        chat_app = any([task["task_type"] in ["ui_input_chat","ui_output_chat","chat"] for task in task_list])
 
         if chat_app:
             final_code = code_snippets

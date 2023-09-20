@@ -38,7 +38,7 @@ Args: {{
 Instruction: Answer question related to the uploaded powerpoint file.
 Inputs: ["question","powerpoint_doc"]
 Args: {{
-"system_template": "You are a chatbot having a conversation with a human.\n\nGiven the following extracted parts of a long document and a question, create a final answer.\n\n{{powerpoint_doc}}\n\n{{chat_history}}\nHuman: {{question}}\nChatbot:",
+"system_template": "You are a chatbot having a conversation with a human.\n\nGiven the following extracted parts of a long document, chat history and a question, create a final answer.\n\n{{powerpoint_doc}}\n\n{{chat_history}}\nHuman: {{question}}\nChatbot:",
 "variety": "False",
 "function_name": "talk_like_a_psychologist"
 }}

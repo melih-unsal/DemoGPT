@@ -93,13 +93,13 @@ class TaskChains:
         return utils.refine(code)
 
     @classmethod
-    def promptChatTemplate(cls, task, code_snippets):
+    def promptTemplate(cls, task, code_snippets):
         inputs = task["input_key"]
         instruction = task["description"]
 
         res = cls.getChain(
-            system_template=prompts.prompt_chat_template.system_template,
-            human_template=prompts.prompt_chat_template.human_template,
+            system_template=prompts.prompt_template.system_template,
+            human_template=prompts.prompt_template.human_template,
             instruction=instruction,
             inputs=inputs,
             code_snippets=code_snippets,
@@ -141,13 +141,13 @@ with st.chat_message("assistant"):
         return code
     
     @classmethod
-    def memory(cls, task):
+    def chat(cls, task):
         inputs = task["input_key"]
         instruction = task["description"]
 
         res = cls.getChain(
-            system_template=prompts.memory.system_template,
-            human_template=prompts.memory.human_template,
+            system_template=prompts.chat.system_template,
+            human_template=prompts.chat.human_template,
             instruction=instruction,
             inputs=inputs
         )

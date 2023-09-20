@@ -25,10 +25,10 @@ def getCodeSnippet(task, code_snippets, iters=10):
         code = TaskChains.uiInputText(task=task, code_snippets=code_snippets)
     elif task_type == "ui_output_text":
         code = TaskChains.uiOutputText(task=task, code_snippets=code_snippets)
-    elif task_type == "prompt_chat_template":
+    elif task_type == "prompt_template":
         res = ""
         is_valid = False
-        res = TaskChains.promptChatTemplate(task=task, code_snippets=code_snippets)
+        res = TaskChains.promptTemplate(task=task, code_snippets=code_snippets)
         function_name = res.get("function_name")
         variety = res.get("variety")
         index = 0
@@ -58,9 +58,9 @@ def getCodeSnippet(task, code_snippets, iters=10):
         code = TaskChains.docLoad(task=task, code_snippets=code_snippets)
     elif task_type == "doc_summarizer":
         code = TaskChains.summarize(task=task, code_snippets=code_snippets)
-    elif task_type == "memory":
-        template = TaskChains.memory(task=task)
-        code = getMemoryCode(template=template, task=task)
+    elif task_type == "chat":
+        template = TaskChains.chat(task=task)
+        code = getChatCode(template=template, task=task)
     elif task_type == "ui_input_chat":
         code = getChatInputCode(TaskChains.uiInputChat(task=task))
     elif task_type == "ui_output_chat":
@@ -82,7 +82,7 @@ def refine(code):
             code = code[len("python") :].strip()
     return code
 
-def getMemoryCode(template, task):
+def getChatCode(template, task):
     inputs = task["input_key"]
     variable = task["output_key"]
     temperature = 0 if template.get("variety", "False") == "False" else 0.7

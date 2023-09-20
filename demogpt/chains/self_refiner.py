@@ -32,7 +32,7 @@ class SelfRefiner:
         self.max_iter = max_iter
         self.log_intermediate_steps = log_intermediate_steps
 
-        self.prompt_templates = {
+        self.prompts = {
             "feedback": PROMPTS[key].FEEDBACK_PROMPT,
             "refine": PROMPTS[key].REFINEMENT_PROMPT,
         }
@@ -46,10 +46,10 @@ class SelfRefiner:
         self.conversation_history = self.getPromptTemplate("refine")
 
     def getPromptTemplate(self, key):
-        assert key in self.prompt_templates
+        assert key in self.prompts
         prompts = []
         prompts.append(
-            SystemMessagePromptTemplate.from_template(self.prompt_templates[key])
+            SystemMessagePromptTemplate.from_template(self.prompts[key])
         )
         return prompts
 
@@ -64,7 +64,7 @@ class SelfRefiner:
     def feedback(self, **kwargs):
         return LLMChain(
             llm=self.llm,
-            prompt=ChatPromptTemplate.from_template(self.prompt_templates["feedback"]),
+            prompt=ChatPromptTemplate.from_template(self.prompts["feedback"]),
         ).run(**kwargs)
 
     def refine(self):

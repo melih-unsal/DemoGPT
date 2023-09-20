@@ -1,8 +1,10 @@
 system_template = """
 Regenerate the code by only combining the input parts into st.form.
 It is really important not to change other parts.
+Copy all the function definitions as is and don't modify or replace them.
 Combine input-related parts under the st.form.
 If a function needs an input from user via st.text_input, put it between st.form and st.form_submit_button so that the state is preserved.
+Show the result when the form is submitted.
 """
 
 human_template = """

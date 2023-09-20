@@ -38,16 +38,16 @@ Ensure that an output type of task does not change.
 Instruction: Create a system that can analyze the user
 Plan:
 Let’s think step by step.
-1. Generate question to understand the personality of the user by 'prompt_chat_template'
+1. Generate question to understand the personality of the user by 'prompt_template'
 2. Show the question to the user with 'ui_output_text'
 3. Get answer from the user for the asked question with 'ui_input_text'
-4. Analyze user's answer by 'prompt_chat_template'.
+4. Analyze user's answer by 'prompt_template'.
 5. Show the analyze to the user with 'ui_output_text'
 List of Task Objects (Python List of JSON):
 [
     {{
         "step": 1,
-        "task_type": "prompt_chat_template",
+        "task_type": "prompt_template",
         "task_name": "generate_question",
         "input_key": "none",
         "input_data_type": "none",
@@ -77,7 +77,7 @@ List of Task Objects (Python List of JSON):
     }},
     {{
         "step": 4,
-        "task_type": "prompt_chat_template",
+        "task_type": "prompt_template",
         "task_name": "analyze_answer",
         "input_key": ["question", "answer"],
         "input_data_type": ["string","string"],
@@ -102,7 +102,7 @@ Plan:
 1. Get website URL from the user with 'ui_input_text'
 2. Use 'doc_loader' to load the page as Document
 3. Use 'doc_to_string' to convert Document to string
-4. Use 'prompt_chat_template' to generate a blog post using the result of doc_to_string
+4. Use 'prompt_template' to generate a blog post using the result of doc_to_string
 5. If blog post is generated, show it to the user with 'ui_output_text'.
 List of Task Objects (Python List of JSON):
 [
@@ -138,7 +138,7 @@ List of Task Objects (Python List of JSON):
     }},
     {{
         "step": 4,
-        "task_type": "prompt_chat_template",
+        "task_type": "prompt_template",
         "task_name": "writeBlogPost",
         "input_key": ["docs_string"],
         "input_data_type": ["string"],
@@ -164,7 +164,7 @@ Plan:
 2. Use 'ui_input_text' to get the output language from the user
 3. Use 'doc_loader' to load the file as Document from file path
 4. Use 'summarize' to summarize the Document
-5. Use 'prompt_chat_template' to translate the summarization
+5. Use 'prompt_template' to translate the summarization
 6. If translation is ready, show it to the user with 'ui_output_text'.
 List of Task Objects (Python List of JSON):
 [
@@ -210,7 +210,7 @@ List of Task Objects (Python List of JSON):
     }},
     {{
         "step": 5,
-        "task_type": "prompt_chat_template",
+        "task_type": "prompt_template",
         "task_name": "translate",
         "input_key": ["summarization_result","language"],
         "input_data_type": ["string","string"],
