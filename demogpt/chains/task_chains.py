@@ -190,7 +190,6 @@ with st.chat_message("assistant"):
     def stringToDoc(cls, task, code_snippets):
         argument = task["input_key"]
         variable = task["output_key"]
-        code = f'{variable} = "".join([doc.page_content for doc in {argument}])'
         code = f"""
 from langchain.docstore.document import Document
 {variable} =  [Document(page_content={argument}, metadata={{'source': 'local'}})]

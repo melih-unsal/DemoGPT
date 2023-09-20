@@ -8,6 +8,8 @@ if uploaded_file is not None:
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
         temp_file.write(uploaded_file.read())
         {variable} = temp_file.name # it shows the file path
+else:
+    {variable} = ''
 
 Suppose that, streamlit has been imported by "import streamlit as st" so you don't need to import it.
 Here is the part of the code that you are supposed to continue:
