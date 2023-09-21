@@ -3,9 +3,13 @@ import os
 import signal
 
 import streamlit as st
-from utils import runStreamlit
+from utils import  generateImage
 from demogpt import DemoGPT
 import requests
+import tempfile
+import cv2
+import webbrowser
+from time import sleep
 
 try:
     from dotenv import load_dotenv
@@ -16,26 +20,24 @@ except Exception as e:
 
 
 def generate_response(txt, title):
-    """
-    Generate response using the LangChainCoder.
-
-    Args:
-        txt (str): The input text.
-
-    Yields:
-        dict: A dictionary containing response information.
-    """
     for data in agent(txt, title):
         yield data
         
-SERVER_URL = "http://3.71.189.238:5000/"
+SERVER_URL = "https://api.demogpt.io/"
         
-def getLink(code):
-    res = requests.post(SERVER_URL, data={
-        "code": code
-    })
-    
-    return "http://3.71.189.238:8501/"
+def create(code):
+    image = generateImage(demo_idea, openai_api_key, openai_api_base)
+    with tempfile.NamedTemporaryFile("w", suffix=".jpg") as tmp:
+        cv2.imwrite(tmp.name, image)
+        tmp.flush()  # Make sure the data is written to disk
+        with open(tmp.name, 'rb') as file:
+            res = requests.post(SERVER_URL + "create", data={"code": code, "prompt":demo_idea}, files={"image": file})
+            st.session_state.app_id = res.json()["id"]
+            st.session_state.url = res.json()["url"]
+            
+def edit(code):
+    res = requests.post(SERVER_URL + "edit", data={
+        "code": code, "app_id":st.session_state.app_id})
     
 def initCode():
     if "code" not in st.session_state:
@@ -49,6 +51,20 @@ title = "🧩 DemoGPT"
 
 st.set_page_config(page_title=title)
 st.title(title)
+
+button_style = st.markdown("""
+<style>
+button[kind="primary"] {
+    background-color: rgb(0, 200, 0);
+    padding: 14px 40px;
+    width: 40%;
+    text-align: center;
+}
+button[kind="primary"]:hover {
+    background-color: rgb(0, 230, 0);
+}
+</style>""", unsafe_allow_html=True)
+
 # Text input
 
 openai_api_key = st.sidebar.text_input(
@@ -56,6 +72,11 @@ openai_api_key = st.sidebar.text_input(
     placeholder="sk-...",
     value=os.getenv("OPENAI_API_KEY", ""),
     type="password",
+)
+
+openai_api_base = st.sidebar.text_input(
+    "Open AI base URL",
+    placeholder="https://api.openai.com/v1",
 )
 
 models = (
@@ -110,6 +131,9 @@ if submitted:
         agent.setModel(model_name)
         code_empty = st.empty()
         st.session_state.container = st.container()
+        st.session_state.done = False
+        st.session_state.app_deployed = False
+        st.session_state.app_editted = False
         for data in generate_response(demo_idea, demo_title):
             done = data.get("done",False)
             message = data.get("message","")
@@ -132,8 +156,8 @@ elif "messages" in st.session_state:
         st.info(message,icon="🧩")                
 
 if st.session_state.done:
-    st.success(st.session_state.message)
-    with st.expander("Code",expanded=True):
+    #st.success(st.session_state.message)
+    with st.expander("Code",expanded=st.session_state.app_deployed):
         code_empty = st.empty()
         if st.session_state.edit_mode:
             new_code = code_empty.text_area("", st.session_state.code,height=500)
@@ -141,7 +165,10 @@ if st.session_state.done:
                 st.session_state.code = new_code  # Save the edited code to session state
                 st.session_state.edit_mode = False  # Exit edit mode
                 code_empty.code(new_code)
-                st.session_state["pid"] = runStreamlit(new_code, openai_api_key) 
+                with st.spinner('App is being updated...'):
+                    edit(st.session_state.code)
+                    st.session_state.app_editted = True
+                    sleep(15) # to make the app ready.
                 st.experimental_rerun()
                 
         else:
@@ -149,7 +176,19 @@ if st.session_state.done:
             code_empty.code(st.session_state.code)
             if st.button("Edit"):
                 st.session_state.edit_mode = True  # Enter edit mode
-                st.experimental_rerun()    
-    example_submitted = False
-    if submitted:
-        st.session_state["pid"] = runStreamlit(code, openai_api_key)         
+                st.experimental_rerun()            
+    if not st.session_state.get("app_deployed", False):
+        with st.spinner('App is being deployed. It takes 1-2 minutes...'):
+            create(st.session_state.code)
+            sleep(60) # to make the app ready.
+            st.session_state.app_deployed = True
+    if not st.session_state.get("app_editted", False):
+        st.success("Your app has been successfully created.", icon="✅")
+    else:
+        st.success("Your app has been successfully updated.", icon="✅")
+        
+    
+def callback():
+    webbrowser.open_new_tab(st.session_state.url) 
+if st.session_state.done: 
+    st.button("Go To App", type="primary", on_click=callback)
