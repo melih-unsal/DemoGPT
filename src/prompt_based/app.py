@@ -25,16 +25,44 @@ def generate_response(txt, title):
         yield data
         
 SERVER_URL = "https://api.demogpt.io/"
+
+toast_messages = [
+    "🌱 Planting the seeds...",
+    "🌦️ Watering and waiting...",
+    "☀️ Soaking up some sunshine...",
+    "🌳 Watching the beans grow...",
+    "🍂 Harvesting time...",
+    "☕ Grinding the beans...",
+    "🚰 Pouring the water...",
+    "⏳ Steeping...",
+    "🥛 Adding a splash of milk...",
+    "✨ Voilà! Your brew is ready. Enjoy your application!"
+]
         
 def create(code):
     image = generateImage(demo_idea, openai_api_key, openai_api_base)
+    index = 0
     with tempfile.NamedTemporaryFile("w", suffix=".jpg") as tmp:
         cv2.imwrite(tmp.name, image)
         tmp.flush()  # Make sure the data is written to disk
-        with open(tmp.name, 'rb') as file:
-            res = requests.post(SERVER_URL + "create", data={"code": code, "prompt":demo_idea, "title":demo_title}, files={"image": file})
-            st.session_state.app_id = res.json()["id"]
-            st.session_state.url = getUrl(st.session_state.app_id, demo_title, demo_idea)
+        while True:
+            if index < len(toast_messages) - 1:
+                index += 1
+
+            with open(tmp.name, 'rb') as file:
+                res = requests.post(SERVER_URL + "create", data={"code": code, "prompt":demo_idea, "title":demo_title}, files={"image": file})
+                try:
+                    st.session_state.app_id = res.json()["id"]
+                    print(res.json())
+                    st.session_state.url = getUrl(st.session_state.app_id, demo_title, demo_idea) 
+                    print("st.session_state.app_id:",st.session_state.app_id)
+                    print("st.session_state.url:",st.session_state.url)
+                except:
+                    yield index
+                else:
+                    break
+    yield index
+                    
             
 def edit(code):
     res = requests.post(SERVER_URL + "edit", data={
@@ -102,7 +130,6 @@ empty_title = st.empty()
 demo_title = empty_title.text_input(
     "Give a name for your application", placeholder="Title", max_chars=18
 )
-
 
 def progressBar(percentage, bar=None):
     if bar:
@@ -180,8 +207,16 @@ if st.session_state.done:
                 st.experimental_rerun()            
     if not st.session_state.get("app_deployed", False):
         with st.spinner('App is being deployed. It takes 4-5 minutes...'):
-            create(st.session_state.code)
-            sleep(240) # to make the app ready.
+            index = 0
+            for i in create(st.session_state.code):
+                if i != index:
+                    st.info(toast_messages[index])
+                index = i
+                sleep(30)
+            
+            for i in range(index+1,len(toast_messages)):
+                sleep(30)
+                st.info(toast_messages[i])
             st.session_state.app_deployed = True
             webbrowser.open_new_tab(st.session_state.url) 
     if not st.session_state.get("app_editted", False):
