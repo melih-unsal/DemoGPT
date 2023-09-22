@@ -35,7 +35,7 @@ toast_messages = [
     "☕ Grinding the beans...",
     "🚰 Pouring the water...",
     "⏳ Steeping...",
-    "🥛 Adding a splash of milk...",
+    "🥛 Adding a splash of milk. Just 1 more step left...",
     "✨ Voilà! Your brew is ready. Enjoy your application!"
 ]
         
@@ -53,10 +53,7 @@ def create(code):
                 res = requests.post(SERVER_URL + "create", data={"code": code, "prompt":demo_idea, "title":demo_title}, files={"image": file})
                 try:
                     st.session_state.app_id = res.json()["id"]
-                    print(res.json())
                     st.session_state.url = getUrl(st.session_state.app_id, demo_title, demo_idea) 
-                    print("st.session_state.app_id:",st.session_state.app_id)
-                    print("st.session_state.url:",st.session_state.url)
                 except:
                     yield index
                 else:
