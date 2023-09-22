@@ -101,7 +101,7 @@ openai_api_key = st.sidebar.text_input(
 )
 
 openai_api_base = st.sidebar.text_input(
-    "Open AI base URL",
+    "Open AI base URL (Optional)",
     placeholder="https://api.openai.com/v1",
 )
 
