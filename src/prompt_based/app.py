@@ -10,6 +10,7 @@ import tempfile
 import cv2
 import webbrowser
 from time import sleep
+from streamlit.components.v1 import html
 
 try:
     from dotenv import load_dotenv
@@ -118,7 +119,18 @@ if "done" not in st.session_state:
 
 with st.form("a", clear_on_submit=True):
     submitted = st.form_submit_button("Submit")
+
+
+def nav_to(url):
+    open_script= """
+        <script type="text/javascript">
+            window.open('%s', '_blank').focus();
+        </script>
+    """ % (url)
+    html(open_script)
     
+if st.button("Redirect"):
+    nav_to("docs.demogpt.io")    
 
 if submitted:
     st.session_state.messages = []
