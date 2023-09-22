@@ -10,6 +10,7 @@ import tempfile
 import cv2
 import webbrowser
 from time import sleep
+from streamlit.components.v1 import html
 
 try:
     from dotenv import load_dotenv
@@ -188,3 +189,13 @@ if st.session_state.done:
         st.success("Your app has been successfully created.", icon="✅")
     else:
         st.success("Your app has been successfully updated.", icon="✅")
+
+if st.button("redirect"):
+    def nav_to(url):
+        open_script= """
+            <script type="text/javascript">
+                window.open('%s', '_blank').focus();
+            </script>
+        """ % (url)
+        html(open_script)
+    nav_to("https://youtube.com")
