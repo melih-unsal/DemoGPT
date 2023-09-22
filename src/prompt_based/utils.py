@@ -111,7 +111,7 @@ def generateImage(instruction, openai_api_key, openai_api_base):
 
     draw = ImageDraw.Draw(image_pil)
 
-    font = ImageFont.truetype('arial.ttf', 48)
+    font = ImageFont.truetype('./arial.ttf', 48)
 
     # Calculate text size and position
     textwidth , textheight = draw.textsize(text, font)
