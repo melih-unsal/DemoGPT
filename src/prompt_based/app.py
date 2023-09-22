@@ -100,7 +100,7 @@ demo_idea = empty_idea.text_area(
 
 empty_title = st.empty()
 demo_title = empty_title.text_input(
-    "Give a name for your application", placeholder="Title"
+    "Give a name for your application", placeholder="Title", max_chars=18
 )
 
 
