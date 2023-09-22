@@ -118,7 +118,7 @@ if "done" not in st.session_state:
     st.session_state["done"] = False
 
 with st.form("a", clear_on_submit=True):
-    submitted = st.form_submit_button("Submit")  
+    submitted = st.form_submit_button("Submit") 
 
 if submitted:
     st.session_state.messages = []
@@ -179,9 +179,9 @@ if st.session_state.done:
                 st.session_state.edit_mode = True  # Enter edit mode
                 st.experimental_rerun()            
     if not st.session_state.get("app_deployed", False):
-        with st.spinner('App is being deployed. It takes 1-2 minutes...'):
+        with st.spinner('App is being deployed. It takes 4-5 minutes...'):
             create(st.session_state.code)
-            sleep(60) # to make the app ready.
+            sleep(240) # to make the app ready.
             st.session_state.app_deployed = True
             webbrowser.open_new_tab(st.session_state.url) 
     if not st.session_state.get("app_editted", False):
@@ -189,5 +189,5 @@ if st.session_state.done:
     else:
         st.success("Your app has been successfully updated.", icon="✅")
     
-    link = f'<a href="{st.session_state.url}" style="font-size: 24px;">Your app is ready, click here</a>'
+    link = f"""<a href="{st.session_state.url}" style="font-size: 24px; text-decoration: none; color: green;">🥳 Woohoo! Your app's up and running. <span style="text-decoration: underline;">Click to explore!</span></a>"""
     st.markdown(link, unsafe_allow_html=True)
