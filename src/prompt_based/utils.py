@@ -125,7 +125,7 @@ def generateImage(instruction, openai_api_key, openai_api_base):
 
 
 def getUrl(app_id, title, description):
-    return f"demogpt.io/details?title={title}&desc={description}&appID={app_id}"
+    return f"https://demogpt.io/details?title={title}&desc={description}&appID=demogpt-{app_id}"
 
 
 """

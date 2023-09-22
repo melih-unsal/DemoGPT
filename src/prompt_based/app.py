@@ -118,19 +118,7 @@ if "done" not in st.session_state:
     st.session_state["done"] = False
 
 with st.form("a", clear_on_submit=True):
-    submitted = st.form_submit_button("Submit")
-
-
-def nav_to(url):
-    open_script= """
-        <script type="text/javascript">
-            window.open('%s', '_blank').focus();
-        </script>
-    """ % (url)
-    html(open_script)
-    
-if st.button("Redirect"):
-    nav_to("docs.demogpt.io")    
+    submitted = st.form_submit_button("Submit")  
 
 if submitted:
     st.session_state.messages = []
@@ -200,3 +188,6 @@ if st.session_state.done:
         st.success("Your app has been successfully created.", icon="✅")
     else:
         st.success("Your app has been successfully updated.", icon="✅")
+    
+    link = f'<a href="{st.session_state.url}" style="font-size: 24px;">Your app is ready, click here</a>'
+    st.markdown(link, unsafe_allow_html=True)
