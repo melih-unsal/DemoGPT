@@ -1,2 +1,3 @@
 demogpt
 pilmoji
+opencv-python

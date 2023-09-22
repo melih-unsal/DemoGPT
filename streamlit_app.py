@@ -3,7 +3,7 @@ import os
 import signal
 
 import streamlit as st
-from utils import  generateImage
+from utils import  generateImage, getUrl
 from demogpt import DemoGPT
 import requests
 import tempfile
@@ -31,9 +31,9 @@ def create(code):
         cv2.imwrite(tmp.name, image)
         tmp.flush()  # Make sure the data is written to disk
         with open(tmp.name, 'rb') as file:
-            res = requests.post(SERVER_URL + "create", data={"code": code, "prompt":demo_idea}, files={"image": file})
+            res = requests.post(SERVER_URL + "create", data={"code": code, "prompt":demo_idea, "title":demo_title}, files={"image": file})
             st.session_state.app_id = res.json()["id"]
-            st.session_state.url = res.json()["url"]
+            st.session_state.url = getUrl(st.session_state.app_id, demo_title, demo_idea)
             
 def edit(code):
     res = requests.post(SERVER_URL + "edit", data={
@@ -169,6 +169,7 @@ if st.session_state.done:
                     edit(st.session_state.code)
                     st.session_state.app_editted = True
                     sleep(15) # to make the app ready.
+                    webbrowser.open_new_tab(st.session_state.url) 
                 st.experimental_rerun()
                 
         else:
@@ -182,13 +183,8 @@ if st.session_state.done:
             create(st.session_state.code)
             sleep(60) # to make the app ready.
             st.session_state.app_deployed = True
+            webbrowser.open_new_tab(st.session_state.url) 
     if not st.session_state.get("app_editted", False):
         st.success("Your app has been successfully created.", icon="✅")
     else:
         st.success("Your app has been successfully updated.", icon="✅")
-        
-    
-def callback():
-    webbrowser.open_new_tab(st.session_state.url) 
-if st.session_state.done: 
-    st.button("Go To App", type="primary", on_click=callback)

@@ -123,3 +123,17 @@ def generateImage(instruction, openai_api_key, openai_api_base):
     image_with_text = cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
 
     return image_with_text
+
+
+def getUrl(app_id, title, description):
+    return f"demogpt.io/details?title={title}&desc={description}&appID={app_id}"
+
+
+"""
+
+add this to the end of the streamlit_app.py for button press to redirect to the app page.
+
+def callback():
+    webbrowser.open_new_tab(st.session_state.url) 
+if st.session_state.done: 
+    st.button("Go To App", type="primary", on_click=callback)"""
