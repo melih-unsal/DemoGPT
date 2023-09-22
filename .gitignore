@@ -1,3 +1,5 @@
+src/test_runs/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -5,6 +7,25 @@ __pycache__/
 
 # C extensions
 *.so
+
+
+# db folders
+src/beta/goals_db/
+db_tutorials/
+src/beta/langchain_db_python/
+src/beta/langchain_code/
+
+quick_start.txt
+test_final_4.py
+test_final_5.py
+
+# docs
+src/docs/*
+src/docs_explanation/*
+src/docs_explanation_some/*
+src/docs_summary/*
+
+.pypirc
 
 # Distribution / packaging
 .Python
@@ -24,7 +45,10 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+src/demogpt.engg-info/
 MANIFEST
+
+src/test_app.py
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -62,7 +86,6 @@ db.sqlite3
 db.sqlite3-journal
 
 LangChain.ipynb
-test.py
 src/.chroma/**/*
 
 # Flask stuff:
@@ -78,6 +101,10 @@ docs/_build/
 # PyBuilder
 .pybuilder/
 target/
+
+src/alpha/**/*
+src/beta/**/*
+src/data_beta/**/*
 
 # Jupyter Notebook
 .ipynb_checkpoints

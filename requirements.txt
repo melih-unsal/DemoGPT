@@ -1,4 +1,3 @@
-streamlit
-langchain
-openai
-tiktoken
+demogpt
+pilmoji
+opencv-python
