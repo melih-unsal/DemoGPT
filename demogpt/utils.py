@@ -6,6 +6,7 @@ import sys
 import tempfile
 import threading
 from subprocess import PIPE, Popen
+import re
 
 from demogpt.chains.task_chains import TaskChains
 from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
@@ -15,6 +16,10 @@ def init(title=""):
     if title:
         return IMPORTS_CODE_SNIPPET + f"\nst.title('{title}')\n"
     return IMPORTS_CODE_SNIPPET
+
+def getFunctionNames(code):
+    pattern = r"def (\w+)\(.*\):"
+    return re.findall(pattern, code)
 
 
 def getCodeSnippet(task, code_snippets, iters=10):

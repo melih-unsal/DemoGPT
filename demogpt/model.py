@@ -6,7 +6,7 @@ from tqdm import trange
 
 from demogpt.chains.chains import Chains
 from demogpt.chains.task_chains import TaskChains
-from demogpt.utils import getCodeSnippet, init
+from demogpt.utils import getCodeSnippet, init, getFunctionNames
 
 
 class DemoGPT:
@@ -166,7 +166,8 @@ class DemoGPT:
             final_code = code_snippets
             sleep(1)
         else:
-            final_code = Chains.combine_v2(code_snippets=code_snippets)
+            function_names = getFunctionNames(code_snippets)
+            final_code = Chains.combine_v2(code_snippets=code_snippets, function_names=function_names)
 
         yield {
             "stage": "final",

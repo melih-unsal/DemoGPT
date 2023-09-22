@@ -5,6 +5,11 @@ Copy all the function definitions as is and don't modify or replace them.
 Combine input-related parts under the st.form.
 If a function needs an input from user via st.text_input, put it between st.form and st.form_submit_button so that the state is preserved.
 Show the result when the form is submitted.
+Keep in mind that don't miss any function definition.
+
+Don't forget to add those functions with their original definitions as is 
+
+{function_names}
 """
 
 human_template = """
@@ -42,7 +47,7 @@ import streamlit as st
 st.title("My Adv Game")
 
 def foo1():
-    result = ...
+    result = "res"
     return result
 
 half_story = foo1()
