@@ -12,10 +12,10 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
-import cv2
-from PIL import Image, ImageDraw, ImageFont
 from pilmoji import Pilmoji
+from PIL import Image, ImageDraw, ImageFont
 import numpy as np
+import cv2
 
 def runThread(proc):
     proc.communicate()
@@ -110,8 +110,7 @@ def generateImage(instruction, openai_api_key, openai_api_base):
     image_pil = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
     draw = ImageDraw.Draw(image_pil)
-
-    font = ImageFont.truetype('./arial.ttf', 48)
+    font = ImageFont.truetype('./src/prompt_based/arial.ttf', 48)
 
     # Calculate text size and position
     textwidth , textheight = draw.textsize(text, font)
