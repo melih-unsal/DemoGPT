@@ -1,4 +1,5 @@
 from . import (combine, combine_v2, feedback, final, plan, plan_with_inputs,
+               plan_feedback, plan_refiner,
                prompt_chat_refiner, refine, system_inputs, task_controller,
                task_definitions, task_refiner, tasks)
 from .self_refinement import final_refiner

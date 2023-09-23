@@ -88,6 +88,19 @@ def refine(code):
     return code
 
 def getChatCode(template, task):
+    
+    def getInputPosition(template, inputs):
+        rightmost = -1
+        human_input = ""
+        for input in inputs:
+            pattern = f"{{{input}}}"
+            index = template.rfind(pattern)
+            if index > rightmost:
+                human_input = input
+                rightmost = index
+        return human_input
+        
+    
     inputs = task["input_key"]
     variable = task["output_key"]
     temperature = 0 if template.get("variety", "False") == "False" else 0.7
@@ -118,13 +131,16 @@ else:
     {variable} = ""
 """
     input_variables = ["chat_history"] + inputs
+    print("system_template:",system_template)
+    print("inputs:",inputs)
+    human_input = getInputPosition(system_template, inputs)
     code = f"""
 
 def {signature}:
     prompt = PromptTemplate(
         input_variables={input_variables}, template='''{system_template}'''
     )
-    memory = ConversationBufferMemory(memory_key="chat_history", input_key="{inputs[0]}")
+    memory = ConversationBufferMemory(memory_key="chat_history", input_key="{human_input}")
     llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key, temperature={temperature})
     chat_llm_chain = LLMChain(
         llm=llm,

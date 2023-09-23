@@ -65,6 +65,15 @@ class Chains:
             system_inputs=system_inputs,
         )
         return cls.refinePlan(plan)
+    
+    @classmethod
+    def planFeedback(cls, instruction, plan):
+        return cls.getChain(
+            system_template=prompts.plan_feedback.system_template,
+            human_template=prompts.plan_feedback.human_template,
+            instruction=instruction,
+            plan=plan
+        )
 
     @classmethod
     def tasks(cls, instruction, plan):
