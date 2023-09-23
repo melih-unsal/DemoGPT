@@ -12,6 +12,12 @@ import webbrowser
 from time import sleep
 from streamlit.components.v1 import html
 
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_ENDPOINT"]="https://api.smith.langchain.com"
+os.environ["LANGCHAIN_API_KEY"] = st.secrets.get("LANGCHAIN_API_KEY","")
+os.environ["LANGCHAIN_PROJECT"] = st.secrets.get("LANGCHAIN_PROJECT","")
+
+
 try:
     from dotenv import load_dotenv
 
@@ -151,7 +157,7 @@ if submitted:
     else:
         bar = progressBar(0)
         st.session_state.container = st.container()
-        agent = DemoGPT(openai_api_key=openai_api_key)
+        agent = DemoGPT(openai_api_key=openai_api_key, openai_api_base=openai_api_base)
         agent.setModel(model_name)
         code_empty = st.empty()
         st.session_state.container = st.container()
