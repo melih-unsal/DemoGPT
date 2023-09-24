@@ -92,7 +92,7 @@ def generateImage(instruction, openai_api_key, openai_api_base):
         model="gpt-3.5-turbo",
         openai_api_key=openai_api_key,
         openai_api_base=openai_api_base,
-        temperature=0.5
+        temperature=0.3
         )
     chain =  LLMChain(llm=llm, prompt=chat_prompt)
     # Create a new image filled with zeros (black)
