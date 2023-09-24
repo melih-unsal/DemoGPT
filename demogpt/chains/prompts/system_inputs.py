@@ -3,6 +3,7 @@ from .task_definitions import TASK_DESCRIPTIONS, TASK_DTYPES, TASK_NAMES
 system_template = f"""
 You are a helpful assistant that can determine all the inputs the system should take from the user to accomplish the given instruction.
 This list includes both the initial and intermediate inputs that the system should take to work properly
+If the system is chat-based then, it should have an input corresponding to that as one of the system inputs.
 """
 
 human_template = """
@@ -12,11 +13,20 @@ System Inputs: [answer]
 Instruction: Create a system that can summarize a powerpoint file
 System Inputs:[powerpoint_file]
 
+Instruction: Generate a system that enable me to give the teacher field then make a chat with the teacher.
+System Inputs:[message, teacher_field]
+
 Instruction: Create a translator which translates to any language
 System Inputs:[output_language, source_text]
 
+Instruction: Create an app that I can chat with
+System Inputs:[message]
+
 Instruction: Generate a system that can generate tweet from hashtags and give a score for the tweet.
 System Inputs:[hashtags]
+
+Instruction: Generate a chat-based system that can analyze the given csv file.
+System Inputs:[message, csv_file]
 
 Instruction: Summarize a text taken from the user
 System Inputs:[text]

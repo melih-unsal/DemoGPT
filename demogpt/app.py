@@ -169,7 +169,6 @@ if st.session_state.done:
                 st.experimental_rerun()
 
         else:
-            print("st.session_state.code:", st.session_state.code)
             code_empty.code(st.session_state.code)
             if st.button("Edit"):
                 st.session_state.edit_mode = True  # Enter edit mode
