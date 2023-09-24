@@ -172,7 +172,7 @@ if submitted:
             code = data.get("code","")
             progressBar(data["percentage"], bar)
             
-            st.session_state["done"] = True
+            st.session_state.done = done
 
             if done:
                 st.session_state.code = code
