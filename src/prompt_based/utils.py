@@ -111,13 +111,34 @@ def generateImage(instruction, openai_api_key, openai_api_base):
 
     draw = ImageDraw.Draw(image_pil)
     font = ImageFont.truetype('./src/prompt_based/arial.ttf', 48)
-
-    # Calculate text size and position
-    textwidth , textheight = draw.textsize(text, font)
-    position = ((width - int(1.1*textwidth)) // 2, (height - int(1.1*textheight)) // 2)
-
+    
+    # Step 1: Draw the emoji/text anywhere on the image
     with Pilmoji(image_pil) as pilmoji:
-        pilmoji.text(position, text.strip(), (0, 0, 0), font)
+        pilmoji.text((100, 70), text, (0, 0, 0), font)
+        
+    # Convert back to numpy array for pixel operations
+    image_np = np.array(image_pil)
+
+    # Step 2: Find the bounding box of the emoji/text
+    rows, cols = np.where(np.any(image_np != color[::-1], axis=2))
+    min_row, max_row = np.min(rows), np.max(rows)
+    min_col, max_col = np.min(cols), np.max(cols)
+
+    # Calculate text size from the bounding box
+    textwidth = max_col - min_col
+    textheight = max_row - min_row
+
+    # Step 3: Calculate center position
+    x = (width - textwidth) // 2
+    y = (height - textheight) // 2
+
+    # Clear the initial drawing and set the background color again
+    image_np[:] = color
+
+    # Step 4: Draw the emoji/text at the centered position
+    image_pil = Image.fromarray(image_np)
+    with Pilmoji(image_pil) as pilmoji:
+        pilmoji.text((x, y), text, (0, 0, 0), font)
 
     image_with_text = cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
 

@@ -151,10 +151,15 @@ with st.form("a", clear_on_submit=True):
     submitted = st.form_submit_button("Submit") 
 
 if submitted:
+    if not demo_idea:
+        st.warning("Please enter your demo idea", icon="⚠️")
+    if not demo_title:
+        st.warning("Please enter your demo title (which will be the title of the generated app)", icon="⚠️")
+        
     st.session_state.messages = []
     if not openai_api_key.startswith("sk-"):
         st.warning("Please enter your OpenAI API Key!", icon="⚠️")
-    else:
+    elif demo_idea and demo_title:
         bar = progressBar(0)
         st.session_state.container = st.container()
         agent = DemoGPT(openai_api_key=openai_api_key, openai_api_base=openai_api_base)
