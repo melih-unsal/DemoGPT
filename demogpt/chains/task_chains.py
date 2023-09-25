@@ -222,3 +222,22 @@ else:
     variable = ""
 """
         return code
+    
+    @classmethod
+    def pythonCoder(cls, task, code_snippets):
+        instruction = task["description"]
+        argument = task["input_key"]
+        variable = task["output_key"]
+        function_name = task["task_name"]
+
+        code = cls.getChain(
+            system_template=prompts.python_coder.system_template,
+            human_template=prompts.python_coder.human_template,
+            instruction=instruction,
+            argument=argument,
+            variable=variable,
+            function_name=function_name,
+            code_snippets=code_snippets
+        )
+        return utils.refine(code)
+    

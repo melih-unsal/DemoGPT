@@ -68,11 +68,23 @@ class Chains:
     
     @classmethod
     def planFeedback(cls, instruction, plan):
-        return cls.getChain(
+        feedback = cls.getChain(
             system_template=prompts.plan_feedback.system_template,
             human_template=prompts.plan_feedback.human_template,
             instruction=instruction,
             plan=plan
+        )
+        
+        return json.loads(feedback)
+    
+    @classmethod
+    def planRefiner(cls, instruction, plan, feedback):
+        return cls.getChain(
+            system_template=prompts.plan_refiner.system_template,
+            human_template=prompts.plan_refiner.human_template,
+            instruction=instruction,
+            plan=plan,
+            feedback=feedback
         )
 
     @classmethod

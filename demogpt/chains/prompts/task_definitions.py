@@ -1,7 +1,7 @@
 import json
 import re
 
-AVAILABLE_TASKS_COUNT = 12
+AVAILABLE_TASKS_COUNT = 13
 
 ################################
 
@@ -101,6 +101,14 @@ ALL_TASKS = [
         "input_data_type": "*string",
         "output_data_type": "string",
         "purpose": "For conversation-based apps, it generates the responses while remembering the conversation history",
+    },
+    {
+        "name": "python",
+        "description": "Implement and call python function from given description.",
+        "good_at": "Writing generic python code by AI",
+        "input_data_type": "*string",
+        "output_data_type": "string",
+        "purpose": "It generates python code from general purpose instructions",
     },
     {
         "name": "prompt_list_parser",

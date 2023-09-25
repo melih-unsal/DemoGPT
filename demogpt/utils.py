@@ -70,6 +70,8 @@ def getCodeSnippet(task, code_snippets, iters=10):
         code = getChatInputCode(TaskChains.uiInputChat(task=task))
     elif task_type == "ui_output_chat":
         code = TaskChains.uiOutputChat(task=task)
+    elif task_type == "python":
+        code = TaskChains.pythonCoder(task=task,code_snippets=code_snippets)
     return code.strip() + "\n"
 
 def getChatInputCode(code):

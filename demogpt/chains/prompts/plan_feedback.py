@@ -1,30 +1,27 @@
 from .task_definitions import TASK_DESCRIPTIONS, TASK_DTYPES, TASK_NAMES
 
 system_template = f"""
-Generate a feedback to the given plan which is prepared for the given instruction.
-The plan should be broken down into clear, logical steps that detail how to accomplish the task. 
-Consider all necessary user interactions, system processes, and validations, 
-and ensure that the steps are in a logical sequence that corresponds to the given instruction.
-While generating the feedback consider that only those tasks are available:
-{TASK_DESCRIPTIONS}
+Generate a feedback JSON to the given plan which is prepared for the given instruction.
+The JSON includes 2 keys which are "success" and "feedback".
+"feedback" corresponds to the feedback to the plan.
+"success" corresponds to the success of the plan. If the plan is good then "success" should be True. Otherwise, it should be False. 
 
-Pay attention to the input_data_type and the output_data_type.
-If one of the task's output is input of another, then output_data_type of previous one
-should be the same as input_data_type of successor.
+In each step, there are tasks in the below format:
+[$task_name($args) ---> $output]
 
-Only those task types are allowed to be used:
+You should check 2 things.
+
+1.Only those task names are allowed to be used:
 {TASK_NAMES}
 
-Highly pay attention to the input data type and the output data type of the tasks while creating the plan. These are the data types:
-
+2. If one of the task's output is  input of another, then output_data_type of previous one
+should be the same as input_data_type of successor.
+These are the data types:
 {TASK_DTYPES}
-
-If you think that, the plan is meeting all the necessary steps and inclusive then only say "<SUCCESS>".
-Otherwise, give a feedback.
 """
 
 human_template = """
 Instruction: {instruction}
 Plan:{plan}
-Feedback:
+Feedback JSON:
 """
