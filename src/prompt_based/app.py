@@ -12,6 +12,12 @@ import webbrowser
 from time import sleep
 from streamlit.components.v1 import html
 
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_ENDPOINT"]="https://api.smith.langchain.com"
+os.environ["LANGCHAIN_API_KEY"] = st.secrets.get("LANGCHAIN_API_KEY","")
+os.environ["LANGCHAIN_PROJECT"] = st.secrets.get("LANGCHAIN_PROJECT","")
+
+
 try:
     from dotenv import load_dotenv
 
@@ -25,16 +31,41 @@ def generate_response(txt, title):
         yield data
         
 SERVER_URL = "https://api.demogpt.io/"
+
+toast_messages = [
+    "🌱 Planting the seeds...",
+    "🌦️ Watering and waiting...",
+    "☀️ Soaking up some sunshine...",
+    "🌳 Watching the beans grow...",
+    "🍂 Harvesting time...",
+    "☕ Grinding the beans...",
+    "🚰 Pouring the water...",
+    "⏳ Steeping...",
+    "🥛 Adding a splash of milk. Just 1 more step left...",
+    "✨ Voilà! Your brew is ready. Enjoy your application!"
+]
         
 def create(code):
     image = generateImage(demo_idea, openai_api_key, openai_api_base)
+    index = 0
     with tempfile.NamedTemporaryFile("w", suffix=".jpg") as tmp:
         cv2.imwrite(tmp.name, image)
         tmp.flush()  # Make sure the data is written to disk
-        with open(tmp.name, 'rb') as file:
-            res = requests.post(SERVER_URL + "create", data={"code": code, "prompt":demo_idea, "title":demo_title}, files={"image": file})
-            st.session_state.app_id = res.json()["id"]
-            st.session_state.url = getUrl(st.session_state.app_id, demo_title, demo_idea)
+        while True:
+            if index < len(toast_messages) - 1:
+                index += 1
+
+            with open(tmp.name, 'rb') as file:
+                res = requests.post(SERVER_URL + "create", data={"code": code, "prompt":demo_idea, "title":demo_title}, files={"image": file})
+                try:
+                    st.session_state.app_id = res.json()["id"]
+                    st.session_state.url = getUrl(st.session_state.app_id, demo_title, demo_idea) 
+                except:
+                    yield index
+                else:
+                    break
+    yield index
+                    
             
 def edit(code):
     res = requests.post(SERVER_URL + "edit", data={
@@ -76,7 +107,7 @@ openai_api_key = st.sidebar.text_input(
 )
 
 openai_api_base = st.sidebar.text_input(
-    "Open AI base URL",
+    "Open AI base URL (Optional)",
     placeholder="https://api.openai.com/v1",
 )
 
@@ -100,9 +131,8 @@ demo_idea = empty_idea.text_area(
 
 empty_title = st.empty()
 demo_title = empty_title.text_input(
-    "Give a name for your application", placeholder="Title"
+    "Give a name for your application", placeholder="Title", max_chars=18
 )
-
 
 def progressBar(percentage, bar=None):
     if bar:
@@ -118,17 +148,21 @@ if "done" not in st.session_state:
     st.session_state["done"] = False
 
 with st.form("a", clear_on_submit=True):
-    submitted = st.form_submit_button("Submit")
-    
+    submitted = st.form_submit_button("Submit") 
 
 if submitted:
+    if not demo_idea:
+        st.warning("Please enter your demo idea", icon="⚠️")
+    if not demo_title:
+        st.warning("Please enter your demo title (which will be the title of the generated app)", icon="⚠️")
+        
     st.session_state.messages = []
     if not openai_api_key.startswith("sk-"):
         st.warning("Please enter your OpenAI API Key!", icon="⚠️")
-    else:
+    elif demo_idea and demo_title:
         bar = progressBar(0)
         st.session_state.container = st.container()
-        agent = DemoGPT(openai_api_key=openai_api_key)
+        agent = DemoGPT(openai_api_key=openai_api_key, openai_api_base=openai_api_base)
         agent.setModel(model_name)
         code_empty = st.empty()
         st.session_state.container = st.container()
@@ -143,7 +177,7 @@ if submitted:
             code = data.get("code","")
             progressBar(data["percentage"], bar)
             
-            st.session_state["done"] = True
+            st.session_state.done = done
 
             if done:
                 st.session_state.code = code
@@ -180,22 +214,23 @@ if st.session_state.done:
                 st.session_state.edit_mode = True  # Enter edit mode
                 st.experimental_rerun()            
     if not st.session_state.get("app_deployed", False):
-        with st.spinner('App is being deployed. It takes 1-2 minutes...'):
-            create(st.session_state.code)
-            sleep(60) # to make the app ready.
+        with st.spinner('App is being deployed. It takes 4-5 minutes...'):
+            index = 0
+            for i in create(st.session_state.code):
+                if i != index:
+                    st.info(toast_messages[index])
+                index = i
+                sleep(30)
+            
+            for i in range(index+1,len(toast_messages)):
+                sleep(30)
+                st.info(toast_messages[i])
             st.session_state.app_deployed = True
             webbrowser.open_new_tab(st.session_state.url) 
     if not st.session_state.get("app_editted", False):
         st.success("Your app has been successfully created.", icon="✅")
     else:
         st.success("Your app has been successfully updated.", icon="✅")
-
-if st.button("redirect"):
-    def nav_to(url):
-        open_script= """
-            <script type="text/javascript">
-                window.open('%s', '_blank').focus();
-            </script>
-        """ % (url)
-        html(open_script)
-    nav_to("https://youtube.com")
+    
+    link = f"""<a href="{st.session_state.url}" style="font-size: 24px; text-decoration: none; color: green;">🥳 Woohoo! Your app's up and running. <span style="text-decoration: underline;">Click to explore!</span></a>"""
+    st.markdown(link, unsafe_allow_html=True)
