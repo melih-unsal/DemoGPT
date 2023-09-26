@@ -28,7 +28,7 @@ if next_segment:
 args: medium_article
 instruction: Display the generated Medium article to the user
 code:
-if submitted:
+if medium_article:
     st.markdown(medium_article)
         
 args: translated_text

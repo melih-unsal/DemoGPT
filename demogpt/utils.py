@@ -133,8 +133,6 @@ else:
     {variable} = ""
 """
     input_variables = ["chat_history"] + inputs
-    print("system_template:",system_template)
-    print("inputs:",inputs)
     human_input = getInputPosition(system_template, inputs)
     code = f"""
 

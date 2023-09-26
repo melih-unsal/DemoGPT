@@ -59,7 +59,7 @@ class TaskChains:
         code = cls.getChain(
             human_template=prompts.ui_output_text.human_template,
             instruction=instruction,
-            args=args,
+            args=args
         )
         return utils.refine(code)
 

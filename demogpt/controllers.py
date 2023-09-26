@@ -10,8 +10,7 @@ def refineKeyTypeCompatiblity(task):
     if task["output_data_type"] == "none":
         if task["output_key"] != "none":
             task["output_key"] = "none"
-    return task
-
+    return task           
 
 def checkDTypes(tasks):
 
@@ -37,6 +36,11 @@ def checkDTypes(tasks):
             if input_key != "none":
                 feedback += f"Since {name} is the first task, its input data type is supposed to be none but it is {input_key}.Please find another way.\n"
 
+        elif reference_input == "*":
+            continue
+        
+        elif reference_input.startswith("*") and input_data_type == "list":
+            continue
         # Check input data types
         elif reference_input.startswith("*"):
             reference_input = reference_input.replace("*", "")
@@ -45,6 +49,7 @@ def checkDTypes(tasks):
                     feedback += f"""
                     {name} expects all inputs as {reference_input} or none but the data type of {input_key} is {input_data_type} not {reference_input}. Please find another way.\n
                     """
+                    print("1:",)
             else:
                 for res, data_type in zip(input_key, input_data_type):
                     if data_type != reference_input:
@@ -56,11 +61,14 @@ def checkDTypes(tasks):
             {name} expects all inputs as {reference_input} but the data type of {input_key} is {input_data_type} not {reference_input}. Please find another way.\n
             """
 
+        if reference_output == "*":
+            continue
         # Check output data types
-        if output_data_type != reference_output:
-            feedback += f"""
-            {name} should output in {reference_output} data type but it is {output_data_type} not {reference_output}. Please find another way.\n
-            """
+        elif output_data_type != reference_output:
+            if not (reference_output.startswith("*") and output_data_type != "list"):
+                feedback += f"""
+                {name} should output in {reference_output} data type but it is {output_data_type} not {reference_output}. Please find another way.\n
+                """
 
     valid = len(feedback) == 0
 
@@ -82,7 +90,7 @@ def checkPromptTemplates(templates, task):
     feedback = ""
     for input_key in inputs:
         if f"{{{input_key}}}" not in templates:
-            feedback += f"{{{input_key}}} is not included in any of the templates. Please add it.\n"
+            feedback += f"'{{{input_key}}}' is not included in any of the templates. You must add '{{{input_key}}}' inside of at least one of the templates.\n"
 
     # now detect extras
 
@@ -90,15 +98,8 @@ def checkPromptTemplates(templates, task):
 
     for match in matches:
         if match not in inputs:
-            feedback += f"{{{match}}} cannot be included in any of the templates. Please remove it.\n"
-
-    print("templates:" + templates)
-    print("matches:", matches)
-    print("inputs:", inputs)
-    print("feedback:", feedback)
+            feedback += f"'{{{match}}}' cannot be included nowhere in the templates. You must remove '{{{match}}}'.\n"
 
     valid = len(feedback) == 0
-
-    print("valid:", valid)
 
     return {"feedback": feedback, "valid": valid}
