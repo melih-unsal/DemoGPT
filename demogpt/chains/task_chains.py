@@ -93,7 +93,7 @@ class TaskChains:
         return utils.refine(code)
 
     @classmethod
-    def promptTemplate(cls, task, code_snippets):
+    def promptTemplate(cls, task):
         inputs = task["input_key"]
         instruction = task["description"]
 
@@ -101,8 +101,7 @@ class TaskChains:
             system_template=prompts.prompt_template.system_template,
             human_template=prompts.prompt_template.human_template,
             instruction=instruction,
-            inputs=inputs,
-            code_snippets=code_snippets,
+            inputs=inputs
         )
         res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res)
@@ -175,16 +174,34 @@ with st.chat_message("assistant"):
         variable = task["output_key"]
         function_name = task["task_name"]
 
-        code = cls.getChain(
+        loader = cls.getChain(
             system_template=prompts.doc_load.system_template,
             human_template=prompts.doc_load.human_template,
             instruction=instruction,
-            argument=argument,
-            variable=variable,
-            function_name=function_name,
             code_snippets=code_snippets,
         )
-        return utils.refine(code)
+
+        
+        if loader in ["TextLoader", "WebBaseLoader", "OnlinePDFLoader"]:
+            loader_line = f'loader = {loader}({argument})'
+        elif loader in ["UnstructuredPDFLoader", "UnstructuredPowerPointLoader"]:
+            loader_line = f'loader = {loader}({argument}, mode="elements", strategy="fast")'
+        elif loader in ["UnstructuredCSVLoader", "UnstructuredExcelLoader"]:
+            loader_line = f'loader = {loader}({argument}, mode="elements")'
+        else:
+            loader_line = f'loader = TextLoader({argument})'
+            
+        code = f"""
+def {function_name}({argument}):
+    {loader_line}
+    docs = loader.load()
+    return docs
+if {argument}:
+    {variable} = {function_name}({argument})
+else:
+    {variable} = ''
+        """
+        return code    
 
     @classmethod
     def stringToDoc(cls, task, code_snippets):

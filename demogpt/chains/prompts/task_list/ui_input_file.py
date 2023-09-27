@@ -16,6 +16,7 @@ Assign the file path to the variable called "{variable}"
 You will basically use file_uploader and get file path from it but nothing else.
 Do not loose the file path and check if the file is uploaded. Otherwise, assign empty string to "{variable}"
 Don't read the file, only get the file path
+In the st.file_uploader, change type parameter compatible with the type of the expected file such as pdf, csv, ...
 """
 
 human_template = """

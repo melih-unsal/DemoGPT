@@ -1,64 +1,49 @@
 loaders = """
 For Local TXT file:
-from langchain.document_loaders import TextLoader
-loader = TextLoader(<local_txt_file_path>)
+TextLoader
 ################################
 For Web Page:
-from langchain.document_loaders import WebBaseLoader
-loader = WebBaseLoader("<url>")
+WebBaseLoader
 ################################
 For Online PDF:
-from langchain.document_loaders import OnlinePDFLoader
-loader = OnlinePDFLoader("<online_pdf_url>")
+OnlinePDFLoader
 ################################
 For Local PDF:
-from langchain.document_loaders import UnstructuredPDFLoader
-loader = UnstructuredPDFLoader(
-    <local_pdf_full_path>, mode="elements", strategy="fast"
-    )
+UnstructuredPDFLoader
 ################################
 For Power Point:
-from langchain.document_loaders import UnstructuredPowerPointLoader
-loader = UnstructuredPowerPointLoader(
-    <local_powerpoint_file>, mode="elements", strategy="fast"
-    )
+UnstructuredPowerPointLoader
 ################################
 For CSV:
-from langchain.document_loaders.csv_loader import UnstructuredCSVLoader
-loader = UnstructuredCSVLoader(<csv_file_path>, mode="elements")
+UnstructuredCSVLoader
 ################################
 For Excel:
-from langchain.document_loaders.excel import UnstructuredExcelLoader
-loader = UnstructuredExcelLoader(<excel_file_path>, mode="elements")
+UnstructuredExcelLoader
 """
 
+loader_dict = {
+    "txt" : "TextLoader",
+    "web_page" : "WebBaseLoader",
+    "online_pdf" : "OnlinePDFLoader",
+    "pdf" :"UnstructuredPDFLoader",
+    "powerpoint" : "UnstructuredPowerPointLoader",
+    "csv" : "UnstructuredCSVLoader",
+    "excel" :"UnstructuredExcelLoader"
+    }
+
 system_template = f"""
-These are the Loader classes that you should select.
-Select the loader according to the input type unless the input type is ambiguous.
+Based on the provided context in 'Previous Code', choose the most appropriate loader.
+
+These are your loader options:
+
 {loaders}
 """
 
 human_template = """
-Write a loader function using langchain.document_loaders 
-to load the document for the argument name, variable and instruction 
-below like in the below format:
+Use the information from 'Previous Code' to determine the loader from one of the 7 loader options.
+Don't write any explanation but directly say the loader option
 
-###
-def {function_name}({argument}):
-    loader = Loader(path) # Select the appropriate Loader
-    docs = loader.load()
-    return docs
-
-if {argument}:
-    {variable} = {function_name}({argument})
-else:
-    {variable} = ''
-###
-    
-While using the loader, don't change "mode" and "strategy" arguments, they need to be constant as stated.
-If there are no such arguments, ignore it.
-
-Instruction:{instruction}    
-
-Document Loader Code:
+Instruction: {instruction}  
+Previous Code: {code_snippets}
+Loader Option:
 """

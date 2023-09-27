@@ -21,7 +21,35 @@ def getFunctionNames(code):
     pattern = r"def (\w+)\(.*\):"
     return re.findall(pattern, code)
 
-
+def getGenericPromptTemplateCode(task, iters):
+    res = ""
+    is_valid = False
+    task_type = task["task_type"]
+    prompt_func = TaskChains.promptTemplate if task_type == "prompt_template" else  TaskChains.chat
+    finalizer_func = getPromptChatTemplateCode if task_type == "prompt_template" else getChatCode
+    additional_inputs = []
+    if task_type == "chat":
+        additional_inputs.append("chat_history")
+    res = prompt_func(task=task)
+    templates = {key:res.get(key) for key in res if "template" in key}
+    function_name = res.get("function_name")
+    variety = res.get("variety")
+    index = 0
+    while not is_valid:
+        check = checkPromptTemplates(templates, task, additional_inputs)
+        is_valid = check["valid"]
+        feedback = check["feedback"]
+        if not is_valid:
+            res = TaskChains.promptTemplateRefiner(res, feedback)
+        else:
+            break
+        index += 1
+        if index == iters:
+            break
+    res["function_name"] = function_name
+    res["variety"] = variety
+    return finalizer_func(res, task)
+    
 def getCodeSnippet(task, code_snippets, iters=10):
     task = refineKeyTypeCompatiblity(task)
     task_type = task["task_type"]
@@ -30,27 +58,8 @@ def getCodeSnippet(task, code_snippets, iters=10):
         code = TaskChains.uiInputText(task=task, code_snippets=code_snippets)
     elif task_type == "ui_output_text":
         code = TaskChains.uiOutputText(task=task, code_snippets=code_snippets)
-    elif task_type == "prompt_template":
-        res = ""
-        is_valid = False
-        res = TaskChains.promptTemplate(task=task, code_snippets=code_snippets)
-        function_name = res.get("function_name")
-        variety = res.get("variety")
-        index = 0
-        while not is_valid:
-            check = checkPromptTemplates(res, task)
-            is_valid = check["valid"]
-            feedback = check["feedback"]
-            if not is_valid:
-                res = TaskChains.promptTemplateRefiner(res, feedback)
-            else:
-                break
-            index += 1
-            if index == iters:
-                break
-        res["function_name"] = function_name
-        res["variety"] = variety
-        code = getPromptChatTemplateCode(res, task)
+    elif task_type in ["prompt_template", "chat"]:
+        code = getGenericPromptTemplateCode(task, iters=iters)
     elif task_type == "path_to_content":
         code = TaskChains.pathToContent(task=task, code_snippets=code_snippets)
     elif task_type == "doc_to_string":
@@ -63,9 +72,6 @@ def getCodeSnippet(task, code_snippets, iters=10):
         code = TaskChains.docLoad(task=task, code_snippets=code_snippets)
     elif task_type == "doc_summarizer":
         code = TaskChains.summarize(task=task, code_snippets=code_snippets)
-    elif task_type == "chat":
-        template = TaskChains.chat(task=task)
-        code = getChatCode(template=template, task=task)
     elif task_type == "ui_input_chat":
         code = getChatInputCode(TaskChains.uiInputChat(task=task))
     elif task_type == "ui_output_chat":

@@ -49,7 +49,6 @@ def checkDTypes(tasks):
                     feedback += f"""
                     {name} expects all inputs as {reference_input} or none but the data type of {input_key} is {input_data_type} not {reference_input}. Please find another way.\n
                     """
-                    print("1:",)
             else:
                 for res, data_type in zip(input_key, input_data_type):
                     if data_type != reference_input:
@@ -75,10 +74,8 @@ def checkDTypes(tasks):
     return {"feedback": feedback, "valid": valid}
 
 
-def checkPromptTemplates(templates, task):
-    human_template = templates["template"]
-    system_template = templates["system_template"]
-    templates = human_template + system_template
+def checkPromptTemplates(templates, task, additional_inputs=[]):
+    templates = " ".join(list(templates.values()))
     inputs = task["input_key"]
     if inputs == "none":
         inputs = []
@@ -87,8 +84,9 @@ def checkPromptTemplates(templates, task):
             if inputs.startswith("["):
                 inputs = inputs[1:-1]
             inputs = [var.strip() for var in inputs.split(",")]
+    template_inputs =  inputs + additional_inputs
     feedback = ""
-    for input_key in inputs:
+    for input_key in template_inputs:
         if f"{{{input_key}}}" not in templates:
             feedback += f"'{{{input_key}}}' is not included in any of the templates. You must add '{{{input_key}}}' inside of at least one of the templates.\n"
 
@@ -97,7 +95,7 @@ def checkPromptTemplates(templates, task):
     matches = set(re.findall(r"\{([^}]+)\}", templates))
 
     for match in matches:
-        if match not in inputs:
+        if match not in template_inputs:
             feedback += f"'{{{match}}}' cannot be included nowhere in the templates. You must remove '{{{match}}}'.\n"
 
     valid = len(feedback) == 0
