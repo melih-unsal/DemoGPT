@@ -182,8 +182,10 @@ with st.chat_message("assistant"):
             code_snippets=code_snippets,
         )
 
-        if loader in ["TextLoader", "WebBaseLoader", "OnlinePDFLoader", "UnstructuredWordDocumentLoader"]:
+        if loader in ["TextLoader", "OnlinePDFLoader", "UnstructuredWordDocumentLoader"]:
             loader_line = f'loader = {loader}({argument})'
+        elif loader == "WebBaseLoader":
+            loader_line = f'loader = {loader}([{argument}])'
         elif loader in ["UnstructuredPDFLoader", "UnstructuredPowerPointLoader"]:
             loader_line = f'loader = {loader}({argument}, mode="elements", strategy="fast")'
         elif loader in ["UnstructuredCSVLoader", "UnstructuredExcelLoader"]:
