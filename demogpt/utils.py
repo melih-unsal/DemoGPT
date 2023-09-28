@@ -25,22 +25,23 @@ def getGenericPromptTemplateCode(task, iters):
     res = ""
     is_valid = False
     task_type = task["task_type"]
+    inputs = task["input_key"]
     prompt_func = TaskChains.promptTemplate if task_type == "prompt_template" else  TaskChains.chat
     finalizer_func = getPromptChatTemplateCode if task_type == "prompt_template" else getChatCode
     additional_inputs = []
     if task_type == "chat":
         additional_inputs.append("chat_history")
     res = prompt_func(task=task)
-    templates = {key:res.get(key) for key in res if "template" in key}
     function_name = res.get("function_name")
     variety = res.get("variety")
     index = 0
     while not is_valid:
+        templates = {key:res.get(key) for key in res if "template" in key}
         check = checkPromptTemplates(templates, task, additional_inputs)
         is_valid = check["valid"]
         feedback = check["feedback"]
         if not is_valid:
-            res = TaskChains.promptTemplateRefiner(res, feedback)
+            res = TaskChains.promptTemplateRefiner(res, inputs, feedback)
         else:
             break
         index += 1
@@ -263,6 +264,7 @@ def runStreamlit(code, openai_api_key, openai_api_base=None):
 
 IMPORTS_CODE_SNIPPET = """
 import os
+import shutil
 import streamlit as st
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI

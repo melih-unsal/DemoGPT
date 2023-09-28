@@ -40,7 +40,7 @@ ALL_TASKS = [
     },
     {
         "name": "doc_loader",
-        "description": "Load file content from path (txt or url or pdf file path or csv file path or powerpoint file path) and generate docs",
+        "description": "Load file content from path (notion zip file path or txt or url or pdf file path or csv file path or powerpoint file path or docx path or youtube url or excel file path) and generate docs",
         "good_at": "Loading from external sources only from url or path not the content",
         "input_data_type": "string",
         "output_data_type": "Document",

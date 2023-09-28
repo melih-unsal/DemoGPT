@@ -155,12 +155,13 @@ with st.chat_message("assistant"):
         return json.loads(res,strict=False)
 
     @classmethod
-    def promptTemplateRefiner(cls, templates, feedback):
+    def promptTemplateRefiner(cls, templates, inputs, feedback):
         res = cls.getChain(
             system_template=prompts.prompt_chat_refiner.system_template,
             human_template=prompts.prompt_chat_refiner.human_template,
             templates=templates,
             feedback=feedback,
+            inputs=inputs
         )
         res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res)
@@ -181,13 +182,19 @@ with st.chat_message("assistant"):
             code_snippets=code_snippets,
         )
 
-        
-        if loader in ["TextLoader", "WebBaseLoader", "OnlinePDFLoader"]:
+        if loader in ["TextLoader", "WebBaseLoader", "OnlinePDFLoader", "UnstructuredWordDocumentLoader"]:
             loader_line = f'loader = {loader}({argument})'
         elif loader in ["UnstructuredPDFLoader", "UnstructuredPowerPointLoader"]:
             loader_line = f'loader = {loader}({argument}, mode="elements", strategy="fast")'
         elif loader in ["UnstructuredCSVLoader", "UnstructuredExcelLoader"]:
             loader_line = f'loader = {loader}({argument}, mode="elements")'
+        elif loader == "YoutubeLoader":
+            loader_line = f'loader = {loader}.from_youtube_url({argument}, add_video_info=False)'
+        elif loader == "NotionDirectoryLoader":
+            loader_line = f"""if os.path.exists('Notion_DB') and os.path.isdir('Notion_DB'):
+        shutil.rmtree('Notion_DB')
+    os.system(f"unzip {{{argument}}} -d Notion_DB")
+    loader = {loader}("Notion_DB")"""
         else:
             loader_line = f'loader = TextLoader({argument})'
             
