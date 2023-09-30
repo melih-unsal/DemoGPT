@@ -13,6 +13,8 @@ def checkRedundantTasks(tasks):
                 if inputs.startswith("["):
                     inputs = inputs[1:-1]
                 all_input_keys += [var.strip() for var in inputs.split(",")]
+            else:
+                all_input_keys += inputs
                 
     all_input_keys = set(all_input_keys) 
     all_input_keys.add("none")
@@ -20,8 +22,13 @@ def checkRedundantTasks(tasks):
     feedback = ""
     
     for task in tasks:
-        if task["output_key"] not in all_input_keys:
-            feedback += f"Task {task['task_name']} is redundant because its output is never used. Try another approach.\n"
+        if isinstance(task["output_key"],str):
+            if task["output_key"] not in all_input_keys:
+                feedback += f"Task {task['task_name']} is redundant because its output is never used. Try another approach.\n"
+        elif isinstance(task["output_key"],list):
+            for output_key in task["output_key"]:
+                if output_key not in all_input_keys:
+                    feedback += f"Task {task['task_name']} has problem because its output {output_key} is never used. Try another approach.\n"
             
     valid = len(feedback) == 0
     
@@ -37,41 +44,49 @@ def refineKeyTypeCompatiblity(task):
     return task   
 
 def checkAppTypeCompatiblity(tasks, app_type):
-    task_prompt_template = any([task["task_type"] == "prompt_template" for task in tasks])
-    task_chat = any([task["task_type"] == "chat" for task in tasks])
-    task_search = any([task["task_type"] == "google_search" for task in tasks])
+    must_chat_tasks = {"ui_input_chat","chat", "ui_output_chat"}
+    must_prompt_template_tasks = {"prompt_template"}
+    must_search_tasks = {"google_search"}
+    
+    task_types = set([task["task_type"] for task in tasks])
+    
+    task_prompt_template = must_prompt_template_tasks & task_types
+    task_search =  must_search_tasks & task_types
+    task_chat = must_chat_tasks & task_types
+    
     
     app_prompt_template = 0 # neutral
     
     app_chat = app_type["is_chat"]["value"] == "true"
     app_search = app_type["is_search"]["value"] == "true"
     if not app_chat:
-        if app_type["is_ai"]["value"] == "true":
+        if app_type["is_nlp"]["value"] == "true":
             app_prompt_template = 1
         else:
             app_prompt_template = -1
     
     feedback = ""
+
     if app_chat:
-        if not task_chat:
-            feedback += "The app is chat-based but you didn't use 'chat' in your tasks. Please add it and try again"
+        for task_type in must_chat_tasks - task_chat:
+            feedback += f"The app is chat-based but you didn't use {task_type} in your tasks. Please add it and try again"
     else:
-        if task_chat:
-            feedback += "The app is not chat-based but you used chat related tasks in your task list. Please remove them and try again"
+        for task_type in task_chat:
+            feedback += f"The app is not chat-based but you used {task_type} in your task list. Please remove it and try again"
     ################################################################################################################################################
     if app_search:
-        if not task_search:
-            feedback += "The app is search-based but you didn't use 'google_search' in your tasks. Please add it and try again"
+        for task_type in must_search_tasks - task_search:
+            feedback += f"The app is search-based but you didn't use {task_type} in your tasks. Please add it and try again"
     else:
-        if task_search:
-            feedback += "The app is not search-based but you used 'google_search' task in your task list. Please remove them and try again"
+        for task_type in task_search:
+            feedback += f"The app is not search-based but you used {task_type} task in your task list. Please remove them and try again"
     ################################################################################################################################################
     if app_prompt_template == 1:
-        if not task_prompt_template:
-            feedback += "The app is ai-based but you didn't use 'prompt_template' in your tasks. Please add it and try again"
+        for task_type in must_prompt_template_tasks - task_prompt_template:
+            feedback += f"The app is ai-based but you didn't use {task_type} in your tasks. Please add it and try again"
     elif app_prompt_template == -1:
-        if task_prompt_template:
-            feedback += "The app is not ai-based but you used 'prompt_template' in your tasks which is redundant. Please remove it and try again"
+        for task_type in task_prompt_template:
+            feedback += f"The app is not ai-based but you used {task_type} in your tasks which is redundant. Please remove it and try again"
     ################################################################################################################################################
     
     valid = len(feedback) == 0

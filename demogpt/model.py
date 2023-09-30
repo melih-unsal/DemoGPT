@@ -169,7 +169,11 @@ class DemoGPT:
             sleep(1)
         else:
             function_names = getFunctionNames(code_snippets)
-            final_code = Chains.combine_v2(code_snippets=code_snippets, function_names=function_names)
+            draft_code = Chains.combine_v2(code_snippets=code_snippets, function_names=function_names)
+            import_statements = Chains.imports(code_snippets=code_snippets)
+            if f"st.title('{title}')" not in draft_code:
+                draft_code = f"\nst.title('{title}')\n" + draft_code
+            final_code = import_statements + draft_code
 
         yield {
             "stage": "final",

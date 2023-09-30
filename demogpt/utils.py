@@ -144,6 +144,9 @@ else:
     input_variables = ["chat_history"] + inputs
     human_input = getInputPosition(system_template, inputs)
     code = f"""
+from langchain.prompts import PromptTemplate
+from langchain.memory import ConversationBufferMemory
+from langchain.chat_models import ChatOpenAI
 
 def {signature}:
     prompt = PromptTemplate(
@@ -195,6 +198,10 @@ else:
     temperature = 0 if templates.get("variety", "False") == "False" else 0.7
 
     code = f"""\n
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate)
+
 def {signature}:
     chat = ChatOpenAI(
         model="gpt-3.5-turbo-16k",
@@ -265,24 +272,8 @@ def runStreamlit(code, openai_api_key, openai_api_base=None):
 
 IMPORTS_CODE_SNIPPET = """
 import os
-import shutil
 import streamlit as st
-from langchain import LLMChain
-from langchain.chat_models import ChatOpenAI
-from langchain.prompts.chat import (ChatPromptTemplate,
-                                    HumanMessagePromptTemplate,
-                                    SystemMessagePromptTemplate)
-from langchain.document_loaders import *
-from langchain.chains.summarize import load_summarize_chain
 import tempfile
-from langchain.docstore.document import Document
-import time
-from langchain.memory import ConversationBufferMemory
-from langchain.chains.question_answering import load_qa_chain
-from langchain.prompts import PromptTemplate
-from langchain.agents import load_tools
-from langchain.agents import initialize_agent
-from langchain.agents import AgentType
 
 # Initialize chat history
 if "messages" not in st.session_state:

@@ -123,6 +123,8 @@ class TaskChains:
         res = task["input_key"]
 
         code = f"""
+import time
+
 with st.chat_message("assistant"):
     message_placeholder = st.empty()
     full_response = ""
@@ -173,6 +175,11 @@ with st.chat_message("assistant"):
         function_name = task["task_name"]
         
         code = f"""
+from langchain.chat_models import ChatOpenAI
+from langchain.agents import load_tools
+from langchain.agents import initialize_agent
+from langchain.agents import AgentType
+
 def {function_name}({argument}):
     llm = ChatOpenAI(temperature=0)
     tools = load_tools(["google-serper", "llm-math", "open-meteo-api", "wikipedia"], llm=llm)
@@ -221,6 +228,9 @@ else:
             loader_line = f'loader = TextLoader({argument})'
             
         code = f"""
+import shutil
+from langchain.document_loaders import *
+
 def {function_name}({argument}):
     {loader_line}
     docs = loader.load()
@@ -258,6 +268,7 @@ from langchain.docstore.document import Document
         code = f"""
 from langchain.chat_models import ChatOpenAI
 from langchain.chains.summarize import load_summarize_chain
+
 def {function_name}(docs):
     llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
     chain = load_summarize_chain(llm, chain_type="stuff")

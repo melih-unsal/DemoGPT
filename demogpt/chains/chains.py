@@ -157,6 +157,15 @@ class Chains:
             plan=plan,
         )
         return refine(code)
+    
+    @classmethod
+    def imports(cls, code_snippets):
+        code = cls.getChain(
+            system_template=prompts.imports.system_template,
+            human_template=prompts.imports.human_template,
+            code_snippets=code_snippets
+        )
+        return refine(code)
 
     @classmethod
     def combine_v2(cls, code_snippets, function_names):

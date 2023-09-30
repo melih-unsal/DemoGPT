@@ -96,8 +96,9 @@ ALL_TASKS = [
     },
     {
         "name": "python",
-        "description": "Implement and call generic python function from given description.",
-        "good_at": "Writing generic python code",
+        "description": """Implement and call generic python function from given description which can be done using the libraries: 
+        [NumPy, Matplotlib, Seaborn, Scikit-Learn, NLTK, SciPy, OpenCV]""",
+        "good_at": "Writing generic python code.",
         "input_data_type": "*",
         "output_data_type": "*",
         "purpose": "It generates python code from general purpose instructions",
@@ -171,7 +172,7 @@ def isTaskAvailable(task,app_chat, app_prompt_template, app_search):
             return False
     
     if not app_prompt_template:
-        if task["name"] == "prompt_template":
+        if task["name"] in ["prompt_template","doc_loader", "doc_to_string", "string_to_doc", "doc_summarizer"]:
             return False
         
     if not app_search:
@@ -187,7 +188,7 @@ def getAvailableTasks(app_type):
     app_chat = app_type["is_chat"]["value"] == "true"
     app_search = app_type["is_search"]["value"] == "true"
     if not app_chat:
-        if app_type["is_ai"]["value"] == "false":
+        if app_type["is_nlp"]["value"] == "false":
             app_prompt_template = False
             
     tasks = []
@@ -223,7 +224,7 @@ def getPlanGenHelper(app_type):
     app_chat_must = app_type["is_chat"]["value"] == "true"
     app_search_must = app_type["is_search"]["value"] == "true"
     if not app_chat_must:
-        if app_type["is_ai"]["value"] == "true":
+        if app_type["is_nlp"]["value"] == "true":
             prompt_template_must = True
             
     helper = ""
