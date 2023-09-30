@@ -202,6 +202,16 @@ If you have cloned the repository and wish to run the source code version, you c
 streamlit run demogpt/app.py
 ```
 
+### Use Local LLM
+
+First, modify the configuration in model_config.py to ensure that the desired model is correctly configured for use.
+To start the LLM server by running the following command:
+
+```sh
+cd server
+python llm_api.py
+```
+
 ## To-Do 📝
 - [x] Implement new DemoGPT pipeline including plan generation, task creation, code snippet generation, and final code assembly.
 - [x] Add feature to allow users to select models.
