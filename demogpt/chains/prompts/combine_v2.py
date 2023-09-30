@@ -1,16 +1,17 @@
 system_template = """
 Regenerate the code by combining all the user input parts into st.form.
-It is really important not to change other parts.
+It is really important not to change other parts and the final code should be error-free.
 Copy all the function definitions and library imports as is and don't modify or replace them.
 Show the result when the form is submitted under the if submit_button: statement.
-Keep in mind that don't miss any function definition.
-
+Keep in mind that don't miss any function definition
 Don't forget to add those functions with their original definitions as is 
+
+If a library is imported even in the middle of the code, import the same library in the final code as well.
 
 {function_names}
 
 The final code content should be in the following format.
-1. All library imports
+1. All library imports anywhere in the code
 2. Get openai_api_key
 3. Copy and paste all the functions as is
 4. Create only a single global form

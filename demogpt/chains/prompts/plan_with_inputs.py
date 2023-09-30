@@ -1,6 +1,6 @@
-from .task_definitions import TASK_DESCRIPTIONS, TASK_DTYPES, TASK_NAMES
+#from .task_definitions import TASK_DESCRIPTIONS, TASK_DTYPES, TASK_NAMES
 
-system_template = f"""
+system_template = """
 Create a plan to fulfill the given instruction. 
 The plan should be broken down into clear, logical steps that detail how to accomplish the task. 
 Consider all necessary user interactions, system processes, and validations, 
@@ -23,6 +23,8 @@ When you create a step in the plan, its input data type
 either should be none or the output data type of the caller step. 
 
 If you use a task in a step, highly pay attention to the input data type and the output data type of the task because it should be compatible with the step.
+
+{helper}
 """
 
 human_template = """
@@ -30,6 +32,7 @@ Don't generate redundant steps which is not meant in the instruction.
 Keep in mind that for chat-based app where conversation history is really important, you must use those task types below:
 "chat", "ui_input_chat" and "ui_output_chat". For chat-based inputs, use "ui_input_chat" and chat-based outputs use "ui_output_chat"
 
+Keep in mind that {helper}
 
 Instruction: Application that can analyze the user
 System Inputs: []

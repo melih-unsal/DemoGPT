@@ -30,6 +30,18 @@ instruction: Display the generated Medium article to the user
 code:
 if medium_article:
     st.markdown(medium_article)
+    
+args: python_code
+instruction: Display the generated python code to the user
+code:
+if python_code:
+    st.code(python_code)
+    
+args: cities
+instruction: Display the predicted cities to the user
+code:
+if cities:
+    st.markdown(cities)
         
 args: translated_text
 instruction: Display the translated text to the user

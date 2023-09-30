@@ -8,11 +8,11 @@ from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
 
-from demogpt.controllers import checkDTypes
+from demogpt.controllers import checkDTypes, checkAppTypeCompatiblity, checkRedundantTasks
 from demogpt.utils import refine
 
 from . import prompts
-
+from demogpt.chains.task_definitions import getTasks, getPlanGenHelper
 
 class Chains:
     @classmethod
@@ -41,6 +41,16 @@ class Chains:
         return LLMChain(llm=cls.llm, prompt=chat_prompt).run(**kwargs)
 
     @classmethod
+    def appType(cls, instruction):
+        app_type =  cls.getChain(
+            system_template=prompts.app_type.system_template,
+            human_template=prompts.app_type.human_template,
+            instruction=instruction,
+        )
+        
+        return json.loads(app_type)
+    
+    @classmethod
     def systemInputs(cls, instruction):
         return cls.getChain(
             system_template=prompts.system_inputs.system_template,
@@ -57,17 +67,23 @@ class Chains:
         )
 
     @classmethod
-    def planWithInputs(cls, instruction, system_inputs):
+    def planWithInputs(cls, instruction, system_inputs, app_type):
+        TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES = getTasks(app_type)
+        helper = getPlanGenHelper(app_type)
         plan = cls.getChain(
             system_template=prompts.plan_with_inputs.system_template,
             human_template=prompts.plan_with_inputs.human_template,
             instruction=instruction,
             system_inputs=system_inputs,
+            helper=helper,
+            TASK_DESCRIPTIONS=TASK_DESCRIPTIONS,
+            TASK_NAMES=TASK_NAMES,
+            TASK_DTYPES=TASK_DTYPES
         )
         return cls.refinePlan(plan)
     
     @classmethod
-    def planFeedback(cls, instruction, plan):
+    def planFeedback(cls, instruction, plan):        
         feedback = cls.getChain(
             system_template=prompts.plan_feedback.system_template,
             human_template=prompts.plan_feedback.human_template,
@@ -88,27 +104,45 @@ class Chains:
         )
 
     @classmethod
-    def tasks(cls, instruction, plan):
+    def tasks(cls, instruction, plan, app_type):
+        TASK_DESCRIPTIONS, TASK_NAMES, _ = getTasks(app_type)
+        
         task_list = cls.getChain(
             system_template=prompts.tasks.system_template,
             human_template=prompts.tasks.human_template,
             instruction=instruction,
             plan=plan,
+            TASK_DESCRIPTIONS=TASK_DESCRIPTIONS,
+            TASK_NAMES=TASK_NAMES
         )
         return json.loads(task_list)
 
     @classmethod
-    def taskController(cls, tasks):
-        return checkDTypes(tasks)
+    def taskController(cls, tasks, app_type):
+        dtype_feedback = checkDTypes(tasks)
+        app_type_feedback = checkAppTypeCompatiblity(tasks, app_type)
+        redundant_task_feedback = checkRedundantTasks(tasks)
+        
+        feedback = dtype_feedback["feedback"] + "\n\n" + app_type_feedback["feedback"] + "\n\n" + redundant_task_feedback["feedback"]
+        valid = dtype_feedback["valid"] and app_type_feedback["valid"] and redundant_task_feedback["valid"]
+        
+        return {
+            "feedback":feedback,
+            "valid":valid
+        }
+        
 
     @classmethod
-    def refineTasks(cls, instruction, tasks, feedback):
+    def refineTasks(cls, instruction, tasks, feedback, app_type):
+        TASK_DESCRIPTIONS, _, _ = getTasks(app_type)
+        
         task_list = cls.getChain(
             system_template=prompts.task_refiner.system_template,
             human_template=prompts.task_refiner.human_template,
             instruction=instruction,
             tasks=tasks,
             feedback=feedback,
+            TASK_DESCRIPTIONS=TASK_DESCRIPTIONS
         )
 
         return json.loads(task_list)

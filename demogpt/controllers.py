@@ -2,6 +2,30 @@ import re
 
 from demogpt.chains.prompts.task_definitions import TASK_TYPE2_TASK
 
+def checkRedundantTasks(tasks):
+    all_input_keys = []
+    for task in tasks:
+        inputs = task["input_key"]
+        if inputs == "none":
+            inputs = []
+        else:
+            if isinstance(inputs, str):
+                if inputs.startswith("["):
+                    inputs = inputs[1:-1]
+                all_input_keys += [var.strip() for var in inputs.split(",")]
+                
+    all_input_keys = set(all_input_keys) 
+    all_input_keys.add("none")
+    
+    feedback = ""
+    
+    for task in tasks:
+        if task["output_key"] not in all_input_keys:
+            feedback += f"Task {task['task_name']} is redundant because its output is never used. Try another approach.\n"
+            
+    valid = len(feedback) == 0
+    
+    return {"feedback": feedback, "valid": valid}
 
 def refineKeyTypeCompatiblity(task):
     if task["input_data_type"] == "none":
@@ -10,7 +34,50 @@ def refineKeyTypeCompatiblity(task):
     if task["output_data_type"] == "none":
         if task["output_key"] != "none":
             task["output_key"] = "none"
-    return task           
+    return task   
+
+def checkAppTypeCompatiblity(tasks, app_type):
+    task_prompt_template = any([task["task_type"] == "prompt_template" for task in tasks])
+    task_chat = any([task["task_type"] == "chat" for task in tasks])
+    task_search = any([task["task_type"] == "google_search" for task in tasks])
+    
+    app_prompt_template = 0 # neutral
+    
+    app_chat = app_type["is_chat"]["value"] == "true"
+    app_search = app_type["is_search"]["value"] == "true"
+    if not app_chat:
+        if app_type["is_ai"]["value"] == "true":
+            app_prompt_template = 1
+        else:
+            app_prompt_template = -1
+    
+    feedback = ""
+    if app_chat:
+        if not task_chat:
+            feedback += "The app is chat-based but you didn't use 'chat' in your tasks. Please add it and try again"
+    else:
+        if task_chat:
+            feedback += "The app is not chat-based but you used chat related tasks in your task list. Please remove them and try again"
+    ################################################################################################################################################
+    if app_search:
+        if not task_search:
+            feedback += "The app is search-based but you didn't use 'google_search' in your tasks. Please add it and try again"
+    else:
+        if task_search:
+            feedback += "The app is not search-based but you used 'google_search' task in your task list. Please remove them and try again"
+    ################################################################################################################################################
+    if app_prompt_template == 1:
+        if not task_prompt_template:
+            feedback += "The app is ai-based but you didn't use 'prompt_template' in your tasks. Please add it and try again"
+    elif app_prompt_template == -1:
+        if task_prompt_template:
+            feedback += "The app is not ai-based but you used 'prompt_template' in your tasks which is redundant. Please remove it and try again"
+    ################################################################################################################################################
+    
+    valid = len(feedback) == 0
+    
+    return {"feedback": feedback, "valid": valid}
+                
 
 def checkDTypes(tasks):
 

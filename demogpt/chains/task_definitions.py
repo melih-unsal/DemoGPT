@@ -1,5 +1,4 @@
 import json
-import re
 
 AVAILABLE_TASKS_COUNT = 13
 
@@ -166,21 +165,73 @@ def jsonFixer(data):
     data = json.dumps(data, indent=4)
     return data.replace("{", "{{").replace("}", "}}")
 
+def isTaskAvailable(task,app_chat, app_prompt_template, app_search):
+    if not app_chat:
+        if "chat" in task["name"]:
+            return False
+    
+    if not app_prompt_template:
+        if task["name"] == "prompt_template":
+            return False
+        
+    if not app_search:
+        if task["name"] == "google_search":
+            return False
+        
+    return True
+        
 
-TASKS = ALL_TASKS[:AVAILABLE_TASKS_COUNT]
+def getAvailableTasks(app_type):
+    app_prompt_template = True # neutral
+    
+    app_chat = app_type["is_chat"]["value"] == "true"
+    app_search = app_type["is_search"]["value"] == "true"
+    if not app_chat:
+        if app_type["is_ai"]["value"] == "false":
+            app_prompt_template = False
+            
+    tasks = []
+    for task in ALL_TASKS[:AVAILABLE_TASKS_COUNT]:
+        if isTaskAvailable(task,app_chat, app_prompt_template, app_search):
+            tasks.append(task)
+            
+    return tasks
 
-TASK_NAMES = [task["name"] for task in TASKS]
+def getTasks(app_type):
+    TASKS = getAvailableTasks(app_type)
+    
+    print("NUMBER OF TASKS:",len(TASKS))
 
-TASK_DESCRIPTIONS = jsonFixer(TASKS)
+    TASK_NAMES = [task["name"] for task in TASKS]
 
-TASK_DTYPES = {
-    task["name"]: {
-        "input_data_type": task["input_data_type"],
-        "output_data_type": task["output_data_type"],
+    TASK_DESCRIPTIONS = jsonFixer(TASKS)
+
+    TASK_DTYPES = {
+        task["name"]: {
+            "input_data_type": task["input_data_type"],
+            "output_data_type": task["output_data_type"],
+        }
+        for task in TASKS
     }
-    for task in TASKS
-}
 
-TASK_DTYPES = jsonFixer(TASK_DTYPES)
+    TASK_DTYPES = jsonFixer(TASK_DTYPES)
+    
+    return TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES
 
-TASK_TYPE2_TASK = {task["name"]: task for task in TASKS}
+def getPlanGenHelper(app_type):
+    prompt_template_must = False
+    app_chat_must = app_type["is_chat"]["value"] == "true"
+    app_search_must = app_type["is_search"]["value"] == "true"
+    if not app_chat_must:
+        if app_type["is_ai"]["value"] == "true":
+            prompt_template_must = True
+            
+    helper = ""
+    if prompt_template_must:
+        helper += "Since the application is AI-based, you must use 'prompt_template' task in the steps.\n"
+    if app_search_must:
+        helper += "Since the application requires Google search, you must use 'google_search' task in the steps.\n"
+    if app_chat_must:
+        helper += "Since the application is chat-based, you must use 'ui_input_chat', 'chat' and 'ui_output_chat' task in the steps.\n"
+        
+    return helper

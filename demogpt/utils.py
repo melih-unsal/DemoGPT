@@ -79,6 +79,8 @@ def getCodeSnippet(task, code_snippets, iters=10):
         code = TaskChains.uiOutputChat(task=task)
     elif task_type == "python":
         code = TaskChains.pythonCoder(task=task,code_snippets=code_snippets)
+    elif task_type == "google_search":
+        code = TaskChains.search(task=task)
     return code.strip() + "\n"
 
 def getChatInputCode(code):
@@ -261,7 +263,6 @@ def runStreamlit(code, openai_api_key, openai_api_base=None):
 
     return process.pid
 
-
 IMPORTS_CODE_SNIPPET = """
 import os
 import shutil
@@ -279,6 +280,9 @@ import time
 from langchain.memory import ConversationBufferMemory
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
+from langchain.agents import load_tools
+from langchain.agents import initialize_agent
+from langchain.agents import AgentType
 
 # Initialize chat history
 if "messages" not in st.session_state:

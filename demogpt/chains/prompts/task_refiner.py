@@ -1,6 +1,6 @@
-from .task_definitions import TASK_DESCRIPTIONS
+#from .task_definitions import TASK_DESCRIPTIONS
 
-system_template = f"""
+system_template = """
 Refine the Generated Task List according to the Feedback
 
 Task objects must be Python dictionaries, and the output should strictly conform to a Python list of JSON objects.

@@ -58,6 +58,7 @@ class DemoGPT:
         }
 
         system_inputs = Chains.systemInputs(instruction=instruction)
+        app_type = Chains.appType(instruction=instruction)
 
         yield {
             "stage": "plan",
@@ -68,7 +69,7 @@ class DemoGPT:
         }
 
         plan = Chains.planWithInputs(
-            instruction=instruction, system_inputs=system_inputs
+            instruction=instruction, system_inputs=system_inputs, app_type=app_type
         )
 
         yield {
@@ -89,7 +90,7 @@ class DemoGPT:
             "message": "Task generation has started...",
         }
 
-        task_list = Chains.tasks(instruction=instruction, plan=plan)
+        task_list = Chains.tasks(instruction=instruction, plan=plan, app_type=app_type)
 
         yield {
             "stage": "task",
@@ -110,7 +111,7 @@ class DemoGPT:
             "message": "Tasks are being controlled.",
         }
 
-        task_controller_result = Chains.taskController(tasks=task_list)
+        task_controller_result = Chains.taskController(tasks=task_list, app_type=app_type)
 
         for _ in trange(self.max_steps):
             if not task_controller_result["valid"]:
@@ -118,8 +119,9 @@ class DemoGPT:
                     instruction=instruction,
                     tasks=task_list,
                     feedback=task_controller_result["feedback"],
+                    app_type=app_type
                 )
-                task_controller_result = Chains.taskController(tasks=task_list)
+                task_controller_result = Chains.taskController(tasks=task_list, app_type=app_type)
             else:
                 break
 

@@ -165,6 +165,26 @@ with st.chat_message("assistant"):
         )
         res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res)
+    
+    @classmethod
+    def search(cls,task):
+        argument = task["input_key"]
+        variable = task["output_key"]
+        function_name = task["task_name"]
+        
+        code = f"""
+def {function_name}({argument}):
+    llm = ChatOpenAI(temperature=0)
+    tools = load_tools(["google-serper", "llm-math", "open-meteo-api", "wikipedia"], llm=llm)
+    agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
+    return agent.run({argument})
+
+if {argument}:
+    {variable} = {function_name}({argument})
+else:
+    {variable} = ''
+        """
+        return code
 
     @classmethod
     def docLoad(cls, task, code_snippets):
