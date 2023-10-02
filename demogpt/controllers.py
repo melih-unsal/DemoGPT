@@ -43,10 +43,20 @@ def refineKeyTypeCompatiblity(task):
             task["output_key"] = "none"
     return task   
 
+def preprocessTaskIO(io):
+    if io == "none":
+        io = []
+    else:
+        if isinstance(io, str):
+            if io.startswith("["):
+                io = io[1:-1]
+            io = [var.strip() for var in io.split(",")]
+    return set(io)
+
 def checkAppTypeCompatiblity(tasks, app_type):
     must_chat_tasks = {"ui_input_chat","chat", "ui_output_chat"}
     must_prompt_template_tasks = {"prompt_template"}
-    must_search_tasks = {"google_search"}
+    must_search_tasks = {"plan_and_execute"}
     
     task_types = set([task["task_type"] for task in tasks])
     
@@ -57,38 +67,55 @@ def checkAppTypeCompatiblity(tasks, app_type):
     
     app_prompt_template = 0 # neutral
     
-    app_chat = app_type["is_chat"]["value"] == "true"
-    app_search = app_type["is_search"]["value"] == "true"
+    app_chat = app_type["is_chat"] == "true"
+    app_search = app_type["is_search"] == "true"
     if not app_chat:
-        if app_type["is_nlp"]["value"] == "true":
+        if app_type["is_ai"] == "true":
             app_prompt_template = 1
         else:
             app_prompt_template = -1
     
     feedback = ""
-
+    ################################################################################################################################################
+    # chat app check
     if app_chat:
         for task_type in must_chat_tasks - task_chat:
-            feedback += f"The app is chat-based but you didn't use {task_type} in your tasks. Please add it and try again"
+            feedback += f"The app is chat-based but you didn't use {task_type} in your tasks. Please add it and try again\n"
     else:
         for task_type in task_chat:
-            feedback += f"The app is not chat-based but you used {task_type} in your task list. Please remove it and try again"
+            feedback += f"The app is not chat-based but you used {task_type} in your task list. Please remove it and try again\n"
     ################################################################################################################################################
+    # search app check
     if app_search:
         for task_type in must_search_tasks - task_search:
-            feedback += f"The app is search-based but you didn't use {task_type} in your tasks. Please add it and try again"
+            feedback += f"The app requires plan_and_execute task but you didn't use {task_type} in your tasks. Please add it and try again\n"
     else:
         for task_type in task_search:
-            feedback += f"The app is not search-based but you used {task_type} task in your task list. Please remove them and try again"
+            feedback += f"The app does not need plan_and_execute task but you used {task_type} task in your task list. Please remove them and try again\n"
     ################################################################################################################################################
+    # prompt_template app check
     if app_prompt_template == 1:
         for task_type in must_prompt_template_tasks - task_prompt_template:
-            feedback += f"The app is ai-based but you didn't use {task_type} in your tasks. Please add it and try again"
+            feedback += f"The app is ai-based but you didn't use {task_type} in your tasks. Please add it and try again\n"
     elif app_prompt_template == -1:
         for task_type in task_prompt_template:
-            feedback += f"The app is not ai-based but you used {task_type} in your tasks which is redundant. Please remove it and try again"
+            feedback += f"The app is not ai-based but you used {task_type} in your tasks which is redundant. Please remove it and try again\n"
     ################################################################################################################################################
-    
+    # search-python compatiblity
+    python_tasks = [task for task in tasks if task["task_type"] == "python"]
+    search_tasks = [task for task in tasks if task["task_type"] == "plan_and_execute"]
+    found = False
+    for python_task in python_tasks:
+        python_outputs = preprocessTaskIO(python_task["input_key"])
+        for search_task in search_tasks:
+            search_inputs = preprocessTaskIO(search_task["output_key"])
+            if python_outputs & search_inputs:
+                feedback += f""" python task '{python_task['task_name']}' uses {(python_outputs & search_inputs).pop()} as an input but it comes from plan_and_execute task '{search_task['task_name']}'. python task cannot use plan_and_execute task's output as an input. Please redesign the tasks so that no python task uses plan_and_execute task's output as an input!"""
+                found = True
+                break
+        if found:
+            break
+ 
     valid = len(feedback) == 0
     
     return {"feedback": feedback, "valid": valid}

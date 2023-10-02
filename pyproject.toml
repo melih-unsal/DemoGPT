@@ -25,6 +25,7 @@ python-dotenv = "*"
 unstructured = "*"
 pdf2image = "*"
 pdfminer-six = "*"
+autopep8 = "*"
 
 [tool.poetry.dev-dependencies]
 

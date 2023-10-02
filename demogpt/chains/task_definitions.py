@@ -1,6 +1,6 @@
 import json
 
-AVAILABLE_TASKS_COUNT = 13
+AVAILABLE_TASKS_COUNT = 12
 
 ################################
 
@@ -62,15 +62,6 @@ ALL_TASKS = [
         "purpose": "Converting string to Document object",
     },
     {
-        "name": "doc_summarizer",
-        "description": "Summarize Document Objects",
-        "good_at": "Summarizing long Document Objects",
-        "input_data_type": "Document",
-        "output_data_type": "string",
-        "purpose": "Summarization of long Document Objects",
-    },
-
-    {
         "name": "ui_input_chat",
         "description": "Get user message/text input for conversation-based application",
         "good_at": "Getting text input from the user for chat-based application",
@@ -104,12 +95,20 @@ ALL_TASKS = [
         "purpose": "It generates python code from general purpose instructions",
     },
     {
-        "name": "google_search",
-        "description": "Answer question using Google search in the internet. It is also good at mathematics.",
-        "good_at": "Applications requiring automatic Google search on external sources in internet and/or mathematical calculations",
+        "name": "plan_and_execute",
+        "description": "It is intelligent AI agent that can answer question using internet.",
+        "good_at": "Applications requiring up to date knowledge on the internet.",
         "input_data_type": "string",
         "output_data_type": "string",
-        "purpose": "For Google search required apps in web, it generates responses using Google search and also if it requires, it also uses mathematics to answer question",
+        "purpose": "By using internet, it autonomously give answer for any question available in the web.",
+    },
+    {
+        "name": "doc_summarizer",
+        "description": "Summarize Document Objects",
+        "good_at": "Summarizing long Document Objects",
+        "input_data_type": "Document",
+        "output_data_type": "string",
+        "purpose": "Summarize long Document Objects",
     },
     {
         "name": "prompt_list_parser",
@@ -117,7 +116,7 @@ ALL_TASKS = [
         "good_at": "Transforming text into a list.",
         "input_data_type": "string",
         "output_data_type": "list",
-        "purpose": "Converting textual data into structured list format.",
+        "purpose": "Converts textual data into structured list format.",
     },
     {
         "name": "router",
@@ -125,7 +124,7 @@ ALL_TASKS = [
         "good_at": "Handling different types of questions that require different abilities.",
         "input_data_type": "*prompt_template",
         "output_data_type": "string",
-        "purpose": "Routing queries to the appropriate handler based on context or type.",
+        "purpose": "Routes queries to the appropriate handler based on context or type.",
     },
     {
         "name": "react",
@@ -133,7 +132,7 @@ ALL_TASKS = [
         "good_at": "Answering questions that require Google search or other web searches.",
         "input_data_type": "string",
         "output_data_type": "string",
-        "purpose": "Finding information online to answer user queries.",
+        "purpose": "Finds information online to answer user queries.",
     },
     {
         "name": "cpal_chain",
@@ -170,13 +169,15 @@ def isTaskAvailable(task,app_chat, app_prompt_template, app_search):
     if not app_chat:
         if "chat" in task["name"]:
             return False
+        if task["name"] == "python":
+            return False 
     
     if not app_prompt_template:
         if task["name"] in ["prompt_template","doc_loader", "doc_to_string", "string_to_doc", "doc_summarizer"]:
             return False
         
     if not app_search:
-        if task["name"] == "google_search":
+        if task["name"] == "plan_and_execute":
             return False
         
     return True
@@ -185,10 +186,10 @@ def isTaskAvailable(task,app_chat, app_prompt_template, app_search):
 def getAvailableTasks(app_type):
     app_prompt_template = True # neutral
     
-    app_chat = app_type["is_chat"]["value"] == "true"
-    app_search = app_type["is_search"]["value"] == "true"
+    app_chat = app_type["is_chat"] == "true"
+    app_search = app_type["is_search"] == "true"
     if not app_chat:
-        if app_type["is_nlp"]["value"] == "false":
+        if app_type["is_ai"] == "false":
             app_prompt_template = False
             
     tasks = []
@@ -201,9 +202,10 @@ def getAvailableTasks(app_type):
 def getTasks(app_type):
     TASKS = getAvailableTasks(app_type)
     
-    print("NUMBER OF TASKS:",len(TASKS))
-
     TASK_NAMES = [task["name"] for task in TASKS]
+    
+    TASK_PURPOSES = {task["name"]:task["purpose"] for task in TASKS}
+    TASK_PURPOSES = jsonFixer(TASK_PURPOSES)
 
     TASK_DESCRIPTIONS = jsonFixer(TASKS)
 
@@ -217,21 +219,21 @@ def getTasks(app_type):
 
     TASK_DTYPES = jsonFixer(TASK_DTYPES)
     
-    return TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES
+    return TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES, TASK_PURPOSES
 
 def getPlanGenHelper(app_type):
     prompt_template_must = False
-    app_chat_must = app_type["is_chat"]["value"] == "true"
-    app_search_must = app_type["is_search"]["value"] == "true"
+    app_chat_must = app_type["is_chat"] == "true"
+    app_search_must = app_type["is_search"] == "true"
     if not app_chat_must:
-        if app_type["is_nlp"]["value"] == "true":
+        if app_type["is_ai"] == "true":
             prompt_template_must = True
             
     helper = ""
     if prompt_template_must:
         helper += "Since the application is AI-based, you must use 'prompt_template' task in the steps.\n"
     if app_search_must:
-        helper += "Since the application requires Google search, you must use 'google_search' task in the steps.\n"
+        helper += "Since the application requires up to date knowledge in the web, you must use 'plan_and_execute' task in the steps.\n"
     if app_chat_must:
         helper += "Since the application is chat-based, you must use 'ui_input_chat', 'chat' and 'ui_output_chat' task in the steps.\n"
         

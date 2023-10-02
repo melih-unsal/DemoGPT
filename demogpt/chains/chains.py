@@ -68,7 +68,7 @@ class Chains:
 
     @classmethod
     def planWithInputs(cls, instruction, system_inputs, app_type):
-        TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES = getTasks(app_type)
+        TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES, _ = getTasks(app_type)
         helper = getPlanGenHelper(app_type)
         plan = cls.getChain(
             system_template=prompts.plan_with_inputs.system_template,
@@ -105,7 +105,7 @@ class Chains:
 
     @classmethod
     def tasks(cls, instruction, plan, app_type):
-        TASK_DESCRIPTIONS, TASK_NAMES, _ = getTasks(app_type)
+        TASK_DESCRIPTIONS, TASK_NAMES, _, _ = getTasks(app_type)
         
         task_list = cls.getChain(
             system_template=prompts.tasks.system_template,
@@ -134,7 +134,7 @@ class Chains:
 
     @classmethod
     def refineTasks(cls, instruction, tasks, feedback, app_type):
-        TASK_DESCRIPTIONS, _, _ = getTasks(app_type)
+        _, TASK_NAMES, _, TASK_PURPOSES  = getTasks(app_type)
         
         task_list = cls.getChain(
             system_template=prompts.task_refiner.system_template,
@@ -142,7 +142,8 @@ class Chains:
             instruction=instruction,
             tasks=tasks,
             feedback=feedback,
-            TASK_DESCRIPTIONS=TASK_DESCRIPTIONS
+            TASK_NAMES=TASK_NAMES,
+            TASK_PURPOSES=TASK_PURPOSES
         )
 
         return json.loads(task_list)

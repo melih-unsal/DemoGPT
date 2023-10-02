@@ -1,6 +1,7 @@
 import os
 import sys
 from time import sleep
+import autopep8
 
 from tqdm import trange
 
@@ -14,7 +15,7 @@ class DemoGPT:
         self,
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
         model_name="gpt-3.5-turbo-0613",
-        max_steps=10,
+        max_steps=5,
         openai_api_base="",
     ):
         assert len(
@@ -55,6 +56,7 @@ class DemoGPT:
             "percentage": 0,
             "done": False,
             "message": "System inputs are being detected...",
+            "failed":False
         }
 
         system_inputs = Chains.systemInputs(instruction=instruction)
@@ -66,6 +68,7 @@ class DemoGPT:
             "percentage": 10,
             "done": False,
             "message": "Plan creation has started...",
+            "failed":False
         }
 
         plan = Chains.planWithInputs(
@@ -78,6 +81,7 @@ class DemoGPT:
             "percentage": 20,
             "done": False,
             "message": "Plan has been generated.",
+            "failed":False
         }
 
         sleep(1)
@@ -88,6 +92,7 @@ class DemoGPT:
             "percentage": 30,
             "done": False,
             "message": "Task generation has started...",
+            "failed":False
         }
 
         task_list = Chains.tasks(instruction=instruction, plan=plan, app_type=app_type)
@@ -99,6 +104,7 @@ class DemoGPT:
             "done": False,
             "message": "Tasks have been generated.",
             "tasks": task_list,
+            "failed":False
         }
 
         sleep(1)
@@ -109,6 +115,7 @@ class DemoGPT:
             "percentage": 55,
             "done": False,
             "message": "Tasks are being controlled.",
+            "failed":False
         }
 
         task_controller_result = Chains.taskController(tasks=task_list, app_type=app_type)
@@ -124,85 +131,78 @@ class DemoGPT:
                 task_controller_result = Chains.taskController(tasks=task_list, app_type=app_type)
             else:
                 break
+            
+        if not task_controller_result["valid"]:
+            yield {
+                "stage": "task",
+                "completed": False,
+                "percentage": 100,
+                "done": False,
+                "message": "🚀✨ Impressive! While DemoGPT can handle a galaxy of app ideas, you've shot for the stars with a unique one. We're ramping up our engines to meet such visionary requests. Give us a little time, and we'll be right there with you.",
+                "failed":True
+            }
+            
+        else:
 
-        code_snippets = init(title)
+            code_snippets = init(title)
 
-        sleep(1)
+            sleep(1)
 
-        yield {
-            "stage": "draft",
-            "completed": False,
-            "percentage": 60,
-            "done": False,
-            "message": "Converting tasks to code snippets...",
-        }
-
-        num_of_tasks = len(task_list)
-
-        for i, task in enumerate(task_list):
-            code = getCodeSnippet(task, code_snippets, self.max_steps)
-            code = "#" + task["description"] + "\n" + code
-            code_snippets += code
             yield {
                 "stage": "draft",
-                "completed": i + 1 == num_of_tasks,
-                "percentage": 60 + int(20 * (i + 1) / num_of_tasks),
+                "completed": False,
+                "percentage": 60,
                 "done": False,
-                "message": f"{i+1}/{num_of_tasks} tasks have been converted to code",
-                "code": code,
+                "message": "Converting tasks to code snippets...",
             }
 
-        sleep(1)
+            num_of_tasks = len(task_list)
 
-        yield {
-            "stage": "draft",
-            "completed": False,
-            "percentage": 85,
-            "done": False,
-            "message": "Code snippets are being combined...",
-        }
-        
-        chat_app = any([task["task_type"] in ["ui_input_chat","ui_output_chat","chat"] for task in task_list])
+            for i, task in enumerate(task_list):
+                code = getCodeSnippet(task, code_snippets, self.max_steps)
+                code = "#" + task["description"] + "\n" + code
+                code_snippets += code
+                yield {
+                    "stage": "draft",
+                    "completed": i + 1 == num_of_tasks,
+                    "percentage": 60 + int(20 * (i + 1) / num_of_tasks),
+                    "done": False,
+                    "message": f"{i+1}/{num_of_tasks} tasks have been converted to code",
+                    "code": code,
+                }
 
-        if chat_app:
-            final_code = code_snippets
             sleep(1)
-        else:
-            function_names = getFunctionNames(code_snippets)
-            draft_code = Chains.combine_v2(code_snippets=code_snippets, function_names=function_names)
-            import_statements = Chains.imports(code_snippets=code_snippets)
-            if f"st.title('{title}')" not in draft_code:
-                draft_code = f"\nst.title('{title}')\n" + draft_code
-            final_code = import_statements + draft_code
 
-        yield {
-            "stage": "final",
-            "completed": True,
-            "percentage": 100,
-            "done": True,
-            "message": "Final code has been generated. Directing to the demo page...",
-            "code": final_code,
-        }
+            yield {
+                "stage": "draft",
+                "completed": False,
+                "percentage": 85,
+                "done": False,
+                "message": "Code snippets are being combined...",
+            }
+            
+            chat_app = any([task["task_type"] in ["ui_input_chat","ui_output_chat","chat"] for task in task_list])
 
-        """draft_code = Chains.combine(
-            instruction=instruction, code_snippets=code_snippets, plan=plan
-        )
+            if chat_app:
+                final_code = code_snippets
+                sleep(1)
+            else:
+                function_names = getFunctionNames(code_snippets)
+                draft_code = Chains.combine_v2(code_snippets=code_snippets, function_names=function_names)
+                import_statements = Chains.imports(code_snippets=code_snippets)
+                if f"st.title('{title}')" not in draft_code:
+                    draft_code = f"\nst.title('{title}')\n" + draft_code
+                final_code = import_statements + draft_code
 
-        yield {
-            "stage": "draft",
-            "completed": True,
-            "percentage": 90,
-            "done": False,
-            "message": "Code snippets combined. Now code is being finalized...",
-        }
-
-        final_code = Chains.final(draft_code=draft_code)
-
-        yield {
-            "stage": "final",
-            "completed": True,
-            "percentage": 100,
-            "done": True,
-            "message": "Final code has been generated. Directing to the demo page...",
-            "code": final_code,
-        }"""
+            # finalize the format
+            final_code = final_code.replace("\t",4*" ")
+            final_code = autopep8.fix_code(final_code)
+            
+            yield {
+                "stage": "final",
+                "completed": True,
+                "percentage": 100,
+                "done": True,
+                "message": "Final code has been generated. Directing to the demo page...",
+                "code": final_code,
+            }

@@ -32,7 +32,9 @@ Don't generate redundant steps which is not meant in the instruction.
 Keep in mind that for chat-based app where conversation history is really important, you must use those task types below:
 "chat", "ui_input_chat" and "ui_output_chat". For chat-based inputs, use "ui_input_chat" and chat-based outputs use "ui_output_chat"
 
-Keep in mind that {helper}
+Keep in mind that you cannot use python task just after plan_and_execute task. 
+
+{helper}
 
 Instruction: Application that can analyze the user
 System Inputs: []

@@ -10,7 +10,6 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 from demogpt import utils
 from demogpt.chains import prompts
 
-
 class TaskChains:
     llm = None
 
@@ -53,13 +52,15 @@ class TaskChains:
     @classmethod
     def uiOutputText(cls, task, code_snippets):
         args = task["input_key"]
+        data_type = task["input_data_type"]
         if isinstance(args, list):
             args = ",".join(args)
         instruction = task["description"]
         code = cls.getChain(
             human_template=prompts.ui_output_text.human_template,
             instruction=instruction,
-            args=args
+            args=args,
+            data_type=data_type
         )
         return utils.refine(code)
 
@@ -173,18 +174,51 @@ with st.chat_message("assistant"):
         argument = task["input_key"]
         variable = task["output_key"]
         function_name = task["task_name"]
+        instruction = task["description"]
+
+        res = cls.getChain(
+            system_template=prompts.search.system_template,
+            human_template=prompts.search.human_template,
+            instruction=instruction,
+            inputs=argument
+        )
         
         code = f"""
 from langchain.chat_models import ChatOpenAI
-from langchain.agents import load_tools
-from langchain.agents import initialize_agent
-from langchain.agents import AgentType
+from langchain_experimental.plan_and_execute import PlanAndExecute, load_agent_executor, load_chat_planner
+from langchain.llms import OpenAI
+from langchain.utilities import GoogleSerperAPIWrapper
+from langchain.agents.tools import Tool
+from langchain.chains import LLMMathChain
 
 def {function_name}({argument}):
-    llm = ChatOpenAI(temperature=0)
-    tools = load_tools(["google-serper", "llm-math", "open-meteo-api", "wikipedia"], llm=llm)
-    agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
-    return agent.run({argument})
+    search_input = "{res}".format({argument}={argument})
+    search = GoogleSerperAPIWrapper()
+    llm = OpenAI(temperature=0)
+    llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
+    tools = [
+        Tool(
+            name = "Search",
+            func=search.run,
+            description="useful for when you need to answer questions about current events"
+        ),
+        Tool(
+            name="Calculator",
+            func=llm_math_chain.run,
+            description="useful for when you need to answer questions about math"
+        ),
+    ]
+    model = ChatOpenAI(temperature=0, model_name="gpt-4")
+    planner = load_chat_planner(model)
+    executor = load_agent_executor(model, tools, verbose=True)
+    agent = PlanAndExecute(planner=planner, executor=executor, verbose=True)
+    try:
+        with st.spinner('DemoGPT is working on it. It might take 1-2 minutes...'):
+            return agent.run(search_input)
+    except AuthenticationError:
+        st.warning('This tool requires GPT-4. Please enter a key that has GPT-4 access', icon="⚠️")
+        return ''
+        
 
 if {argument}:
     {variable} = {function_name}({argument})
@@ -272,7 +306,8 @@ from langchain.chains.summarize import load_summarize_chain
 def {function_name}(docs):
     llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
     chain = load_summarize_chain(llm, chain_type="stuff")
-    return chain.run(docs)
+    with st.spinner('DemoGPT is working on it. It might take 5-10 seconds...'):
+        return chain.run(docs)
 if {argument}:
     {variable} = summarize(argument)
 else:

@@ -1,7 +1,5 @@
-#from .task_definitions import TASK_DESCRIPTIONS
-
 system_template = """
-Refine the Generated Task List according to the Feedback
+Refine the Generated Task List by fixing the problem mentinoed in the Feedback
 
 Task objects must be Python dictionaries, and the output should strictly conform to a Python list of JSON objects.
 So use double quotes because this output will be converted to json with json.loads function.
@@ -19,18 +17,26 @@ It is extremely important to include these keys in each task object:
 
 ################################
 
-Available Tasks:
+You are only allowed to use those tasks below:
 
-{TASK_DESCRIPTIONS}
+{TASK_NAMES}
+
+These are the explanations of those tasks:
+
+{TASK_PURPOSES}
+
+Your main job is by considering the "Problems", generating new task list
+Please ensure that the New Refined Task List does not contain any problem mentioned in the "Problems".
+If needed, you can change the number of tasks, remove/replace/add tasks as long as you use only the allowed tasks
 """
 
 human_template = """
 Instruction:{instruction}
 ################################
-Generated Task List:
+Problematic Task List:
 {tasks}
 ################################
-Feedback given to the Generated Task (extremly important) : {feedback}
+Problems: {feedback}
 ################################
 New Refined Task List:
 """

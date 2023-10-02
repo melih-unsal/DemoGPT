@@ -79,7 +79,7 @@ def getCodeSnippet(task, code_snippets, iters=10):
         code = TaskChains.uiOutputChat(task=task)
     elif task_type == "python":
         code = TaskChains.pythonCoder(task=task,code_snippets=code_snippets)
-    elif task_type == "google_search":
+    elif task_type == "plan_and_execute":
         code = TaskChains.search(task=task)
     return code.strip() + "\n"
 
@@ -137,7 +137,8 @@ if not openai_api_key.startswith('sk-'):
 elif {' and '.join(inputs)}:
     if 'chat_llm_chain' not in st.session_state:
         st.session_state.chat_llm_chain = {signature}
-    {variable} = st.session_state.chat_llm_chain.run({run_call})
+    with st.spinner('with st.spinner('DemoGPT is working on it. It takes less than 10 seconds...'):'):
+        {variable} = st.session_state.chat_llm_chain.run({run_call})
 else:
     {variable} = ""
 """
@@ -190,7 +191,8 @@ if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
     {variable} = ""
 elif {' and '.join(inputs)}:
-    {variable} = {signature}
+    with st.spinner('DemoGPT is working on it. It takes less than 10 seconds...'):
+        {variable} = {signature}
 else:
     {variable} = ""
 """

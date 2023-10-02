@@ -116,7 +116,6 @@ def kill():
             pass
         st.session_state["pid"] = -1
 
-
 if submitted:
     st.session_state.messages = []
     if not openai_api_key:
@@ -131,15 +130,18 @@ if submitted:
         st.session_state.container = st.container()
         for data in generate_response(demo_idea, demo_title):
             done = data.get("done", False)
+            failed = data.get("failed", False)
             message = data.get("message", "")
             st.session_state["message"] = message
             stage = data.get("stage", "stage")
             code = data.get("code", "")
             progressBar(data["percentage"], bar)
 
-            st.session_state["done"] = True
+            st.session_state["done"] = done
+            st.session_state["failed"] = failed
+            st.session_state["message"] = message
 
-            if done:
+            if done or failed:
                 st.session_state.code = code
                 break
 
@@ -175,4 +177,13 @@ if st.session_state.done:
                 st.experimental_rerun()
     example_submitted = False
     if submitted:
-        st.session_state["pid"] = runStreamlit(code, openai_api_key, openai_api_base)
+        st.session_state["pid"] = runStreamlit(code, openai_api_key, openai_api_base)     
+
+if st.session_state.get("failed",False):
+    with st.form('fail'):
+        st.warning(st.session_state["message"])
+        email = st.text_input("Email", placeholder="example@example.com")
+        email_submit = st.form_submit_button('Send')
+    if email_submit:
+        st.success("🌟 Thank you for entrusting us with your vision! We're on it and will ping you the moment your app is ready to launch. Stay tuned for a stellar update soon!")
+

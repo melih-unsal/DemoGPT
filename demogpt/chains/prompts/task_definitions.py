@@ -104,7 +104,7 @@ ALL_TASKS = [
         "purpose": "It generates python code from general purpose instructions",
     },
     {
-        "name": "google_search",
+        "name": "plan_and_execute",
         "description": "Answer question using Google search in the internet. It is also good at mathematics.",
         "good_at": "Applications requiring automatic Google search on external sources in internet and/or mathematical calculations",
         "input_data_type": "string",
