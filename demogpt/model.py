@@ -15,7 +15,7 @@ class DemoGPT:
         self,
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
         model_name="gpt-3.5-turbo-0613",
-        max_steps=5,
+        max_steps=10,
         openai_api_base="",
     ):
         assert len(
