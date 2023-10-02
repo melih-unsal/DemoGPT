@@ -84,21 +84,6 @@ title = "🧩 DemoGPT"
 st.set_page_config(page_title=title)
 st.title(title)
 
-button_style = st.markdown("""
-<style>
-button[kind="primary"] {
-    background-color: rgb(0, 200, 0);
-    padding: 14px 40px;
-    width: 40%;
-    text-align: center;
-}
-button[kind="primary"]:hover {
-    background-color: rgb(0, 230, 0);
-}
-</style>""", unsafe_allow_html=True)
-
-# Text input
-
 openai_api_key = st.sidebar.text_input(
     "OpenAI API Key",
     placeholder="sk-...",
@@ -236,9 +221,8 @@ if st.session_state.done:
     else:
         st.success("Your app has been successfully updated.", icon="✅")
     
-    link = f"""<a href="{st.session_state.url}" style="font-size: 24px; text-decoration: none; color: green;">🥳 Woohoo! Your app's up and running. <span style="text-decoration: underline;">Click to explore!</span></a>"""
+    link = f"""<a href="" style="font-size: 24px; text-decoration: none; color: green;">🥳 Woohoo! Your app's up and running. <span style="text-decoration: underline;">Click to explore!</span></a>"""
     st.markdown(link, unsafe_allow_html=True)
-    st.link_button("Go to gallery", "https://streamlit.io/gallery")
     
     
 if st.session_state.get("failed",False):
