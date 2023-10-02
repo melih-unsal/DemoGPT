@@ -134,6 +134,7 @@ demo_title = empty_title.text_input(
     "Give a name for your application", placeholder="Title", max_chars=18
 )
 
+
 def progressBar(percentage, bar=None):
     if bar:
         bar.progress(percentage)
@@ -171,15 +172,18 @@ if submitted:
         st.session_state.app_editted = False
         for data in generate_response(demo_idea, demo_title):
             done = data.get("done",False)
+            failed = data.get("failed", False)
             message = data.get("message","")
             st.session_state["message"] = message
             stage = data.get("stage","stage")
             code = data.get("code","")
             progressBar(data["percentage"], bar)
             
-            st.session_state.done = done
+            st.session_state["done"] = done
+            st.session_state["failed"] = failed
+            st.session_state["message"] = message
 
-            if done:
+            if done or failed:
                 st.session_state.code = code
                 break
             
@@ -192,7 +196,7 @@ elif "messages" in st.session_state:
 
 if st.session_state.done:
     #st.success(st.session_state.message)
-    with st.expander("Code",expanded=st.session_state.app_deployed):
+    with st.expander("Code",expanded=st.session_state.get("app_deployed",False)):
         code_empty = st.empty()
         if st.session_state.edit_mode:
             new_code = code_empty.text_area("", st.session_state.code,height=500)
@@ -234,3 +238,13 @@ if st.session_state.done:
     
     link = f"""<a href="{st.session_state.url}" style="font-size: 24px; text-decoration: none; color: green;">🥳 Woohoo! Your app's up and running. <span style="text-decoration: underline;">Click to explore!</span></a>"""
     st.markdown(link, unsafe_allow_html=True)
+    st.link_button("Go to gallery", "https://streamlit.io/gallery")
+    
+    
+if st.session_state.get("failed",False):
+    with st.form('fail'):
+        st.warning(st.session_state["message"])
+        email = st.text_input("Email", placeholder="example@example.com")
+        email_submit = st.form_submit_button('Send')
+    if email_submit:
+        st.success("🌟 Thank you for entrusting us with your vision! We're on it and will ping you the moment your app is ready to launch. Stay tuned for a stellar update soon!")
