@@ -1,4 +1,4 @@
-#from .task_definitions import TASK_DESCRIPTIONS, TASK_NAMES
+# from .task_definitions import TASK_DESCRIPTIONS, TASK_NAMES
 
 system_template = """
 Create a Python list of task objects that align with the provided instruction and plan. Task objects must be Python dictionaries, and the output should strictly conform to a Python list of JSON objects.

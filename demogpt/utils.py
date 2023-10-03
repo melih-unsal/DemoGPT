@@ -1,12 +1,12 @@
 import json
 import os
 import platform
+import re
 import shutil
 import sys
 import tempfile
 import threading
 from subprocess import PIPE, Popen
-import re
 
 from demogpt.chains.task_chains import TaskChains
 from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
@@ -17,17 +17,23 @@ def init(title=""):
         return IMPORTS_CODE_SNIPPET + f"\nst.title('{title}')\n"
     return IMPORTS_CODE_SNIPPET
 
+
 def getFunctionNames(code):
     pattern = r"def (\w+)\(.*\):"
     return re.findall(pattern, code)
+
 
 def getGenericPromptTemplateCode(task, iters):
     res = ""
     is_valid = False
     task_type = task["task_type"]
     inputs = task["input_key"]
-    prompt_func = TaskChains.promptTemplate if task_type == "prompt_template" else  TaskChains.chat
-    finalizer_func = getPromptChatTemplateCode if task_type == "prompt_template" else getChatCode
+    prompt_func = (
+        TaskChains.promptTemplate if task_type == "prompt_template" else TaskChains.chat
+    )
+    finalizer_func = (
+        getPromptChatTemplateCode if task_type == "prompt_template" else getChatCode
+    )
     additional_inputs = []
     if task_type == "chat":
         additional_inputs.append("chat_history")
@@ -36,7 +42,7 @@ def getGenericPromptTemplateCode(task, iters):
     variety = res.get("variety")
     index = 0
     while not is_valid:
-        templates = {key:res.get(key) for key in res if "template" in key}
+        templates = {key: res.get(key) for key in res if "template" in key}
         check = checkPromptTemplates(templates, task, additional_inputs)
         is_valid = check["valid"]
         feedback = check["feedback"]
@@ -50,7 +56,8 @@ def getGenericPromptTemplateCode(task, iters):
     res["function_name"] = function_name
     res["variety"] = variety
     return finalizer_func(res, task)
-    
+
+
 def getCodeSnippet(task, code_snippets, iters=10):
     task = refineKeyTypeCompatiblity(task)
     task_type = task["task_type"]
@@ -78,10 +85,11 @@ def getCodeSnippet(task, code_snippets, iters=10):
     elif task_type == "ui_output_chat":
         code = TaskChains.uiOutputChat(task=task)
     elif task_type == "python":
-        code = TaskChains.pythonCoder(task=task,code_snippets=code_snippets)
+        code = TaskChains.pythonCoder(task=task, code_snippets=code_snippets)
     elif task_type == "plan_and_execute":
         code = TaskChains.search(task=task)
     return code.strip() + "\n"
+
 
 def getChatInputCode(code):
     prefix = """
@@ -91,6 +99,7 @@ for message in st.session_state.messages:
 """
     return prefix + code
 
+
 def refine(code):
     if "```" in code:
         code = code.split("```")[1]
@@ -98,8 +107,29 @@ def refine(code):
             code = code[len("python") :].strip()
     return code
 
+
+def reformatTasks(tasks):
+    def proprocess(io):
+        if io == "none":
+            io = []
+        elif isinstance(io, str):
+            if io.startswith("["):
+                io = io[1:-1]
+            io = [var.strip() for var in io.split(",")]
+        return io
+
+    processed_tasks = []
+    for task in tasks:
+        task_input = proprocess(task["input_key"])
+        task_output = proprocess(task["output_key"])
+        task["input_key"] = task_input
+        task["output_key"] = task_output
+        processed_tasks.append(task)
+
+    return processed_tasks
+
+
 def getChatCode(template, task):
-    
     def getInputPosition(template, inputs):
         rightmost = -1
         human_input = ""
@@ -110,8 +140,7 @@ def getChatCode(template, task):
                 human_input = input
                 rightmost = index
         return human_input
-        
-    
+
     inputs = task["input_key"]
     variable = task["output_key"]
     temperature = 0 if template.get("variety", "False") == "False" else 0.7
@@ -137,7 +166,7 @@ if not openai_api_key.startswith('sk-'):
 elif {' and '.join(inputs)}:
     if 'chat_llm_chain' not in st.session_state:
         st.session_state.chat_llm_chain = {signature}
-    with st.spinner('with st.spinner('DemoGPT is working on it. It takes less than 10 seconds...'):'):
+    with st.spinner('DemoGPT is working on it. It takes less than 10 seconds...'):
         {variable} = st.session_state.chat_llm_chain.run({run_call})
 else:
     {variable} = ""
@@ -166,7 +195,7 @@ def {signature}:
 {function_call} 
 
     """
-    
+
     return code
 
 
@@ -227,6 +256,7 @@ def {signature}:
 """
     return code
 
+
 def runThread(proc):
     proc.communicate()
 
@@ -271,6 +301,7 @@ def runStreamlit(code, openai_api_key, openai_api_base=None):
         pass
 
     return process.pid
+
 
 IMPORTS_CODE_SNIPPET = """
 import os

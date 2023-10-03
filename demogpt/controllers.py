@@ -2,46 +2,90 @@ import re
 
 from demogpt.chains.prompts.task_definitions import TASK_TYPE2_TASK
 
+
+def planToTaskFormat(plan):
+    pattern = re.compile(r"\b(\w+)\(([^)]*)\)( ---> ([\w_,\s]+))?")
+    matches = pattern.findall(plan)
+    functions = [
+        {
+            "name": match[0],
+            "arguments": [
+                arg.strip()
+                for arg in match[1].split(",")
+                if arg.strip() and '"' not in arg.strip()
+            ],
+            "output": [
+                arg.strip()
+                for arg in match[3].split(",")
+                if arg.strip() and '"' not in arg.strip()
+            ],
+        }
+        for match in matches
+    ]
+    plan_steps = []
+    for i, function in enumerate(functions):
+        step = {
+            "step": i + 1,
+            "task_type": function["name"],
+            "task_name": function["name"],
+            "input_key": function["arguments"],
+            "output_key": function["output"],
+        }
+        plan_steps.append(step)
+    return plan_steps
+
+
+def validatePlan(plan, app_type):
+    tasks = planToTaskFormat(plan)
+    feedback1 = ""
+    for task in tasks:
+        name = task["task_type"]
+        if name not in TASK_TYPE2_TASK:
+            feedback1 += f"Task {name} is invalid, you cannot use undefined task.\n"
+
+    res2 = checkAppTypeCompatiblity(tasks, app_type)
+    res3 = checkRedundantTasks(tasks)
+
+    feedback = feedback1
+    if feedback:
+        feedback += "\nOnly those tasks are available:" + " ".join(
+            TASK_TYPE2_TASK.keys()
+        )
+
+    if res2["feedback"]:
+        feedback += "\n" + res2["feedback"]
+    if res3["feedback"]:
+        feedback += "\n" + res3["feedback"]
+
+    valid = len(feedback1) == 0 and res2["valid"] and res3["valid"]
+
+    return {"feedback": feedback, "valid": valid}
+
+
 def checkRedundantTasks(tasks):
     all_input_keys = []
     for task in tasks:
         inputs = task["input_key"]
-        if inputs == "none":
-            inputs = []
-        else:
-            if isinstance(inputs, str):
-                if inputs.startswith("["):
-                    inputs = inputs[1:-1]
-                all_input_keys += [var.strip() for var in inputs.split(",")]
-            else:
-                all_input_keys += inputs
-                
-    all_input_keys = set(all_input_keys) 
+        all_input_keys += inputs
+
+    all_input_keys = set(all_input_keys)
     all_input_keys.add("none")
-    
+
     feedback = ""
-    
+
     for task in tasks:
-        if isinstance(task["output_key"],str):
-            if task["output_key"] not in all_input_keys:
+        if isinstance(task["output_key"], str):
+            if task["output_key"] not in all_input_keys and len(task["output_key"]) > 0:
                 feedback += f"Task {task['task_name']} is redundant because its output is never used. Try another approach.\n"
-        elif isinstance(task["output_key"],list):
+        elif isinstance(task["output_key"], list):
             for output_key in task["output_key"]:
                 if output_key not in all_input_keys:
                     feedback += f"Task {task['task_name']} has problem because its output {output_key} is never used. Try another approach.\n"
-            
+
     valid = len(feedback) == 0
-    
+
     return {"feedback": feedback, "valid": valid}
 
-def refineKeyTypeCompatiblity(task):
-    if task["input_data_type"] == "none":
-        if task["input_key"] != "none":
-            task["input_key"] = "none"
-    if task["output_data_type"] == "none":
-        if task["output_key"] != "none":
-            task["output_key"] = "none"
-    return task   
 
 def preprocessTaskIO(io):
     if io == "none":
@@ -53,20 +97,20 @@ def preprocessTaskIO(io):
             io = [var.strip() for var in io.split(",")]
     return set(io)
 
+
 def checkAppTypeCompatiblity(tasks, app_type):
-    must_chat_tasks = {"ui_input_chat","chat", "ui_output_chat"}
+    must_chat_tasks = {"ui_input_chat", "chat", "ui_output_chat"}
     must_prompt_template_tasks = {"prompt_template"}
     must_search_tasks = {"plan_and_execute"}
-    
+
     task_types = set([task["task_type"] for task in tasks])
-    
+
     task_prompt_template = must_prompt_template_tasks & task_types
-    task_search =  must_search_tasks & task_types
+    task_search = must_search_tasks & task_types
     task_chat = must_chat_tasks & task_types
-    
-    
-    app_prompt_template = 0 # neutral
-    
+
+    app_prompt_template = 0  # neutral
+
     app_chat = app_type["is_chat"] == "true"
     app_search = app_type["is_search"] == "true"
     if not app_chat:
@@ -74,7 +118,7 @@ def checkAppTypeCompatiblity(tasks, app_type):
             app_prompt_template = 1
         else:
             app_prompt_template = -1
-    
+
     feedback = ""
     ################################################################################################################################################
     # chat app check
@@ -106,20 +150,30 @@ def checkAppTypeCompatiblity(tasks, app_type):
     search_tasks = [task for task in tasks if task["task_type"] == "plan_and_execute"]
     found = False
     for python_task in python_tasks:
-        python_outputs = preprocessTaskIO(python_task["input_key"])
+        python_inputs = preprocessTaskIO(python_task["input_key"])
         for search_task in search_tasks:
-            search_inputs = preprocessTaskIO(search_task["output_key"])
-            if python_outputs & search_inputs:
-                feedback += f""" python task '{python_task['task_name']}' uses {(python_outputs & search_inputs).pop()} as an input but it comes from plan_and_execute task '{search_task['task_name']}'. python task cannot use plan_and_execute task's output as an input. Please redesign the tasks so that no python task uses plan_and_execute task's output as an input!"""
+            search_outputs = preprocessTaskIO(search_task["output_key"])
+            if python_inputs & search_outputs:
+                feedback += f""" python task '{python_task['task_name']}' uses {(python_inputs & search_outputs).pop()} as an input but it comes from plan_and_execute task '{search_task['task_name']}'. python task cannot use plan_and_execute task's output as an input. Please redesign the tasks so that no python task uses plan_and_execute task's output as an input!"""
                 found = True
                 break
         if found:
             break
- 
+
+    ################################################################################################################################################
+    # plan_and_execute compatibility
+    search_indices = sorted([task["step"] for task in search_tasks])
+    if len(search_tasks) > 1:
+        for index in search_indices:
+            if index + 1 in search_indices:
+                feedback += """It is not recommended to use back to back "plan_and_execute" tasks because one plan_and_execute can handle generic question by itself. 
+                You should combine plan_and_execute tasks in a single task."""
+                break
+
     valid = len(feedback) == 0
-    
+
     return {"feedback": feedback, "valid": valid}
-                
+
 
 def checkDTypes(tasks):
 
@@ -147,7 +201,7 @@ def checkDTypes(tasks):
 
         elif reference_input == "*":
             continue
-        
+
         elif reference_input.startswith("*") and input_data_type == "list":
             continue
         # Check input data types
@@ -193,7 +247,7 @@ def checkPromptTemplates(templates, task, additional_inputs=[]):
             if inputs.startswith("["):
                 inputs = inputs[1:-1]
             inputs = [var.strip() for var in inputs.split(",")]
-    template_inputs =  inputs + additional_inputs
+    template_inputs = inputs + additional_inputs
     feedback = ""
     for input_key in template_inputs:
         if f"{{{input_key}}}" not in templates:

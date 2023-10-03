@@ -48,9 +48,7 @@ class SelfRefiner:
     def getPromptTemplate(self, key):
         assert key in self.prompts
         prompts = []
-        prompts.append(
-            SystemMessagePromptTemplate.from_template(self.prompts[key])
-        )
+        prompts.append(SystemMessagePromptTemplate.from_template(self.prompts[key]))
         return prompts
 
     def addToHistory(self, prompt):

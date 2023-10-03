@@ -81,12 +81,21 @@ model_name = st.sidebar.selectbox("Model", models)
 
 empty_idea = st.empty()
 demo_idea = empty_idea.text_area(
-    "Enter your LLM-based demo idea", placeholder="Type your demo idea here", height=100
+    "Enter your LLM-based demo idea",
+    placeholder="Type your demo idea here",
+    height=100,
+    help="""## Example prompts
+* Character Clone: Want an app that converses like Jeff Bezos? Prompt - "Create me a chat-based application that talks like Jeff Bezos."
+* Language Mastery: Need help in learning French? Prompt - "Create me an application that translates English sentences to French and provides pronunciation guidance for learners. 
+* Content Generation: Looking to generate content? Prompt - "Create a system that can write ready to share Medium article from website. The resulting Medium article should be creative and interesting and written in a markdown format."
+    """,
 )
 
 empty_title = st.empty()
 demo_title = empty_title.text_input(
-    "Give a name for your application", placeholder="Title"
+    "Give a name for your application",
+    placeholder="Title",
+    help="It will be displayed as a title in your app",
 )
 
 
@@ -115,6 +124,7 @@ def kill():
         except Exception as e:
             pass
         st.session_state["pid"] = -1
+
 
 if submitted:
     st.session_state.messages = []
@@ -177,13 +187,14 @@ if st.session_state.done:
                 st.experimental_rerun()
     example_submitted = False
     if submitted:
-        st.session_state["pid"] = runStreamlit(code, openai_api_key, openai_api_base)     
+        st.session_state["pid"] = runStreamlit(code, openai_api_key, openai_api_base)
 
-if st.session_state.get("failed",False):
-    with st.form('fail'):
+if st.session_state.get("failed", False):
+    with st.form("fail"):
         st.warning(st.session_state["message"])
         email = st.text_input("Email", placeholder="example@example.com")
-        email_submit = st.form_submit_button('Send')
+        email_submit = st.form_submit_button("Send")
     if email_submit:
-        st.success("🌟 Thank you for entrusting us with your vision! We're on it and will ping you the moment your app is ready to launch. Stay tuned for a stellar update soon!")
-
+        st.success(
+            "🌟 Thank you for entrusting us with your vision! We're on it and will ping you the moment your app is ready to launch. Stay tuned for a stellar update soon!"
+        )

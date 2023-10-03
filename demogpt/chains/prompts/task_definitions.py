@@ -70,7 +70,6 @@ ALL_TASKS = [
         "output_data_type": "string",
         "purpose": "Summarization of long Document Objects",
     },
-
     {
         "name": "ui_input_chat",
         "description": "Get user message/text input for conversation-based application",

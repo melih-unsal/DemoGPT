@@ -10,6 +10,7 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 from demogpt import utils
 from demogpt.chains import prompts
 
+
 class TaskChains:
     llm = None
 
@@ -60,7 +61,7 @@ class TaskChains:
             human_template=prompts.ui_output_text.human_template,
             instruction=instruction,
             args=args,
-            data_type=data_type
+            data_type=data_type,
         )
         return utils.refine(code)
 
@@ -102,11 +103,11 @@ class TaskChains:
             system_template=prompts.prompt_template.system_template,
             human_template=prompts.prompt_template.human_template,
             instruction=instruction,
-            inputs=inputs
+            inputs=inputs,
         )
         res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res)
-    
+
     @classmethod
     def uiInputChat(cls, task):
         variable = task["output_key"]
@@ -115,10 +116,10 @@ class TaskChains:
         code = cls.getChain(
             human_template=prompts.ui_input_chat.human_template,
             instruction=instruction,
-            variable=variable
+            variable=variable,
         )
         return utils.refine(code)
-    
+
     @classmethod
     def uiOutputChat(cls, task):
         res = task["input_key"]
@@ -141,7 +142,7 @@ with st.chat_message("assistant"):
         st.session_state.messages.append({{"role": "assistant", "content": full_response}})        
         """
         return code
-    
+
     @classmethod
     def chat(cls, task):
         inputs = task["input_key"]
@@ -151,11 +152,11 @@ with st.chat_message("assistant"):
             system_template=prompts.chat.system_template,
             human_template=prompts.chat.human_template,
             instruction=instruction,
-            inputs=inputs
+            inputs=inputs,
         )
-        res = res.replace("'''",'"""')
+        res = res.replace("'''", '"""')
         res = res[res.find("{") : res.rfind("}") + 1]
-        return json.loads(res,strict=False)
+        return json.loads(res, strict=False)
 
     @classmethod
     def promptTemplateRefiner(cls, templates, inputs, feedback):
@@ -164,13 +165,13 @@ with st.chat_message("assistant"):
             human_template=prompts.prompt_chat_refiner.human_template,
             templates=templates,
             feedback=feedback,
-            inputs=inputs
+            inputs=inputs,
         )
         res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res)
-    
+
     @classmethod
-    def search(cls,task):
+    def search(cls, task):
         argument = task["input_key"]
         variable = task["output_key"]
         function_name = task["task_name"]
@@ -180,9 +181,9 @@ with st.chat_message("assistant"):
             system_template=prompts.search.system_template,
             human_template=prompts.search.human_template,
             instruction=instruction,
-            inputs=argument
+            inputs=argument,
         )
-        
+
         code = f"""
 from langchain.chat_models import ChatOpenAI
 from langchain_experimental.plan_and_execute import PlanAndExecute, load_agent_executor, load_chat_planner
@@ -243,24 +244,32 @@ else:
             code_snippets=code_snippets,
         )
 
-        if loader in ["TextLoader", "OnlinePDFLoader", "UnstructuredWordDocumentLoader"]:
-            loader_line = f'loader = {loader}({argument})'
+        if loader in [
+            "TextLoader",
+            "OnlinePDFLoader",
+            "UnstructuredWordDocumentLoader",
+        ]:
+            loader_line = f"loader = {loader}({argument})"
         elif loader == "WebBaseLoader":
-            loader_line = f'loader = {loader}([{argument}])'
+            loader_line = f"loader = {loader}([{argument}])"
         elif loader in ["UnstructuredPDFLoader", "UnstructuredPowerPointLoader"]:
-            loader_line = f'loader = {loader}({argument}, mode="elements", strategy="fast")'
+            loader_line = (
+                f'loader = {loader}({argument}, mode="elements", strategy="fast")'
+            )
         elif loader in ["UnstructuredCSVLoader", "UnstructuredExcelLoader"]:
             loader_line = f'loader = {loader}({argument}, mode="elements")'
         elif loader == "YoutubeLoader":
-            loader_line = f'loader = {loader}.from_youtube_url({argument}, add_video_info=False)'
+            loader_line = (
+                f"loader = {loader}.from_youtube_url({argument}, add_video_info=False)"
+            )
         elif loader == "NotionDirectoryLoader":
             loader_line = f"""if os.path.exists('Notion_DB') and os.path.isdir('Notion_DB'):
         shutil.rmtree('Notion_DB')
     os.system(f"unzip {{{argument}}} -d Notion_DB")
     loader = {loader}("Notion_DB")"""
         else:
-            loader_line = f'loader = TextLoader({argument})'
-            
+            loader_line = f"loader = TextLoader({argument})"
+
         code = f"""
 import shutil
 from langchain.document_loaders import *
@@ -274,7 +283,7 @@ if {argument}:
 else:
     {variable} = ''
         """
-        return code    
+        return code
 
     @classmethod
     def stringToDoc(cls, task, code_snippets):
@@ -314,7 +323,7 @@ else:
     variable = ""
 """
         return code
-    
+
     @classmethod
     def pythonCoder(cls, task, code_snippets):
         instruction = task["description"]
@@ -329,7 +338,6 @@ else:
             argument=argument,
             variable=variable,
             function_name=function_name,
-            code_snippets=code_snippets
+            code_snippets=code_snippets,
         )
         return utils.refine(code)
-    

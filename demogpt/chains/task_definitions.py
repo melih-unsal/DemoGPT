@@ -96,11 +96,11 @@ ALL_TASKS = [
     },
     {
         "name": "plan_and_execute",
-        "description": "It is intelligent AI agent that can answer question using internet.",
+        "description": "It is intelligent AI agent that can answer any specific question on internet.",
         "good_at": "Applications requiring up to date knowledge on the internet.",
         "input_data_type": "string",
         "output_data_type": "string",
-        "purpose": "By using internet, it autonomously give answer for any question available in the web.",
+        "purpose": "By using internet, it autonomously give answer for any question available in the web. It can answer questions as specific as possible so you don't need to iterate over the answer.",
     },
     {
         "name": "doc_summarizer",
@@ -165,46 +165,54 @@ def jsonFixer(data):
     data = json.dumps(data, indent=4)
     return data.replace("{", "{{").replace("}", "}}")
 
-def isTaskAvailable(task,app_chat, app_prompt_template, app_search):
+
+def isTaskAvailable(task, app_chat, app_prompt_template, app_search):
     if not app_chat:
         if "chat" in task["name"]:
             return False
         if task["name"] == "python":
-            return False 
-    
-    if not app_prompt_template:
-        if task["name"] in ["prompt_template","doc_loader", "doc_to_string", "string_to_doc", "doc_summarizer"]:
             return False
-        
+
+    if not app_prompt_template:
+        if task["name"] in [
+            "prompt_template",
+            "doc_loader",
+            "doc_to_string",
+            "string_to_doc",
+            "doc_summarizer",
+        ]:
+            return False
+
     if not app_search:
         if task["name"] == "plan_and_execute":
             return False
-        
+
     return True
-        
+
 
 def getAvailableTasks(app_type):
-    app_prompt_template = True # neutral
-    
+    app_prompt_template = True  # neutral
+
     app_chat = app_type["is_chat"] == "true"
     app_search = app_type["is_search"] == "true"
     if not app_chat:
         if app_type["is_ai"] == "false":
             app_prompt_template = False
-            
+
     tasks = []
     for task in ALL_TASKS[:AVAILABLE_TASKS_COUNT]:
-        if isTaskAvailable(task,app_chat, app_prompt_template, app_search):
+        if isTaskAvailable(task, app_chat, app_prompt_template, app_search):
             tasks.append(task)
-            
+
     return tasks
+
 
 def getTasks(app_type):
     TASKS = getAvailableTasks(app_type)
-    
+
     TASK_NAMES = [task["name"] for task in TASKS]
-    
-    TASK_PURPOSES = {task["name"]:task["purpose"] for task in TASKS}
+
+    TASK_PURPOSES = {task["name"]: task["purpose"] for task in TASKS}
     TASK_PURPOSES = jsonFixer(TASK_PURPOSES)
 
     TASK_DESCRIPTIONS = jsonFixer(TASKS)
@@ -218,8 +226,9 @@ def getTasks(app_type):
     }
 
     TASK_DTYPES = jsonFixer(TASK_DTYPES)
-    
+
     return TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES, TASK_PURPOSES
+
 
 def getPlanGenHelper(app_type):
     prompt_template_must = False
@@ -228,7 +237,7 @@ def getPlanGenHelper(app_type):
     if not app_chat_must:
         if app_type["is_ai"] == "true":
             prompt_template_must = True
-            
+
     helper = ""
     if prompt_template_must:
         helper += "Since the application is AI-based, you must use 'prompt_template' task in the steps.\n"
@@ -236,5 +245,5 @@ def getPlanGenHelper(app_type):
         helper += "Since the application requires up to date knowledge in the web, you must use 'plan_and_execute' task in the steps.\n"
     if app_chat_must:
         helper += "Since the application is chat-based, you must use 'ui_input_chat', 'chat' and 'ui_output_chat' task in the steps.\n"
-        
+
     return helper
