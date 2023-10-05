@@ -231,7 +231,7 @@ TEST_CASES = [
         """,
         "code_snippets": """
         import streamlit as st
-        from langchain import LLMChain
+        from langchain.chains import LLMChain
         from langchain.chat_models import ChatOpenAI
         from langchain.prompts.chat import (ChatPromptTemplate,
                                             HumanMessagePromptTemplate,
@@ -340,7 +340,7 @@ TEST_CASES = [
         """,
         "code_snippets": """
         import streamlit as st
-        from langchain import LLMChain
+        from langchain.chains import LLMChain
         from langchain.chat_models import ChatOpenAI
         from langchain.prompts.chat import (ChatPromptTemplate,
                                             HumanMessagePromptTemplate,
@@ -415,7 +415,7 @@ TEST_CASES = [
         """,
         "code_snippets": """
         import streamlit as st
-        from langchain import LLMChain
+        from langchain.chains import LLMChain
         from langchain.chat_models import ChatOpenAI
         from langchain.prompts.chat import (ChatPromptTemplate,
                                             HumanMessagePromptTemplate,
@@ -538,7 +538,7 @@ TEST_CASES = [
         """,
         "code_snippets": """
         import streamlit as st
-        from langchain import LLMChain
+        from langchain.chains import LLMChain
         from langchain.chat_models import ChatOpenAI
         from langchain.prompts.chat import (ChatPromptTemplate,
                                             HumanMessagePromptTemplate,

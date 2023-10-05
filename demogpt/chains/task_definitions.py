@@ -71,11 +71,11 @@ ALL_TASKS = [
     },
     {
         "name": "ui_output_chat",
-        "description": "Display the conversation history in a chat-based application",
+        "description": "Display the conversation history in a chat-based application. It is the only thing that you can use for displaying the chat",
         "good_at": "Displaying chat history",
         "input_data_type": "string",
         "output_data_type": "none",
-        "purpose": "For conversation-based apps, it displays the conversation history.",
+        "purpose": "For conversation-based apps, it displays the chat conversation with history.",
     },
     {
         "name": "chat",
@@ -88,7 +88,7 @@ ALL_TASKS = [
     {
         "name": "python",
         "description": """Implement and call generic python function from given description which can be done using the libraries: 
-        [NumPy, Matplotlib, Seaborn, Scikit-Learn, NLTK, SciPy, OpenCV]""",
+        [NumPy, Matplotlib, Seaborn, Scikit-Learn, NLTK, SciPy, OpenCV, Pandas]""",
         "good_at": "Writing generic python code.",
         "input_data_type": "*",
         "output_data_type": "*",
@@ -115,7 +115,7 @@ ALL_TASKS = [
         "description": "Transform the input text into a list.",
         "good_at": "Transforming text into a list.",
         "input_data_type": "string",
-        "output_data_type": "list",
+        "output_data_type": "*",
         "purpose": "Converts textual data into structured list format.",
     },
     {
@@ -170,8 +170,8 @@ def isTaskAvailable(task, app_chat, app_prompt_template, app_search):
     if not app_chat:
         if "chat" in task["name"]:
             return False
-        if task["name"] == "python":
-            return False
+    elif task["name"] == "python":
+        return False
 
     if not app_prompt_template:
         if task["name"] in [
@@ -182,10 +182,16 @@ def isTaskAvailable(task, app_chat, app_prompt_template, app_search):
             "doc_summarizer",
         ]:
             return False
+        
+    elif task["name"] == "python":
+        return False
 
     if not app_search:
         if task["name"] == "plan_and_execute":
             return False
+        
+    elif task["name"] == "python":
+        return False
 
     return True
 
@@ -209,6 +215,7 @@ def getAvailableTasks(app_type):
 
 def getTasks(app_type):
     TASKS = getAvailableTasks(app_type)
+    TASK_TYPE2_TASK = {task["name"]: task for task in TASKS}
 
     TASK_NAMES = [task["name"] for task in TASKS]
 
@@ -227,7 +234,7 @@ def getTasks(app_type):
 
     TASK_DTYPES = jsonFixer(TASK_DTYPES)
 
-    return TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES, TASK_PURPOSES
+    return TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES, TASK_PURPOSES, TASK_TYPE2_TASK
 
 
 def getPlanGenHelper(app_type):

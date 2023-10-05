@@ -1,6 +1,4 @@
-from .task_definitions import TASK_DESCRIPTIONS, TASK_DTYPES, TASK_NAMES
-
-system_template = f"""
+system_template = """
 Generate a feedback JSON to the given plan which is prepared for the given instruction.
 The JSON includes 2 keys which are "success" and "feedback".
 "feedback" corresponds to the feedback to the plan.

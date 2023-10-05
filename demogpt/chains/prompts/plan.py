@@ -1,6 +1,4 @@
-from .task_definitions import TASK_DESCRIPTIONS, TASK_DTYPES, TASK_NAMES
-
-system_template = f"""
+system_template = """
 Create a plan to fulfill the given instruction. 
 The plan should be broken down into clear, logical steps that detail how to accomplish the task. 
 Consider all necessary user interactions, system processes, and validations, 

@@ -1,5 +1,3 @@
-from .task_definitions import TASK_DESCRIPTIONS, TASK_DTYPES, TASK_NAMES
-
 system_template = f"""
 You are a helpful assistant that can determine all the inputs the system should take from the user to accomplish the given instruction.
 This list includes both the initial and intermediate inputs that the system should take to work properly

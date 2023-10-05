@@ -1,7 +1,6 @@
 import re
-
-from demogpt.chains.prompts.task_definitions import TASK_TYPE2_TASK
-
+from functools import reduce
+from demogpt.chains.task_definitions import getTasks
 
 def planToTaskFormat(plan):
     pattern = re.compile(r"\b(\w+)\(([^)]*)\)( ---> ([\w_,\s]+))?")
@@ -34,33 +33,97 @@ def planToTaskFormat(plan):
         plan_steps.append(step)
     return plan_steps
 
-
-def validatePlan(plan, app_type):
-    tasks = planToTaskFormat(plan)
-    feedback1 = ""
+def checkTaskNames(tasks, app_type):
+    TASK_TYPE2_TASK = getTasks(app_type)[-1]
+    feedback = ""
     for task in tasks:
         name = task["task_type"]
         if name not in TASK_TYPE2_TASK:
-            feedback1 += f"Task {name} is invalid, you cannot use undefined task.\n"
-
-    res2 = checkAppTypeCompatiblity(tasks, app_type)
-    res3 = checkRedundantTasks(tasks)
-
-    feedback = feedback1
+            feedback += f"Task {name} is invalid, you cannot use undefined task.\n"
+            
     if feedback:
         feedback += "\nOnly those tasks are available:" + " ".join(
-            TASK_TYPE2_TASK.keys()
-        )
+                TASK_TYPE2_TASK.keys()
+            )
+    
+    valid = len(feedback) == 0
+    
+    return {
+        "feedback": feedback,
+        "valid": valid
+    }
 
-    if res2["feedback"]:
+def validate(input, app_type):
+    if isinstance(input,str):#means plan
+        input = planToTaskFormat(input) 
+    
+    res1 = checkTaskNames(input, app_type)
+    res2 = checkAppTypeCompatiblity(input, app_type)
+    res3 = checkRedundantTasks(input)
+    res4 = checkInputOutputLengthCompatiblity(input, app_type)
+    res5 = checkInputOuputCompatibility(input)
+
+    feedback = ""
+    
+    if not res1["valid"]:
+        feedback += "\n" + res1["feedback"]
+    if not res2["valid"]:
         feedback += "\n" + res2["feedback"]
-    if res3["feedback"]:
+    if not res3["valid"]:
         feedback += "\n" + res3["feedback"]
+    if not res4["valid"]:
+        feedback += "\n" + res4["feedback"]
+    if not res5["valid"]:
+        feedback += "\n" + res5["feedback"]
 
-    valid = len(feedback1) == 0 and res2["valid"] and res3["valid"]
+    valid = len(feedback) == 0
 
     return {"feedback": feedback, "valid": valid}
 
+def refineKeyTypeCompatiblity(task):
+    if task["input_data_type"] == "none":
+        if task["input_key"] != "none":
+            task["input_key"] = "none"
+    if task["output_data_type"] == "none":
+        if task["output_key"] != "none":
+            task["output_key"] = "none"
+    return task
+
+
+def checkInputOuputCompatibility(tasks):
+    feedback = ""
+    inputs = set((reduce((lambda x, y: x+y),[task["input_key"] for task in tasks] + [["none"]])))
+    outputs = set((reduce((lambda x, y: x+y),[task["output_key"] for task in tasks] + [["none"]])))
+        
+    input2tasks = {}
+    output2tasks = {}
+    for task in tasks:
+        for input_key in task["input_key"]:
+            input_task_names = input2tasks.get(input_key,[])
+            input_task_names.append(task["task_name"])
+            input2tasks[input_key] = input_task_names
+        for output_key in task["output_key"]:
+            output_task_names = output2tasks.get(output_key,[])
+            output_task_names.append(task["task_name"])
+            output2tasks[output_key] = output_task_names
+    
+    ghost_inputs = inputs - outputs # inputs which are not coming from output of another task
+    redundant_outputs = outputs - inputs # outputs which are an input of another task
+    
+    for input_key in ghost_inputs:
+        for task_name in input2tasks[input_key]:
+            feedback += f"Remove task {task_name} because its input {input_key} is not coming from another task.\n" 
+    for output_key in redundant_outputs:
+        for task_name in output2tasks[input_key]:
+            feedback += f"Remove task {task_name} because its output {output_key} is not used. It is redundant.\n" 
+    
+    valid = len(feedback) == 0
+    
+    return {
+        "valid": valid,
+        "feedback": feedback
+    }
+        
 
 def checkRedundantTasks(tasks):
     all_input_keys = []
@@ -74,36 +137,56 @@ def checkRedundantTasks(tasks):
     feedback = ""
 
     for task in tasks:
-        if isinstance(task["output_key"], str):
-            if task["output_key"] not in all_input_keys and len(task["output_key"]) > 0:
-                feedback += f"Task {task['task_name']} is redundant because its output is never used. Try another approach.\n"
-        elif isinstance(task["output_key"], list):
-            for output_key in task["output_key"]:
-                if output_key not in all_input_keys:
-                    feedback += f"Task {task['task_name']} has problem because its output {output_key} is never used. Try another approach.\n"
+        for output_key in task["output_key"]:
+            if output_key not in all_input_keys:
+                feedback += f"Task {task['task_name']} has problem because its output {output_key} is never used. Try another approach.\n"
 
     valid = len(feedback) == 0
 
     return {"feedback": feedback, "valid": valid}
 
-
-def preprocessTaskIO(io):
-    if io == "none":
-        io = []
-    else:
-        if isinstance(io, str):
-            if io.startswith("["):
-                io = io[1:-1]
-            io = [var.strip() for var in io.split(",")]
-    return set(io)
-
+def checkInputOutputLengthCompatiblity(tasks, app_type):
+    TASK_TYPE2_TASK = getTasks(app_type)[-1]
+    feedback = ""
+    for task in tasks:
+        task_type = task["task_type"]
+        if task_type not in TASK_TYPE2_TASK:
+            continue
+        
+        original_task = TASK_TYPE2_TASK[task_type]
+        # input check
+        if original_task["input_data_type"] == "none":
+            if len(task["input_key"]) > 0:
+                feedback += f"Task {task_type} cannot have input\n"
+        
+        elif not original_task["input_data_type"].startswith("*"):
+            if len(task["input_key"]) > 1:
+                feedback += f"Task {task_type} can only have single input but you gave multiple"
+                
+        # output check
+        if original_task["output_data_type"] == "none":
+            if len(task["output_key"]) > 0:
+                feedback += f"Task {task_type} cannot have output\n"
+                
+        elif not original_task["output_data_type"].startswith("*"):
+            if len(task["output_key"]) > 1:
+                feedback += f"Task {task_type} can only have single output but you gave multiple"
+                
+    valid = len(feedback) == 0
+    
+    return {
+        "feedback": feedback,
+        "valid": valid
+    }
+    
 
 def checkAppTypeCompatiblity(tasks, app_type):
     must_chat_tasks = {"ui_input_chat", "chat", "ui_output_chat"}
     must_prompt_template_tasks = {"prompt_template"}
     must_search_tasks = {"plan_and_execute"}
 
-    task_types = set([task["task_type"] for task in tasks])
+    task_types_list= [task["task_type"] for task in tasks]
+    task_types = set(task_types_list)
 
     task_prompt_template = must_prompt_template_tasks & task_types
     task_search = must_search_tasks & task_types
@@ -125,6 +208,10 @@ def checkAppTypeCompatiblity(tasks, app_type):
     if app_chat:
         for task_type in must_chat_tasks - task_chat:
             feedback += f"The app is chat-based but you didn't use {task_type} in your tasks. Please add it and try again\n"
+            
+        for task_type in must_chat_tasks:
+            if task_types_list.count(task_type) > 1:
+                feedback += f"You can use {task_type} in your tasks only once. Please remove the redundant ones and combine in a single task\n"
     else:
         for task_type in task_chat:
             feedback += f"The app is not chat-based but you used {task_type} in your task list. Please remove it and try again\n"
@@ -150,9 +237,9 @@ def checkAppTypeCompatiblity(tasks, app_type):
     search_tasks = [task for task in tasks if task["task_type"] == "plan_and_execute"]
     found = False
     for python_task in python_tasks:
-        python_inputs = preprocessTaskIO(python_task["input_key"])
+        python_inputs = set(python_task["input_key"])
         for search_task in search_tasks:
-            search_outputs = preprocessTaskIO(search_task["output_key"])
+            search_outputs = set(search_task["output_key"])
             if python_inputs & search_outputs:
                 feedback += f""" python task '{python_task['task_name']}' uses {(python_inputs & search_outputs).pop()} as an input but it comes from plan_and_execute task '{search_task['task_name']}'. python task cannot use plan_and_execute task's output as an input. Please redesign the tasks so that no python task uses plan_and_execute task's output as an input!"""
                 found = True
@@ -175,8 +262,9 @@ def checkAppTypeCompatiblity(tasks, app_type):
     return {"feedback": feedback, "valid": valid}
 
 
-def checkDTypes(tasks):
-
+def checkDTypes(tasks, app_type):
+    TASK_TYPE2_TASK = getTasks(app_type)[-1]
+    
     feedback = ""
     for task in tasks:
         name = task["task_type"]
@@ -207,17 +295,11 @@ def checkDTypes(tasks):
         # Check input data types
         elif reference_input.startswith("*"):
             reference_input = reference_input.replace("*", "")
-            if isinstance(input_key, str):
-                if input_data_type != reference_input and input_data_type != "none":
+            for res, data_type in zip(input_key, input_data_type):
+                if data_type != reference_input:
                     feedback += f"""
-                    {name} expects all inputs as {reference_input} or none but the data type of {input_key} is {input_data_type} not {reference_input}. Please find another way.\n
+                    {name} expects all inputs as {reference_input} but data type of {res} is {data_type} not {reference_input}. Please find another way.\n
                     """
-            else:
-                for res, data_type in zip(input_key, input_data_type):
-                    if data_type != reference_input:
-                        feedback += f"""
-                        {name} expects all inputs as {reference_input} but data type of {res} is {data_type} not {reference_input}. Please find another way.\n
-                        """
         elif input_data_type != reference_input:
             feedback += f"""
             {name} expects all inputs as {reference_input} but the data type of {input_key} is {input_data_type} not {reference_input}. Please find another way.\n

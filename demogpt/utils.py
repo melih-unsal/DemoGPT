@@ -17,7 +17,39 @@ def init(title=""):
         return IMPORTS_CODE_SNIPPET + f"\nst.title('{title}')\n"
     return IMPORTS_CODE_SNIPPET
 
+def reorderTasksForChatApp(tasks):
+    chat_input_order = chat_output_order = -1
+    for i,task in enumerate(tasks):
+        if task["task_type"] == "ui_input_chat":
+            chat_input_order = i
+        if task["task_type"] == "ui_output_chat":
+            chat_output_order = i
+    
+    if chat_input_order == -1 and chat_output_order == -1: # means, chat input output pair does not exist (it should have failed before.)
+        return tasks
 
+    if chat_input_order + 1 == chat_output_order: # means there is no task between chat input and chat output
+        return tasks
+    
+    pre_chat_tasks = []
+    middle_chat_tasks = []
+    post_chat_tasks = []
+    
+    for i, task in enumerate(tasks):
+        if i < chat_input_order:
+            pre_chat_tasks.append(task)
+        elif chat_input_order < i < chat_output_order:
+            if set(tasks[i]["input_key"]) & set(tasks[chat_input_order]["output_key"]):
+                middle_chat_tasks.append(task)
+            else:
+                pre_chat_tasks.append(task)
+        elif i >= chat_output_order:
+            post_chat_tasks.append(task)
+                
+    new_tasks =  pre_chat_tasks + [tasks[chat_input_order]] + middle_chat_tasks + post_chat_tasks
+            
+    return new_tasks
+    
 def getFunctionNames(code):
     pattern = r"def (\w+)\(.*\):"
     return re.findall(pattern, code)
@@ -63,23 +95,23 @@ def getCodeSnippet(task, code_snippets, iters=10):
     task_type = task["task_type"]
     code = ""
     if task_type == "ui_input_text":
-        code = TaskChains.uiInputText(task=task, code_snippets=code_snippets)
+        code = TaskChains.uiInputText(task=task)
     elif task_type == "ui_output_text":
-        code = TaskChains.uiOutputText(task=task, code_snippets=code_snippets)
+        code = TaskChains.uiOutputText(task=task)
     elif task_type in ["prompt_template", "chat"]:
         code = getGenericPromptTemplateCode(task, iters=iters)
     elif task_type == "path_to_content":
         code = TaskChains.pathToContent(task=task, code_snippets=code_snippets)
     elif task_type == "doc_to_string":
-        code = TaskChains.docToString(task=task, code_snippets=code_snippets)
+        code = TaskChains.docToString(task=task)
     elif task_type == "string_to_doc":
-        code = TaskChains.stringToDoc(task=task, code_snippets=code_snippets)
+        code = TaskChains.stringToDoc(task=task)
     elif task_type == "ui_input_file":
-        code = TaskChains.uiInputFile(task=task, code_snippets=code_snippets)
+        code = TaskChains.uiInputFile(task=task)
     elif task_type == "doc_loader":
         code = TaskChains.docLoad(task=task, code_snippets=code_snippets)
     elif task_type == "doc_summarizer":
-        code = TaskChains.summarize(task=task, code_snippets=code_snippets)
+        code = TaskChains.summarize(task=task)
     elif task_type == "ui_input_chat":
         code = getChatInputCode(TaskChains.uiInputChat(task=task))
     elif task_type == "ui_output_chat":
@@ -130,7 +162,7 @@ def reformatTasks(tasks):
 
 
 def getChatCode(template, task):
-    def getInputPosition(template, inputs):
+    def getHumanInput(template, inputs):
         rightmost = -1
         human_input = ""
         for input in inputs:
@@ -142,7 +174,7 @@ def getChatCode(template, task):
         return human_input
 
     inputs = task["input_key"]
-    variable = task["output_key"]
+    variable = ", ".join(task["output_key"])
     temperature = 0 if template.get("variety", "False") == "False" else 0.7
     system_template = template["system_template"]
     run_call = "{}"
@@ -172,8 +204,11 @@ else:
     {variable} = ""
 """
     input_variables = ["chat_history"] + inputs
-    human_input = getInputPosition(system_template, inputs)
+    human_input = template["human_input"]
+    if human_input not in inputs:
+        human_input = getHumanInput(system_template, inputs)
     code = f"""
+from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
 from langchain.chat_models import ChatOpenAI
@@ -201,7 +236,7 @@ def {signature}:
 
 def getPromptChatTemplateCode(templates, task):
     inputs = task["input_key"]
-    variable = task["output_key"]
+    variable = ", ".join(task["output_key"])
     run_call = "{}"
 
     if inputs == "none":
@@ -229,7 +264,7 @@ else:
     temperature = 0 if templates.get("variety", "False") == "False" else 0.7
 
     code = f"""\n
-from langchain import LLMChain
+from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate)
 

@@ -1,7 +1,9 @@
 import json
 import os
+import re
+from difflib import SequenceMatcher
 
-from langchain import LLMChain
+from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
@@ -40,8 +42,8 @@ class TaskChains:
         return LLMChain(llm=cls.llm, prompt=chat_prompt).run(**kwargs)
 
     @classmethod
-    def uiInputText(cls, task, code_snippets):
-        variable = task["output_key"]
+    def uiInputText(cls, task):
+        variable = ", ".join(task["output_key"])
         instruction = task["description"]
         code = cls.getChain(
             human_template=prompts.ui_input_text.human_template,
@@ -51,13 +53,14 @@ class TaskChains:
         return utils.refine(code)
 
     @classmethod
-    def uiOutputText(cls, task, code_snippets):
-        args = task["input_key"]
+    def uiOutputText(cls, task):
+        args = ", ".join(task["input_key"])
         data_type = task["input_data_type"]
         if isinstance(args, list):
             args = ",".join(args)
         instruction = task["description"]
         code = cls.getChain(
+            system_template=prompts.ui_output_text.system_template,
             human_template=prompts.ui_output_text.human_template,
             instruction=instruction,
             args=args,
@@ -66,23 +69,36 @@ class TaskChains:
         return utils.refine(code)
 
     @classmethod
-    def uiInputFile(cls, task, code_snippets):
-        variable = task["output_key"]
+    def uiInputFile(cls, task):
+        variable = ", ".join(task["output_key"])
         instruction = task["description"]
-        code = cls.getChain(
+        res = cls.getChain(
             system_template=prompts.ui_input_file.system_template,
             human_template=prompts.ui_input_file.human_template,
-            instruction=instruction,
-            variable=variable,
-            code_snippets=code_snippets,
+            instruction=instruction
         )
-        return utils.refine(code)
+        res = res[res.find("{") : res.rfind("}") + 1]
+        res = json.loads(res)
+        title = res.get("title")
+        data_type = res.get("data_type")
+        code = f"""
+uploaded_file = st.file_uploader("{title}", type={data_type}, key='{variable}')
+if uploaded_file is not None:
+    # Create a temporary file to store the uploaded content
+    extension = uploaded_file.name.split(".")[-1]
+    with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{{extension}}') as temp_file:
+        temp_file.write(uploaded_file.read())
+        {variable} = temp_file.name # it shows the file path
+else:
+    {variable} = ''
+        """
+        return code
 
     @classmethod
     def pathToContent(cls, task, code_snippets):
         instruction = task["description"]
-        argument = task["input_key"]
-        variable = task["output_key"]
+        argument = ", ".join(task["input_key"])
+        variable = ", ".join(task["output_key"])
 
         code = cls.getChain(
             system_template=prompts.path_to_file.system_template,
@@ -96,7 +112,7 @@ class TaskChains:
 
     @classmethod
     def promptTemplate(cls, task):
-        inputs = task["input_key"]
+        inputs = ", ".join(task["input_key"])
         instruction = task["description"]
 
         res = cls.getChain(
@@ -110,7 +126,7 @@ class TaskChains:
 
     @classmethod
     def uiInputChat(cls, task):
-        variable = task["output_key"]
+        variable = ", ".join(task["output_key"])
         instruction = task["description"]
 
         code = cls.getChain(
@@ -122,7 +138,7 @@ class TaskChains:
 
     @classmethod
     def uiOutputChat(cls, task):
-        res = task["input_key"]
+        res = ", ".join(task["input_key"])
 
         code = f"""
 import time
@@ -145,7 +161,7 @@ with st.chat_message("assistant"):
 
     @classmethod
     def chat(cls, task):
-        inputs = task["input_key"]
+        inputs = ", ".join(task["input_key"])
         instruction = task["description"]
 
         res = cls.getChain(
@@ -172,8 +188,8 @@ with st.chat_message("assistant"):
 
     @classmethod
     def search(cls, task):
-        argument = task["input_key"]
-        variable = task["output_key"]
+        argument = ", ".join(task["input_key"])
+        variable = ", ".join(task["output_key"])
         function_name = task["task_name"]
         instruction = task["description"]
 
@@ -183,6 +199,8 @@ with st.chat_message("assistant"):
             instruction=instruction,
             inputs=argument,
         )
+        
+        res = res.replace('"',"'")
 
         code = f"""
 from langchain.chat_models import ChatOpenAI
@@ -230,46 +248,109 @@ else:
 
     @classmethod
     def docLoad(cls, task, code_snippets):
+        
+        def get_most_similar_key(input_key, available_keys):
+            # This function returns the most similar key from available_keys to the input_key.
+            best_match = None
+            best_ratio = 0
+            for key in available_keys:
+                ratio = SequenceMatcher(None, input_key, key).ratio()
+                if ratio > best_ratio:
+                    best_ratio = ratio
+                    best_match = key
+            return best_match
+        
+        type2loader = {
+            "txt": "TextLoader",
+            "docx":"UnstructuredWordDocumentLoader",
+            "pdf":"UnstructuredPDFLoader",
+            "pptx":"UnstructuredPowerPointLoader",
+            "csv":"CSVLoader",
+            "xlsx":"UnstructuredExcelLoader",
+            "zip":"NotionDirectoryLoader",
+            "online_pdf":"OnlinePDFLoader",
+            "web":"WebBaseLoader",
+            "xlsx":"UnstructuredExcelLoader",
+            "youtube":"YoutubeLoader",  
+        }
+        
+        loader2type = {type2loader[dtype]:dtype for dtype in type2loader}
+        
+        def getLoaderCall(data_type):
+            if data_type in loader2type:
+                data_type = loader2type[data_type]
+            
+            loader = type2loader.get(data_type)  # First, try to get the exact match
+            if loader is None:
+                # If there's no exact match, get the most similar key and retrieve the value
+                similar_key = get_most_similar_key(data_type, type2loader.keys())
+                loader = type2loader[similar_key]
+                
+            loader = type2loader[data_type]
+            
+            if data_type in [
+                "txt",
+                "online_pdf",
+                "docx",
+            ]:
+                loader_line = f"loader = {loader}({argument})"
+            elif data_type == "web":
+                loader_line = f"loader = {loader}([{argument}])"
+            elif data_type in ["pdf", "pptx"]:
+                loader_line = (
+                    f'loader = {loader}({argument}, mode="elements", strategy="fast")'
+                )
+            elif data_type in ["csv", "xlsx"]:
+                loader_line = f'loader = {loader}({argument}, mode="elements")'
+            elif data_type == "youtube":
+                loader_line = (
+                    f"loader = {loader}.from_youtube_url({argument}, add_video_info=False)"
+                )
+            elif data_type == "zip":
+                loader_line = f"""if os.path.exists('Notion_DB') and os.path.isdir('Notion_DB'):
+            shutil.rmtree('Notion_DB')
+        os.system(f"unzip {{{argument}}} -d Notion_DB")
+        loader = {loader}("Notion_DB")"""
+            else:
+                loader_line = f"loader = TextLoader({argument})"
+            
+            return loader_line
+        
         instruction = task["description"]
-        argument = task["input_key"]
-        if isinstance(argument, list):
-            argument = argument[0]
-        variable = task["output_key"]
+        argument = task["input_key"][0]
+        variable = ", ".join(task["output_key"])
         function_name = task["task_name"]
-
-        loader = cls.getChain(
-            system_template=prompts.doc_load.system_template,
-            human_template=prompts.doc_load.human_template,
-            instruction=instruction,
-            code_snippets=code_snippets,
-        )
-
-        if loader in [
-            "TextLoader",
-            "OnlinePDFLoader",
-            "UnstructuredWordDocumentLoader",
-        ]:
-            loader_line = f"loader = {loader}({argument})"
-        elif loader == "WebBaseLoader":
-            loader_line = f"loader = {loader}([{argument}])"
-        elif loader in ["UnstructuredPDFLoader", "UnstructuredPowerPointLoader"]:
-            loader_line = (
-                f'loader = {loader}({argument}, mode="elements", strategy="fast")'
-            )
-        elif loader in ["UnstructuredCSVLoader", "UnstructuredExcelLoader"]:
-            loader_line = f'loader = {loader}({argument}, mode="elements")'
-        elif loader == "YoutubeLoader":
-            loader_line = (
-                f"loader = {loader}.from_youtube_url({argument}, add_video_info=False)"
-            )
-        elif loader == "NotionDirectoryLoader":
-            loader_line = f"""if os.path.exists('Notion_DB') and os.path.isdir('Notion_DB'):
-        shutil.rmtree('Notion_DB')
-    os.system(f"unzip {{{argument}}} -d Notion_DB")
-    loader = {loader}("Notion_DB")"""
+        
+        variable_match = re.search(r"(\w+)\s*=\s*temp_file\.name", code_snippets, re.MULTILINE)
+        
+        if variable_match:
+            variable_name = variable_match.group(1).strip()
         else:
-            loader_line = f"loader = TextLoader({argument})"
+            variable_name = ''
+            
+        match = re.search(r"st\.file_uploader\(\s*?.*?type=\s*\[(.*?)\]\s*?.*?\)", code_snippets, re.DOTALL)
+                
+        loader_line = ""
 
+        if variable_name == argument and  match:
+            types = match.group(1).replace("'", "").split(", ")
+            types = [type.strip() for type in types]
+            if len(types) == 1:
+                loader_line = getLoaderCall(types[0])
+            else:
+                loader_line = "\n    ".join([f"if {argument}.endswith('.{data_type}'):\n\t{getLoaderCall(data_type)}" for data_type in types])
+        else:
+            print("No match found. Using the chain...")
+            types = []
+            loader = cls.getChain(
+                system_template=prompts.doc_load.system_template,
+                human_template=prompts.doc_load.human_template,
+                instruction=instruction,
+                code_snippets=code_snippets
+                )
+            
+            loader_line = getLoaderCall(loader)
+            
         code = f"""
 import shutil
 from langchain.document_loaders import *
@@ -286,9 +367,9 @@ else:
         return code
 
     @classmethod
-    def stringToDoc(cls, task, code_snippets):
-        argument = task["input_key"]
-        variable = task["output_key"]
+    def stringToDoc(cls, task):
+        argument = ", ".join(task["input_key"])
+        variable = ", ".join(task["output_key"])
         code = f"""
 from langchain.docstore.document import Document
 {variable} =  [Document(page_content={argument}, metadata={{'source': 'local'}})]
@@ -296,16 +377,16 @@ from langchain.docstore.document import Document
         return code
 
     @classmethod
-    def docToString(cls, task, code_snippets):
-        argument = task["input_key"]
-        variable = task["output_key"]
+    def docToString(cls, task):
+        argument = ", ".join(task["input_key"])
+        variable = ", ".join(task["output_key"])
         code = f'{variable} = "".join([doc.page_content for doc in {argument}])'
         return code
 
     @classmethod
-    def summarize(cls, task, code_snippets):
-        argument = task["input_key"]
-        variable = task["output_key"]
+    def summarize(cls, task):
+        argument = ", ".join(task["input_key"])
+        variable = ", ".join(task["output_key"])
         function_name = task["task_name"]
 
         code = f"""
@@ -327,8 +408,8 @@ else:
     @classmethod
     def pythonCoder(cls, task, code_snippets):
         instruction = task["description"]
-        argument = task["input_key"]
-        variable = task["output_key"]
+        argument = ", ".join(task["input_key"])
+        variable = ", ".join(task["output_key"])
         function_name = task["task_name"]
 
         code = cls.getChain(

@@ -5,6 +5,8 @@ import sys
 
 import streamlit as st
 
+import streamlit.components.v1 as components
+
 current_file_path = os.path.abspath(__file__)
 current_directory = os.path.dirname(current_file_path)
 parent_directory = os.path.dirname(current_directory)
@@ -14,7 +16,6 @@ sys.path.append(grandparent_directory)
 from model import DemoGPT
 from utils import runStreamlit
 
-# logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
 
 try:
     from dotenv import load_dotenv
@@ -48,7 +49,9 @@ def initCode():
 title = "🧩 DemoGPT"
 
 st.set_page_config(page_title=title)
+    
 st.title(title)
+
 
 initCode()
 
@@ -133,30 +136,34 @@ if submitted:
     else:
         bar = progressBar(0)
         st.session_state.container = st.container()
-        agent = DemoGPT(openai_api_key=openai_api_key, openai_api_base=openai_api_base)
-        agent.setModel(model_name)
-        kill()
-        code_empty = st.empty()
-        st.session_state.container = st.container()
-        for data in generate_response(demo_idea, demo_title):
-            done = data.get("done", False)
-            failed = data.get("failed", False)
-            message = data.get("message", "")
-            st.session_state["message"] = message
-            stage = data.get("stage", "stage")
-            code = data.get("code", "")
-            progressBar(data["percentage"], bar)
+        try:
+            agent = DemoGPT(openai_api_key=openai_api_key, openai_api_base=openai_api_base)
+            agent.setModel(model_name)
+        except Exception as e:
+            st.warning(e)
+        else:
+            kill()
+            code_empty = st.empty()
+            st.session_state.container = st.container()
+            for data in generate_response(demo_idea, demo_title):
+                done = data.get("done", False)
+                failed = data.get("failed", False)
+                message = data.get("message", "")
+                st.session_state["message"] = message
+                stage = data.get("stage", "stage")
+                code = data.get("code", "")
+                progressBar(data["percentage"], bar)
 
-            st.session_state["done"] = done
-            st.session_state["failed"] = failed
-            st.session_state["message"] = message
+                st.session_state["done"] = done
+                st.session_state["failed"] = failed
+                st.session_state["message"] = message
 
-            if done or failed:
-                st.session_state.code = code
-                break
+                if done or failed:
+                    st.session_state.code = code
+                    break
 
-            st.info(message, icon="🧩")
-            st.session_state.messages.append(message)
+                st.info(message, icon="🧩")
+                st.session_state.messages.append(message)
 
 elif "messages" in st.session_state:
     for message in st.session_state.messages:

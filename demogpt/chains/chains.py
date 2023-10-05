@@ -2,7 +2,7 @@ import json
 import os
 import re
 
-from langchain import LLMChain
+from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
@@ -10,8 +10,7 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 
 from demogpt import utils
 from demogpt.chains.task_definitions import getPlanGenHelper, getTasks
-from demogpt.controllers import (checkAppTypeCompatiblity, checkDTypes,
-                                 checkRedundantTasks, validatePlan)
+from demogpt.controllers import validate
 
 from . import prompts
 
@@ -24,7 +23,12 @@ class Chains:
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
         temperature=0.0,
         openai_api_base=None,
+        has_gpt4=False
     ):
+        cls.openai_api_key=openai_api_key
+        cls.temperature=temperature
+        cls.openai_api_base=openai_api_base
+        cls.has_gpt4=has_gpt4
         cls.llm = ChatOpenAI(
             model=model,
             openai_api_key=openai_api_key,
@@ -32,26 +36,39 @@ class Chains:
             openai_api_base=openai_api_base,
         )
         cls.model = model
-
+    
+    @classmethod
+    def getModel(cls, change=False):
+        if change and cls.has_gpt4:
+            return ChatOpenAI(
+                model="gpt-4-0613",
+                openai_api_key=cls.openai_api_key,
+                temperature=cls.temperature,
+                openai_api_base=cls.openai_api_base,
+        )
+        
+        return cls.llm
+        
     @classmethod
     def setModel(cls, model):
         cls.model = model
 
     @classmethod
-    def getChain(cls, system_template="", human_template="", **kwargs):
+    def getChain(cls, system_template="", human_template="", change=False, **kwargs):
         prompts = []
         if system_template:
             prompts.append(SystemMessagePromptTemplate.from_template(system_template))
         if human_template:
             prompts.append(HumanMessagePromptTemplate.from_template(human_template))
         chat_prompt = ChatPromptTemplate.from_messages(prompts)
-        return LLMChain(llm=cls.llm, prompt=chat_prompt).run(**kwargs)
+        return LLMChain(llm=cls.getModel(change=change), prompt=chat_prompt).run(**kwargs)
 
     @classmethod
     def appType(cls, instruction):
         app_type = cls.getChain(
             system_template=prompts.app_type.system_template,
             human_template=prompts.app_type.human_template,
+            change=True,
             instruction=instruction,
         )
 
@@ -62,24 +79,18 @@ class Chains:
         return cls.getChain(
             system_template=prompts.system_inputs.system_template,
             human_template=prompts.system_inputs.human_template,
-            instruction=instruction,
-        )
-
-    @classmethod
-    def plan(cls, instruction):
-        return cls.getChain(
-            system_template=prompts.plan.system_template,
-            human_template=prompts.plan.human_template,
+            change=True,
             instruction=instruction,
         )
 
     @classmethod
     def planWithInputs(cls, instruction, system_inputs, app_type):
-        TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES, _ = getTasks(app_type)
+        TASK_DESCRIPTIONS, TASK_NAMES, TASK_DTYPES = getTasks(app_type)[:3]
         helper = getPlanGenHelper(app_type)
         plan = cls.getChain(
             system_template=prompts.plan_with_inputs.system_template,
             human_template=prompts.plan_with_inputs.human_template,
+            change=True,
             instruction=instruction,
             system_inputs=system_inputs,
             helper=helper,
@@ -94,6 +105,7 @@ class Chains:
         feedback = cls.getChain(
             system_template=prompts.plan_feedback.system_template,
             human_template=prompts.plan_feedback.human_template,
+            change=True,
             instruction=instruction,
             plan=plan,
         )
@@ -102,10 +114,11 @@ class Chains:
 
     @classmethod
     def planRefiner(cls, instruction, plan, feedback, app_type):
-        _, TASK_NAMES, _, TASK_PURPOSES = getTasks(app_type)
+        _, TASK_NAMES, _, TASK_PURPOSES = getTasks(app_type)[:4]
         return cls.getChain(
             system_template=prompts.plan_refiner.system_template,
             human_template=prompts.plan_refiner.human_template,
+            change=True,
             instruction=instruction,
             plan=plan,
             feedback=feedback,
@@ -115,7 +128,7 @@ class Chains:
 
     @classmethod
     def tasks(cls, instruction, plan, app_type):
-        TASK_DESCRIPTIONS, TASK_NAMES, _, _ = getTasks(app_type)
+        TASK_DESCRIPTIONS, TASK_NAMES= getTasks(app_type)[:2]
 
         task_list = cls.getChain(
             system_template=prompts.tasks.system_template,
@@ -130,32 +143,15 @@ class Chains:
 
     @classmethod
     def taskController(cls, tasks, app_type):
-        dtype_feedback = checkDTypes(tasks)
-        app_type_feedback = checkAppTypeCompatiblity(tasks, app_type)
-        redundant_task_feedback = checkRedundantTasks(tasks)
-
-        feedback = (
-            dtype_feedback["feedback"]
-            + "\n\n"
-            + app_type_feedback["feedback"]
-            + "\n\n"
-            + redundant_task_feedback["feedback"]
-        )
-        valid = (
-            dtype_feedback["valid"]
-            and app_type_feedback["valid"]
-            and redundant_task_feedback["valid"]
-        )
-
-        return {"feedback": feedback, "valid": valid}
+        return validate(tasks, app_type)
 
     @classmethod
     def planController(cls, plan, app_type):
-        return validatePlan(plan, app_type)
+        return validate(plan, app_type)
 
     @classmethod
     def refineTasks(cls, instruction, tasks, feedback, app_type):
-        _, TASK_NAMES, _, TASK_PURPOSES = getTasks(app_type)
+        _, TASK_NAMES, _, TASK_PURPOSES = getTasks(app_type)[:4]
 
         task_list = cls.getChain(
             system_template=prompts.task_refiner.system_template,
