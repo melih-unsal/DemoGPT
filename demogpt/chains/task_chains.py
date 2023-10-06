@@ -238,8 +238,10 @@ def {function_name}({argument}):
         st.warning('This tool requires GPT-4. Please enter a key that has GPT-4 access', icon="⚠️")
         return ''
         
-
-if {argument}:
+if not openai_api_key.startswith('sk-'):
+    st.warning('Please enter your OpenAI API key!', icon='⚠')
+    {variable} = ""
+elif {argument}:
     {variable} = {function_name}({argument})
 else:
     {variable} = ''
@@ -398,7 +400,10 @@ def {function_name}(docs):
     chain = load_summarize_chain(llm, chain_type="stuff")
     with st.spinner('DemoGPT is working on it. It might take 5-10 seconds...'):
         return chain.run(docs)
-if {argument}:
+if not openai_api_key.startswith('sk-'):
+    st.warning('Please enter your OpenAI API key!', icon='⚠')
+    {variable} = ""
+elif {argument}:
     {variable} = summarize(argument)
 else:
     variable = ""
