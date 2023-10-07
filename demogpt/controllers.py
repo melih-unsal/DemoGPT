@@ -114,7 +114,7 @@ def checkInputOuputCompatibility(tasks):
         for task_name in input2tasks[input_key]:
             feedback += f"Remove task {task_name} because its input {input_key} is not coming from another task.\n" 
     for output_key in redundant_outputs:
-        for task_name in output2tasks[input_key]:
+        for task_name in output2tasks[output_key]:
             feedback += f"Remove task {task_name} because its output {output_key} is not used. It is redundant.\n" 
     
     valid = len(feedback) == 0

@@ -16,7 +16,7 @@ Please classify your app idea based on the following criteria and generate the a
 
 4. is_search:
     - True if:
-        a. The app primarily relies on external web search (like Google).
+        a. The app idea strictly requires information after cut off date and this information should be fetched in the whole web instead of specific websites.
     - False otherwise.
     
 Example JSON Format:
@@ -32,7 +32,7 @@ Example JSON Format:
 human_template = """
 App Idea: an agent that can get analysis of CSV file then summarize it.
 JSON:{{
-    "explanation":"Making analysis requires ai. It does not include conversation. No external information is needed",
+    "explanation":"Making analysis requires ai. It does not include conversation. No up to date information is needed",
     "is_ai":"true",
     "is_chat":"false",
     "is_search":"false"
@@ -40,7 +40,7 @@ JSON:{{
 
 App Idea: an application that can get the word count of txt file.
 JSON:{{
-    "explanation":"Word count is a simple python task so no ai is required. No conversation is expected. No external information is needed",
+    "explanation":"Word count is a simple python task so no ai is required. No conversation is expected. No up to date information is needed",
     "is_ai":"false",
     "is_chat":"false",
     "is_search":"false"
@@ -48,7 +48,7 @@ JSON:{{
 
 App Idea: create an application that can talk like Jeff Bezos
 JSON:{{
-    "explanation":"To talk like Jeff Bezos, need generative text model so I need ai. Talking app includes conversation. No external information is needed",
+    "explanation":"To talk like Jeff Bezos, need generative text model so I need ai. Talking app includes conversation. No up to date information is needed",
     "is_ai":"true",
     "is_chat":"true",
     "is_search":"false"
@@ -56,7 +56,7 @@ JSON:{{
 
 App Idea: create an application that can find and list all the male names
 JSON:{{
-    "explanation":"I need ai to filter the male names because it is not a simple Python task. It does not include conversation. No external information is needed",
+    "explanation":"I need ai to filter the male names because it is not a simple Python task. It does not include conversation. No up to date information is needed",
     "is_ai":"true",
     "is_chat":"false",
     "is_search":"false"
@@ -64,7 +64,7 @@ JSON:{{
 
 App Idea: generate an agent that can give suggestions to the uploaded CV
 JSON:{{
-    "explanation":"Giving suggestions is not a simple Python task so i need ai. Giving suggestions/advice does not require a conversation. No external information is needed",
+    "explanation":"Giving suggestions is not a simple Python task so i need ai. Giving suggestions/advice does not require a conversation. No up to date information is needed",
     "is_ai":"true",
     "is_chat":"false",
     "is_search":"false"

@@ -11,13 +11,25 @@ from subprocess import PIPE, Popen
 from demogpt.chains.task_chains import TaskChains
 from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
 
+AI_VARIETY_TEMPERATURE = 0.5
 
 def init(title=""):
     if title:
         return IMPORTS_CODE_SNIPPET + f"\nst.title('{title}')\n"
     return IMPORTS_CODE_SNIPPET
 
+def filterTasks(tasks):
+    filtered_tasks = []
+    for task in tasks:
+        if len(task["input_key"]) == 0 and len(task["output_key"]) == 0:
+            ...
+        else:
+            filtered_tasks.append(task)
+    return filtered_tasks
+
 def reorderTasksForChatApp(tasks):
+    print("before reordering:")
+    print(tasks)
     chat_input_order = chat_output_order = -1
     for i,task in enumerate(tasks):
         if task["task_type"] == "ui_input_chat":
@@ -47,6 +59,9 @@ def reorderTasksForChatApp(tasks):
             post_chat_tasks.append(task)
                 
     new_tasks =  pre_chat_tasks + [tasks[chat_input_order]] + middle_chat_tasks + post_chat_tasks
+    
+    print("after reordering:")
+    print(new_tasks)
             
     return new_tasks
     
@@ -91,7 +106,7 @@ def getGenericPromptTemplateCode(task, iters):
 
 
 def getCodeSnippet(task, code_snippets, iters=10):
-    task = refineKeyTypeCompatiblity(task)
+    #task = refineKeyTypeCompatiblity(task)
     task_type = task["task_type"]
     code = ""
     if task_type == "ui_input_text":
@@ -149,6 +164,8 @@ def reformatTasks(tasks):
                 io = io[1:-1]
             io = [var.strip() for var in io.split(",")]
         return io
+    
+    tasks = filterTasks(tasks)
 
     processed_tasks = []
     for task in tasks:
@@ -175,7 +192,7 @@ def getChatCode(template, task):
 
     inputs = task["input_key"]
     variable = ", ".join(task["output_key"])
-    temperature = 0 if template.get("variety", "False") == "False" else 0.7
+    temperature = 0 if template.get("variety", "False") == "False" else AI_VARIETY_TEMPERATURE
     system_template = template["system_template"]
     run_call = "{}"
 
@@ -261,7 +278,7 @@ else:
     {variable} = ""
 """
 
-    temperature = 0 if templates.get("variety", "False") == "False" else 0.7
+    temperature = 0 if templates.get("variety", "False") == "False" else AI_VARIETY_TEMPERATURE
 
     code = f"""\n
 from langchain.chains import LLMChain
