@@ -294,6 +294,7 @@ else:
                 "txt",
                 "online_pdf",
                 "docx",
+                "csv"
             ]:
                 loader_line = f"loader = {loader}({argument})"
             elif data_type == "web":
@@ -302,7 +303,7 @@ else:
                 loader_line = (
                     f'loader = {loader}({argument}, mode="elements", strategy="fast")'
                 )
-            elif data_type in ["csv", "xlsx"]:
+            elif data_type  == "xlsx":
                 loader_line = f'loader = {loader}({argument}, mode="elements")'
             elif data_type == "youtube":
                 loader_line = (
