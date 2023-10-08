@@ -270,8 +270,13 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
                     code_snippets=code_snippets, function_names=function_names
                 )
                 import_statements = Chains.imports(code_snippets=code_snippets)
+                extra = ''
                 if f"st.title('{title}')" not in draft_code:
-                    draft_code = f"\nst.title('{title}')\n" + draft_code
+                    extra = f"\nst.title('{title}')\n"
+                if "os.environ['SERPER_API_KEY']" not in draft_code:
+                    extra += "os.environ['SERPER_API_KEY']=st.secrets.get('SERPER_API_KEY','')\n"
+                if extra:
+                    draft_code = extra + draft_code
                 final_code = import_statements + draft_code
 
             # finalize the format

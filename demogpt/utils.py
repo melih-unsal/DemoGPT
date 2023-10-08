@@ -15,7 +15,7 @@ AI_VARIETY_TEMPERATURE = 0.5
 
 def init(title=""):
     if title:
-        return IMPORTS_CODE_SNIPPET + f"\nst.title('{title}')\n"
+        return IMPORTS_CODE_SNIPPET + f"\nst.title('{title}')\nos.environ['SERPER_API_KEY']=st.secrets.get('SERPER_API_KEY','')\n"
     return IMPORTS_CODE_SNIPPET
 
 def filterTasks(tasks):
