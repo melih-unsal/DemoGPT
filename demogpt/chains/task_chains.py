@@ -213,7 +213,7 @@ from langchain.chains import LLMMathChain
 def {function_name}({argument}):
     search_input = "{res}".format({argument}={argument})
     search = GoogleSerperAPIWrapper()
-    llm = OpenAI(temperature=0)
+    llm = OpenAI(openai_api_key=openai_api_key, temperature=0)
     llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
     tools = [
         Tool(
@@ -227,7 +227,7 @@ def {function_name}({argument}):
             description="useful for when you need to answer questions about math"
         ),
     ]
-    model = ChatOpenAI(temperature=0, model_name="gpt-4")
+    model = ChatOpenAI(openai_api_key=openai_api_key, temperature=0, model_name="gpt-4")
     planner = load_chat_planner(model)
     executor = load_agent_executor(model, tools, verbose=True)
     agent = PlanAndExecute(planner=planner, executor=executor, verbose=True)

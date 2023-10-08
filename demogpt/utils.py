@@ -13,10 +13,13 @@ from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
 
 AI_VARIETY_TEMPERATURE = 0.5
 
-def init(title=""):
+def init(title="", app_type={}):
+    initial_code = IMPORTS_CODE_SNIPPET 
     if title:
-        return IMPORTS_CODE_SNIPPET + f"\nst.title('{title}')\nos.environ['SERPER_API_KEY']=st.secrets.get('SERPER_API_KEY','')\n"
-    return IMPORTS_CODE_SNIPPET
+        initial_code += f"\nst.title('{title}')\n"
+    if app_type.get("is_search",False):
+        initial_code += "os.environ['SERPER_API_KEY']=st.secrets.get('SERPER_API_KEY','')\n"
+    return initial_code
 
 def filterTasks(tasks):
     filtered_tasks = []
@@ -30,28 +33,32 @@ def filterTasks(tasks):
 def reorderTasksForChatApp(tasks):
     print("before reordering:")
     print(tasks)
-    chat_input_order = chat_output_order = -1
+    chat_input_order = chat_output_order = chat_order = -1
     for i,task in enumerate(tasks):
         if task["task_type"] == "ui_input_chat":
             chat_input_order = i
         if task["task_type"] == "ui_output_chat":
             chat_output_order = i
+        if task["task_type"] == "chat":
+            chat_order = i
     
-    if chat_input_order == -1 and chat_output_order == -1: # means, chat input output pair does not exist (it should have failed before.)
+    if chat_input_order == -1 or chat_output_order == -1 or chat_order == -1: # means, chat input output pair does not exist (it should have failed before.)
         return tasks
 
-    if chat_input_order + 1 == chat_output_order: # means there is no task between chat input and chat output
+    if chat_input_order + 2 == chat_output_order: # means there is no task between chat input and chat output
         return tasks
     
     pre_chat_tasks = []
     middle_chat_tasks = []
     post_chat_tasks = []
     
+    chat_outputs = set(tasks[chat_input_order]["output_key"]) | set(tasks[chat_order]["output_key"])
+    
     for i, task in enumerate(tasks):
         if i < chat_input_order:
             pre_chat_tasks.append(task)
         elif chat_input_order < i < chat_output_order:
-            if set(tasks[i]["input_key"]) & set(tasks[chat_input_order]["output_key"]):
+            if set(tasks[i]["input_key"]) & chat_outputs:
                 middle_chat_tasks.append(task)
             else:
                 pre_chat_tasks.append(task)
