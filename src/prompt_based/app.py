@@ -10,13 +10,13 @@ import tempfile
 import cv2
 import webbrowser
 from time import sleep
-from streamlit.components.v1 import html
 
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_ENDPOINT"]="https://api.smith.langchain.com"
 os.environ["LANGCHAIN_API_KEY"] = st.secrets.get("LANGCHAIN_API_KEY","")
 os.environ["LANGCHAIN_PROJECT"] = st.secrets.get("LANGCHAIN_PROJECT","")
-
+DEPLOY_URL = st.secrets.get("DEPLOY_URL","")
+API_URL = st.secrets.get("API_URL","")
 
 try:
     from dotenv import load_dotenv
@@ -30,8 +30,6 @@ def generate_response(txt, title):
     for data in agent(txt, title):
         yield data
         
-SERVER_URL = "https://api.demogpt.io/"
-
 toast_messages = [
     "🌱 Planting the seeds...",
     "🌦️ Watering and waiting...",
@@ -56,7 +54,7 @@ def create(code):
                 index += 1
 
             with open(tmp.name, 'rb') as file:
-                res = requests.post(SERVER_URL + "create", data={"code": code, "prompt":demo_idea, "title":demo_title}, files={"image": file})
+                res = requests.post(DEPLOY_URL + "create", data={"code": code, "prompt":demo_idea, "title":demo_title}, files={"image": file})
                 try:
                     st.session_state.app_id = res.json()["id"]
                     st.session_state.url = getUrl(st.session_state.app_id, demo_title, demo_idea) 
@@ -65,10 +63,18 @@ def create(code):
                 else:
                     break
     yield index
-                    
-            
+
+def sendEmail(email):
+    res = requests.post(API_URL + "email", 
+                        data={
+                            "email": email, 
+                            "description":demo_idea,
+                            "title":demo_title
+                            }
+                        )
+                     
 def edit(code):
-    res = requests.post(SERVER_URL + "edit", data={
+    res = requests.post(DEPLOY_URL + "edit", data={
         "code": code, "app_id":st.session_state.app_id})
     
 def initCode():
@@ -111,12 +117,21 @@ model_name = st.sidebar.selectbox("Model", models)
 
 empty_idea = st.empty()
 demo_idea = empty_idea.text_area(
-    "Enter your LLM-based demo idea", placeholder="Type your demo idea here", height=100
+    "Enter your LLM-based demo idea",
+    placeholder="Type your demo idea here",
+    height=100,
+    help="""## Example prompts
+* Character Clone: Want an app that converses like Jeff Bezos? Prompt - "Create me a chat-based application that talks like Jeff Bezos."
+* Language Mastery: Need help in learning French? Prompt - "Create me an application that translates English sentences to French and provides pronunciation guidance for learners. 
+* Content Generation: Looking to generate content? Prompt - "Create a system that can write ready to share Medium article from website. The resulting Medium article should be creative and interesting and written in a markdown format."
+    """,
 )
 
 empty_title = st.empty()
 demo_title = empty_title.text_input(
-    "Give a name for your application", placeholder="Title", max_chars=18
+    "Give a name for your application",
+    placeholder="Title",
+    help="It will be displayed as a title in your app",
 )
 
 
@@ -148,32 +163,36 @@ if submitted:
     elif demo_idea and demo_title:
         bar = progressBar(0)
         st.session_state.container = st.container()
-        agent = DemoGPT(openai_api_key=openai_api_key, openai_api_base=openai_api_base)
-        agent.setModel(model_name)
-        code_empty = st.empty()
-        st.session_state.container = st.container()
-        st.session_state.done = False
-        st.session_state.app_deployed = False
-        st.session_state.app_editted = False
-        for data in generate_response(demo_idea, demo_title):
-            done = data.get("done",False)
-            failed = data.get("failed", False)
-            message = data.get("message","")
-            st.session_state["message"] = message
-            stage = data.get("stage","stage")
-            code = data.get("code","")
-            progressBar(data["percentage"], bar)
-            
-            st.session_state["done"] = done
-            st.session_state["failed"] = failed
-            st.session_state["message"] = message
+        try:
+            agent = DemoGPT(openai_api_key=openai_api_key, openai_api_base=openai_api_base)
+            agent.setModel(model_name)
+        except Exception as e:
+            st.warning(e)
+        else:
+            code_empty = st.empty()
+            st.session_state.container = st.container()
+            st.session_state.done = False
+            st.session_state.app_deployed = False
+            st.session_state.app_editted = False
+            for data in generate_response(demo_idea, demo_title):
+                done = data.get("done",False)
+                failed = data.get("failed", False)
+                message = data.get("message","")
+                st.session_state["message"] = message
+                stage = data.get("stage","stage")
+                code = data.get("code","")
+                progressBar(data["percentage"], bar)
+                
+                st.session_state["done"] = done
+                st.session_state["failed"] = failed
+                st.session_state["message"] = message
 
-            if done or failed:
-                st.session_state.code = code
-                break
-            
-            st.info(message,icon="🧩") 
-            st.session_state.messages.append(message)  
+                if done or failed:
+                    st.session_state.code = code
+                    break
+                
+                st.info(message,icon="🧩") 
+                st.session_state.messages.append(message)  
             
 elif "messages" in st.session_state:
     for message in st.session_state.messages:
@@ -221,7 +240,7 @@ if st.session_state.done:
     else:
         st.success("Your app has been successfully updated.", icon="✅")
     
-    link = f"""<a href="" style="font-size: 24px; text-decoration: none; color: green;">🥳 Woohoo! Your app's up and running. <span style="text-decoration: underline;">Click to explore!</span></a>"""
+    link = f"""<a href="{st.session_state.url}" style="font-size: 24px; text-decoration: none; color: green;">🥳 Woohoo! Your app's up and running. <span style="text-decoration: underline;">Click to explore!</span></a>"""
     st.markdown(link, unsafe_allow_html=True)
     
     
@@ -231,4 +250,5 @@ if st.session_state.get("failed",False):
         email = st.text_input("Email", placeholder="example@example.com")
         email_submit = st.form_submit_button('Send')
     if email_submit:
+        sendEmail(email)
         st.success("🌟 Thank you for entrusting us with your vision! We're on it and will ping you the moment your app is ready to launch. Stay tuned for a stellar update soon!")
