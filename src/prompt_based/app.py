@@ -4,6 +4,7 @@ import signal
 
 import streamlit as st
 from utils import  generateImage, getUrl
+import components
 from demogpt import DemoGPT
 import requests
 import tempfile
@@ -90,6 +91,9 @@ title = "🧩 DemoGPT"
 st.set_page_config(page_title=title)
 st.title(title)
 
+
+st.sidebar.markdown(components.how_to_use)
+
 openai_api_key = st.sidebar.text_input(
     "OpenAI API Key",
     placeholder="sk-...",
@@ -114,6 +118,9 @@ models = (
 )
 
 model_name = st.sidebar.selectbox("Model", models)
+
+st.sidebar.markdown(components.about)
+st.sidebar.markdown(components.faq)
 
 empty_idea = st.empty()
 demo_idea = empty_idea.text_area(
