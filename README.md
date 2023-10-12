@@ -1,4 +1,4 @@
-# ![favicon](assets/puzzle.png) DemoGPT: Auto Gen-AI App Generator with the Power of Foundation Models
+# ![favicon](assets/puzzle.png) DemoGPT: Autonomous AI Agent for Effortless App Creation 🚀
 
 <p align="center">
 <a href=""><img src="assets/banner_small.png" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="450px"></a>

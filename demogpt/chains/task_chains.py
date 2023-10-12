@@ -209,9 +209,17 @@ with st.chat_message("assistant"):
         code = f"""
 from langchain.agents import ConversationalChatAgent, AgentExecutor
 from langchain.tools import DuckDuckGoSearchRun
+from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
+from langchain.memory import ConversationBufferMemory
 from langchain.agents.tools import Tool
 from langchain.chains import LLMMathChain
 from langchain.chat_models import ChatOpenAI
+from langchain.callbacks import StreamlitCallbackHandler
+
+msgs = StreamlitChatMessageHistory()
+memory = ConversationBufferMemory(
+    chat_memory=msgs, return_messages=True, memory_key="chat_history", output_key="output"
+)
 
 def {function_name}({argument}):
     llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key)
@@ -228,10 +236,11 @@ def {function_name}({argument}):
         agent=chat_agent,
         tools=tools,
         memory=memory,
-        return_intermediate_steps=False,
+        return_intermediate_steps=True,
         handle_parsing_errors=True,
     )
-    return executor({argument})["response"]
+    st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
+    return executor({argument}, callbacks=[st_cb])["output"]
 
 if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
@@ -263,11 +272,12 @@ else:
 
         code = f"""
 from langchain.chat_models import ChatOpenAI
-from langchain_experimental.plan_and_execute import PlanAndExecute, load_agent_executor, load_chat_planner
 from langchain.llms import OpenAI
 from langchain.tools import DuckDuckGoSearchRun
 from langchain.agents.tools import Tool
+from langchain.agents import initialize_agent, AgentType
 from langchain.chains import LLMMathChain
+from langchain.callbacks import StreamlitCallbackHandler
 
 def {function_name}({argument}):
     search_input = "{res}".format({argument}={argument})
@@ -281,16 +291,10 @@ def {function_name}({argument}):
             description="useful for when you need to answer questions about math"
         ),
     ]
-    model = ChatOpenAI(openai_api_key=openai_api_key, temperature=0, model_name="gpt-4")
-    planner = load_chat_planner(model)
-    executor = load_agent_executor(model, tools, verbose=True)
-    agent = PlanAndExecute(planner=planner, executor=executor, verbose=True)
-    try:
-        with st.spinner('DemoGPT is working on it. It might take 1-2 minutes...'):
-            return agent.run(search_input)
-    except AuthenticationError:
-        st.warning('This tool requires GPT-4. Please enter a key that has GPT-4 access', icon="⚠️")
-        return ''
+    model = ChatOpenAI(openai_api_key=openai_api_key, temperature=0)
+    agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
+    st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
+    return agent.run(search_input, callbacks=[st_cb])
         
 if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')

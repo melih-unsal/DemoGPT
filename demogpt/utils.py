@@ -14,10 +14,12 @@ from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
 
 AI_VARIETY_TEMPERATURE = 0.5
 
-def init(title=""):
+def init(title="", app_type={}):
     initial_code = IMPORTS_CODE_SNIPPET 
     if title:
         initial_code += f"\nst.title('{title}')\n"
+    if app_type.get("is_search",False):
+        initial_code += f"\nst_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)\n"
     return initial_code
 
 def filterTasks(tasks):

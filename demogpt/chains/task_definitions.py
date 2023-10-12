@@ -174,13 +174,14 @@ def jsonFixer(data):
     return data.replace("{", "{{").replace("}", "}}")
 
 def isTaskAvailable(task, app_chat, app_prompt_template, app_search):
-
     if not app_chat:
         if "chat" in task["name"]:
             return False
     elif task["name"] == "python":
         return False
     elif task["name"] == "plan_and_execute":
+        return False
+    elif task["name"] == "prompt_template":
         return False
     elif app_search:
         if task["name"] == "chat":
