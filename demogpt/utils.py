@@ -7,18 +7,17 @@ import sys
 import tempfile
 import threading
 from subprocess import PIPE, Popen
+from functools import reduce
 
 from demogpt.chains.task_chains import TaskChains
 from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
 
 AI_VARIETY_TEMPERATURE = 0.5
 
-def init(title="", app_type={}):
+def init(title=""):
     initial_code = IMPORTS_CODE_SNIPPET 
     if title:
         initial_code += f"\nst.title('{title}')\n"
-    if app_type.get("is_search",False):
-        initial_code += "os.environ['SERPER_API_KEY']=st.secrets.get('SERPER_API_KEY','')\n"
     return initial_code
 
 def filterTasks(tasks):
@@ -33,45 +32,47 @@ def filterTasks(tasks):
 def reorderTasksForChatApp(tasks):
     print("before reordering:")
     print(tasks)
-    chat_input_order = chat_output_order = chat_order = -1
-    for i,task in enumerate(tasks):
+    step2task={task["step"]:task for task in tasks}
+    input_chat_step = -1
+    for task in tasks:
         if task["task_type"] == "ui_input_chat":
-            chat_input_order = i
-        if task["task_type"] == "ui_output_chat":
-            chat_output_order = i
-        if task["task_type"] == "chat":
-            chat_order = i
+            input_chat_step = task["step"]
+            break
     
-    if chat_input_order == -1 or chat_output_order == -1 or chat_order == -1: # means, chat input output pair does not exist (it should have failed before.)
-        return tasks
+    if input_chat_step == -1:
+        return tasks 
 
-    if chat_input_order + 2 == chat_output_order: # means there is no task between chat input and chat output
-        return tasks
+    input2tasks={}
+    for task in tasks:
+        for input_key in task["input_key"]:
+            input2tasks[input_key] = input2tasks.get(input_key,[]) + [task]
     
-    pre_chat_tasks = []
-    middle_chat_tasks = []
-    post_chat_tasks = []
-    
-    chat_outputs = set(tasks[chat_input_order]["output_key"]) | set(tasks[chat_order]["output_key"])
-    
-    for i, task in enumerate(tasks):
-        if i < chat_input_order:
-            pre_chat_tasks.append(task)
-        elif chat_input_order < i < chat_output_order:
-            if set(tasks[i]["input_key"]) & chat_outputs:
-                middle_chat_tasks.append(task)
-            else:
-                pre_chat_tasks.append(task)
-        elif i >= chat_output_order:
-            post_chat_tasks.append(task)
-                
-    new_tasks =  pre_chat_tasks + [tasks[chat_input_order]] + middle_chat_tasks + post_chat_tasks
-    
+    non_pre_task_steps = set() # these are the ones that cannot be done before chat input
+    steps = {i for i in range(1,len(tasks)+1)}
+    all_steps = {i for i in range(1,len(tasks)+1)}
+    root = step2task[input_chat_step]
+    non_pre_task_steps.add(root["step"])
+    change = True
+    while change:
+        change = False
+        for step in non_pre_task_steps:
+            task1 = step2task[step]
+            for input_key in task1["input_key"]:
+                tasks1 = input2tasks[input_key]
+                for task2 in tasks1:
+                    if task2["step"] not in non_pre_task_steps:
+                        change = True
+                        non_pre_task_steps.add(task2["step"])
+                        steps.remove(task["step"])
+    post_steps = sorted(list(all_steps-steps))
+    steps = sorted(list(steps))     
+    pre_tasks = [step2task[step] for step in steps]
+    post_tasks = [step2task[step] for step in post_steps]
+    new_tasks = pre_tasks + post_tasks
     print("after reordering:")
-    print(new_tasks)
-            
+    print(new_tasks)      
     return new_tasks
-    
+
 def getFunctionNames(code):
     pattern = r"def (\w+)\(.*\):"
     return re.findall(pattern, code)
@@ -142,6 +143,8 @@ def getCodeSnippet(task, code_snippets, iters=10):
         code = TaskChains.pythonCoder(task=task, code_snippets=code_snippets)
     elif task_type == "plan_and_execute":
         code = TaskChains.search(task=task)
+    elif task_type == "search_chat":
+        code = TaskChains.search_chat(task=task)
     return code.strip() + "\n"
 
 
@@ -220,10 +223,8 @@ if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
     {variable} = ""
 elif {' and '.join(inputs)}:
-    if 'chat_llm_chain' not in st.session_state:
-        st.session_state.chat_llm_chain = {signature}
     with st.spinner('DemoGPT is working on it. It takes less than 10 seconds...'):
-        {variable} = st.session_state.chat_llm_chain.run({run_call})
+        {variable} = chat_llm_chain.run({run_call})
 else:
     {variable} = ""
 """
@@ -234,22 +235,23 @@ else:
     code = f"""
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
+from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
 from langchain.memory import ConversationBufferMemory
 from langchain.chat_models import ChatOpenAI
 
-def {signature}:
-    prompt = PromptTemplate(
-        input_variables={input_variables}, template='''{system_template}'''
-    )
-    memory = ConversationBufferMemory(memory_key="chat_history", input_key="{human_input}")
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key, temperature={temperature})
-    chat_llm_chain = LLMChain(
-        llm=llm,
-        prompt=prompt,
-        verbose=False,
-        memory=memory,
-    )
-    return chat_llm_chain
+msgs = StreamlitChatMessageHistory()
+
+prompt = PromptTemplate(
+    input_variables={input_variables}, template='''{system_template}'''
+)
+memory = ConversationBufferMemory(memory_key="chat_history", input_key="{human_input}", chat_memory=msgs, return_messages=True)
+llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key, temperature={temperature})
+chat_llm_chain = LLMChain(
+    llm=llm,
+    prompt=prompt,
+    verbose=False,
+    memory=memory,
+)
     
 {function_call} 
 

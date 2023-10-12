@@ -78,9 +78,9 @@ def foo2(half_story,user_choice):
 
 with st.form(key='story_game'):
     # Under the form, take all the user inputs
-	text_input = st.text_input(label='Enter some text')
+    text_input = st.text_input(label='Enter some text')
     user_choice = st.selectbox("What would you like to do next?", ["Choice1", "Choice2"])
-	submit_button = st.form_submit_button(label='Submit Story')
+    submit_button = st.form_submit_button(label='Submit Story')
     # If form is submitted by st.form_submit_button run the logic
     if submit_button:
         ######## Call the functions
@@ -94,7 +94,7 @@ with st.form(key='story_game'):
         if half_story:
             #Under the st.form_submit_button, show the results.
             st.write(half_story)
-            
+        
         if continued_story:
             #Under the st.form_submit_button, show the results.
             st.markdown(continued_story)

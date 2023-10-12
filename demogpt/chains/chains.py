@@ -38,12 +38,20 @@ class Chains:
         cls.model = model
     
     @classmethod
-    def getModel(cls, change=False):
+    def getModel(cls, change=False, temperature=0):
         if change and cls.has_gpt4:
             return ChatOpenAI(
                 model="gpt-4-0613",
                 openai_api_key=cls.openai_api_key,
-                temperature=cls.temperature,
+                temperature=temperature,
+                openai_api_base=cls.openai_api_base,
+        )
+        
+        if temperature > 0:
+            return ChatOpenAI(
+                model=cls.model,
+                openai_api_key=cls.openai_api_key,
+                temperature=temperature,
                 openai_api_base=cls.openai_api_base,
         )
         
@@ -54,14 +62,24 @@ class Chains:
         cls.model = model
 
     @classmethod
-    def getChain(cls, system_template="", human_template="", change=False, **kwargs):
+    def getChain(cls, system_template="", human_template="", change=False, temperature=0, **kwargs):
         prompts = []
         if system_template:
             prompts.append(SystemMessagePromptTemplate.from_template(system_template))
         if human_template:
             prompts.append(HumanMessagePromptTemplate.from_template(human_template))
         chat_prompt = ChatPromptTemplate.from_messages(prompts)
-        return LLMChain(llm=cls.getModel(change=change), prompt=chat_prompt).run(**kwargs)
+        return LLMChain(llm=cls.getModel(change=change, temperature=temperature), prompt=chat_prompt).run(**kwargs)
+    
+    @classmethod
+    def title(cls, instruction):
+        return cls.getChain(
+            system_template=prompts.title.system_template,
+            human_template=prompts.title.human_template,
+            change=False,
+            temperature=0.8,
+            instruction=instruction
+        ).replace('"','').replace("'","")
 
     @classmethod
     def appType(cls, instruction):
@@ -79,7 +97,7 @@ class Chains:
         return cls.getChain(
             system_template=prompts.system_inputs.system_template,
             human_template=prompts.system_inputs.human_template,
-            change=True,
+            change=False,
             instruction=instruction,
         )
 
@@ -90,7 +108,7 @@ class Chains:
         plan = cls.getChain(
             system_template=prompts.plan_with_inputs.system_template,
             human_template=prompts.plan_with_inputs.human_template,
-            change=True,
+            change=False,
             instruction=instruction,
             system_inputs=system_inputs,
             helper=helper,
@@ -105,7 +123,7 @@ class Chains:
         feedback = cls.getChain(
             system_template=prompts.plan_feedback.system_template,
             human_template=prompts.plan_feedback.human_template,
-            change=True,
+            change=False,
             instruction=instruction,
             plan=plan,
         )
@@ -118,7 +136,7 @@ class Chains:
         return cls.getChain(
             system_template=prompts.plan_refiner.system_template,
             human_template=prompts.plan_refiner.human_template,
-            change=True,
+            change=False,
             instruction=instruction,
             plan=plan,
             feedback=feedback,
@@ -176,6 +194,29 @@ class Chains:
             plan=plan,
         )
         return utils.refine(code)
+    
+    @classmethod
+    def howToUse(cls, code_snippets):
+        steps = cls.getChain(
+            system_template=prompts.how_to_use.system_template,
+            human_template=prompts.how_to_use.human_template,
+            code_snippets=code_snippets
+        )
+        
+        total_code = f'st.sidebar.markdown("""{steps}""")\n'
+        return total_code
+    
+    @classmethod
+    def about(cls, instruction, title):
+        markdown = cls.getChain(
+            system_template=prompts.about.system_template,
+            human_template=prompts.about.human_template,
+            instruction=instruction,
+            title=title
+        )
+        
+        code = f'\nst.sidebar.markdown("# About")\nst.sidebar.markdown("{markdown}")'
+        return code
 
     @classmethod
     def imports(cls, code_snippets):

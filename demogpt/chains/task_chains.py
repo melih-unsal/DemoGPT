@@ -171,6 +171,8 @@ with st.chat_message("assistant"):
             inputs=inputs,
         )
         res = res.replace("'''", '"""')
+        print("chat:")
+        print(res)
         res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res, strict=False)
 
@@ -183,8 +185,65 @@ with st.chat_message("assistant"):
             feedback=feedback,
             inputs=inputs,
         )
+        print("promptTemplateRefiner:")
+        print(res)
         res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res)
+    
+    @classmethod
+    def search_chat(cls, task):
+        argument = ", ".join(task["input_key"])
+        variable = ", ".join(task["output_key"])
+        function_name = task["task_name"]
+        instruction = task["description"]
+
+        res = cls.getChain(
+            system_template=prompts.search.system_template,
+            human_template=prompts.search.human_template,
+            instruction=instruction,
+            inputs=argument,
+        )
+        
+        res = res.replace('"',"'")
+
+        code = f"""
+from langchain.agents import ConversationalChatAgent, AgentExecutor
+from langchain.tools import DuckDuckGoSearchRun
+from langchain.agents.tools import Tool
+from langchain.chains import LLMMathChain
+from langchain.chat_models import ChatOpenAI
+
+def {function_name}({argument}):
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key)
+    llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
+    tools = [
+        DuckDuckGoSearchRun(name="Search"),
+        Tool(
+            name="Calculator",
+            func=llm_math_chain.run,
+            description="useful for when you need to answer questions about math"
+        )]
+    chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm, tools=tools)
+    executor = AgentExecutor.from_agent_and_tools(
+        agent=chat_agent,
+        tools=tools,
+        memory=memory,
+        return_intermediate_steps=False,
+        handle_parsing_errors=True,
+    )
+    return executor({argument})["response"]
+
+if not openai_api_key.startswith('sk-'):
+    st.warning('Please enter your OpenAI API key!', icon='⚠')
+    {variable} = ""
+elif {argument}:
+    {variable} = {function_name}({argument})
+else:
+    {variable} = ''
+  
+        """
+        
+        return code
 
     @classmethod
     def search(cls, task):
@@ -206,21 +265,16 @@ with st.chat_message("assistant"):
 from langchain.chat_models import ChatOpenAI
 from langchain_experimental.plan_and_execute import PlanAndExecute, load_agent_executor, load_chat_planner
 from langchain.llms import OpenAI
-from langchain.utilities import GoogleSerperAPIWrapper
+from langchain.tools import DuckDuckGoSearchRun
 from langchain.agents.tools import Tool
 from langchain.chains import LLMMathChain
 
 def {function_name}({argument}):
     search_input = "{res}".format({argument}={argument})
-    search = GoogleSerperAPIWrapper()
     llm = OpenAI(openai_api_key=openai_api_key, temperature=0)
     llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
     tools = [
-        Tool(
-            name = "Search",
-            func=search.run,
-            description="useful for when you need to answer questions about current events"
-        ),
+        DuckDuckGoSearchRun(name="Search"),
         Tool(
             name="Calculator",
             func=llm_math_chain.run,

@@ -77,6 +77,9 @@ def validate(input, app_type):
         feedback += "\n" + res5["feedback"]
 
     valid = len(feedback) == 0
+    
+    print("feedback:")
+    print(feedback)
 
     return {"feedback": feedback, "valid": valid}
 
@@ -180,7 +183,7 @@ def checkInputOutputLengthCompatiblity(tasks, app_type):
     }
     
 
-def checkAppTypeCompatiblity(tasks, app_type):
+def checkAppTypeCompatiblity_old(tasks, app_type):
     must_chat_tasks = {"ui_input_chat", "chat", "ui_output_chat"}
     must_prompt_template_tasks = {"prompt_template"}
     must_search_tasks = {"plan_and_execute"}
@@ -219,10 +222,100 @@ def checkAppTypeCompatiblity(tasks, app_type):
     # search app check
     if app_search:
         for task_type in must_search_tasks - task_search:
-            feedback += f"The app requires plan_and_execute task but you didn't use {task_type} in your tasks. Please add it and try again\n"
+            feedback += f"The app requires {task_type} task but you didn't use {task_type} in your tasks. Please add it and try again\n"
     else:
         for task_type in task_search:
-            feedback += f"The app does not need plan_and_execute task but you used {task_type} task in your task list. Please remove them and try again\n"
+            feedback += f"The app does not need {task_type} task but you used {task_type} task in your task list. Please remove them and try again\n"
+    ################################################################################################################################################
+    # prompt_template app check
+    if app_prompt_template == 1:
+        for task_type in must_prompt_template_tasks - task_prompt_template:
+            feedback += f"The app is ai-based but you didn't use {task_type} in your tasks. Please add it and try again\n"
+    elif app_prompt_template == -1:
+        for task_type in task_prompt_template:
+            feedback += f"The app is not ai-based but you used {task_type} in your tasks which is redundant. Please remove it and try again\n"
+    ################################################################################################################################################
+    # search-python compatiblity
+    python_tasks = [task for task in tasks if task["task_type"] == "python"]
+    search_tasks = [task for task in tasks if task["task_type"] == "plan_and_execute"]
+    found = False
+    for python_task in python_tasks:
+        python_inputs = set(python_task["input_key"])
+        for search_task in search_tasks:
+            search_outputs = set(search_task["output_key"])
+            if python_inputs & search_outputs:
+                feedback += f""" python task '{python_task['task_name']}' uses {(python_inputs & search_outputs).pop()} as an input but it comes from plan_and_execute task '{search_task['task_name']}'. python task cannot use plan_and_execute task's output as an input. Please redesign the tasks so that no python task uses plan_and_execute task's output as an input!"""
+                found = True
+                break
+        if found:
+            break
+
+    ################################################################################################################################################
+    # plan_and_execute compatibility
+    search_indices = sorted([task["step"] for task in search_tasks])
+    if len(search_tasks) > 1:
+        for index in search_indices:
+            if index + 1 in search_indices:
+                feedback += """It is not recommended to use back to back "plan_and_execute" tasks because one plan_and_execute can handle generic question by itself. 
+                You should combine plan_and_execute tasks in a single task."""
+                break
+
+    valid = len(feedback) == 0
+
+    return {"feedback": feedback, "valid": valid}
+
+
+def checkAppTypeCompatiblity(tasks, app_type):
+    must_chat_tasks = {"ui_input_chat", "chat", "ui_output_chat", "search_chat"}
+    must_prompt_template_tasks = {"prompt_template"}
+    must_search_tasks = {"plan_and_execute", "search_chat"}
+
+    task_types_list= [task["task_type"] for task in tasks]
+    task_types = set(task_types_list)
+
+    app_prompt_template = 0  # neutral
+
+    app_chat = app_type["is_chat"] == "true"
+    app_search = app_type["is_search"] == "true"
+    if not app_chat:
+        if app_type["is_ai"] == "true":
+            app_prompt_template = 1
+        else:
+            app_prompt_template = -1
+            
+    if app_chat:
+        if app_search:
+            must_search_tasks.remove("plan_and_execute")
+            must_chat_tasks.remove("chat")
+    else:
+        must_search_tasks.remove("search_chat")
+        must_chat_tasks.remove("search_chat")
+        
+    task_prompt_template = must_prompt_template_tasks & task_types
+    task_search = must_search_tasks & task_types
+    task_chat = must_chat_tasks & task_types        
+
+    feedback = ""
+    ################################################################################################################################################
+    # chat app check
+    if app_chat:
+        for task_type in must_chat_tasks - task_chat:
+            feedback += f"The app is chat-based but you didn't use {task_type} in your tasks. Please add it and try again\n"
+            
+        for task_type in must_chat_tasks:
+            if task_types_list.count(task_type) > 1:
+                feedback += f"You can use {task_type} in your tasks only once. Please remove the redundant ones and combine in a single task\n"
+    else:
+        for task_type in task_chat:
+            feedback += f"The app is not chat-based but you used {task_type} in your task list. Please remove it and try again\n"
+    ################################################################################################################################################
+    # search app check
+    if app_search:
+        for task_type in must_search_tasks - task_search:
+            feedback += f"The app requires {task_type} task but you didn't use {task_type} in your tasks. Please add it and try again\n"
+    else:
+        for task_type in task_search:
+            feedback += f"The app does not need {task_type} task but you used {task_type} task in your task list. Please remove them and try again\n"
     ################################################################################################################################################
     # prompt_template app check
     if app_prompt_template == 1:

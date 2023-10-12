@@ -11,7 +11,8 @@ IMPORTANT NOTE:
 - Write "system_template" in a way that, system_template.format(input=something for input in inputs) work.
 It should also have {{chat_history}}
 What I mean is that, put all the elements of Inputs inside of system_template with curly braces so that I can format it with predefined parameters.
-Always put the most similar variable name which should be coming from chat input in curly braces at the end 
+Always put the most similar variable name which should be coming from chat input in curly braces at the end .
+It should be strictly a JSON format so that it can be directly used by json.loads function in Python.
 """
 
 human_template = """

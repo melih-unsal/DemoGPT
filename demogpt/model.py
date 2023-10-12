@@ -10,6 +10,7 @@ from demogpt.chains.chains import Chains
 from demogpt.chains.task_chains import TaskChains
 from demogpt.utils import getCodeSnippet, getFunctionNames, init, reorderTasksForChatApp
 import streamlit as st
+import re
 
 
 class DemoGPT:
@@ -215,6 +216,8 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
 
         else:
             
+            title = Chains.title(instruction=instruction)
+            
             task_list = reorderTasksForChatApp(task_list) # for chat apps, remove the code between chat input and chat output
 
             code_snippets = init(title)
@@ -273,14 +276,21 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
                 extra = ''
                 if f"st.title('{title}')" not in draft_code:
                     extra = f"\nst.title('{title}')\n"
-                if "os.environ['SERPER_API_KEY']" not in draft_code:
-                    extra += "os.environ['SERPER_API_KEY']=st.secrets.get('SERPER_API_KEY','')\n"
                 if extra:
                     draft_code = extra + draft_code
                 final_code = import_statements + draft_code
 
             # finalize the format
             final_code = autopep8.fix_code(final_code)
+            
+            how_to_markdown = Chains.howToUse(code_snippets=final_code)
+            sleep(1)
+            about = Chains.about(instruction=instruction, title=title)
+            pattern = r'(openai_api_key\s*=\s*st\.sidebar\.text_input\((?:[^()]*|\([^)]*\))*\))'
+            # replacement string with additional code
+            replacement = how_to_markdown + r'\1' + about
+            # substitute using regex
+            final_code = re.sub(pattern, replacement, final_code, flags=re.DOTALL)
 
             yield {
                 "stage": "final",

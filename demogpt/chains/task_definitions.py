@@ -1,6 +1,6 @@
 import json
 
-AVAILABLE_TASKS_COUNT = 12
+AVAILABLE_TASKS_COUNT = 14
 
 ################################
 
@@ -103,6 +103,14 @@ ALL_TASKS = [
         "purpose": "By using internet, it autonomously give answer for any question available in the web. It can answer questions as specific as possible so you don't need to iterate over the answer.",
     },
     {
+        "name": "search_chat",
+        "description": "It is intelligent chat-based AI agent that can answer any specific question on internet.",
+        "good_at": "Applications requiring up to date knowledge on the internet. It can also be used in chat app",
+        "input_data_type": "string",
+        "output_data_type": "string",
+        "purpose": "By using internet, it autonomously give answer for any question available in the web. It can answer questions as specific as possible so you don't need to iterate over the answer. It also remembers the chat history while responsing",
+    },
+    {
         "name": "doc_summarizer",
         "description": "Summarize Document Objects",
         "good_at": "Summarizing long Document Objects",
@@ -165,13 +173,18 @@ def jsonFixer(data):
     data = json.dumps(data, indent=4)
     return data.replace("{", "{{").replace("}", "}}")
 
-
 def isTaskAvailable(task, app_chat, app_prompt_template, app_search):
+
     if not app_chat:
         if "chat" in task["name"]:
             return False
     elif task["name"] == "python":
         return False
+    elif task["name"] == "plan_and_execute":
+        return False
+    elif app_search:
+        if task["name"] == "chat":
+            return False
 
     if not app_prompt_template:
         if task["name"] in [
@@ -188,6 +201,8 @@ def isTaskAvailable(task, app_chat, app_prompt_template, app_search):
 
     if not app_search:
         if task["name"] == "plan_and_execute":
+            return False
+        if task["name"] == "search_chat":
             return False
         
     elif task["name"] == "python":

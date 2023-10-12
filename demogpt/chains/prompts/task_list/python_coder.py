@@ -20,6 +20,7 @@ else:
     {variable} = ''
 ================================================================
 Import all the Python libraries you use in the result.
+Your generated function cannot be empty and should be functional. So, you cannot generate a function having only comments.
     
 Let's get coding!
 """
