@@ -39,10 +39,10 @@ class Chains:
         cls.model = model
     
     @classmethod
-    def getModel(cls, change=False, temperature=0):
+    def getModel(cls, change=False, temperature=0, change_model="gpt-4-0613"):
         if change and cls.has_gpt4:
             return ChatOpenAI(
-                model="gpt-4-0613",
+                model=change_model,
                 openai_api_key=cls.openai_api_key,
                 temperature=temperature,
                 openai_api_base=cls.openai_api_base,
@@ -63,14 +63,14 @@ class Chains:
         cls.model = model
 
     @classmethod
-    def getChain(cls, system_template="", human_template="", change=False, temperature=0, **kwargs):
+    def getChain(cls, system_template="", human_template="", change=False, change_model="gpt-4-0613", temperature=0, **kwargs):
         prompts = []
         if system_template:
             prompts.append(SystemMessagePromptTemplate.from_template(system_template))
         if human_template:
             prompts.append(HumanMessagePromptTemplate.from_template(human_template))
         chat_prompt = ChatPromptTemplate.from_messages(prompts)
-        return LLMChain(llm=cls.getModel(change=change, temperature=temperature), prompt=chat_prompt).run(**kwargs)
+        return LLMChain(llm=cls.getModel(change=change, temperature=temperature, change_model=change_model), prompt=chat_prompt).run(**kwargs)
     
     @classmethod
     def title(cls, instruction):
@@ -152,6 +152,8 @@ class Chains:
         task_list = cls.getChain(
             system_template=prompts.tasks.system_template,
             human_template=prompts.tasks.human_template,
+            change=True,
+            change_model="gpt-3.5-turbo-16k-0613",
             instruction=instruction,
             plan=plan,
             TASK_DESCRIPTIONS=TASK_DESCRIPTIONS,
@@ -175,6 +177,8 @@ class Chains:
         task_list = cls.getChain(
             system_template=prompts.task_refiner.system_template,
             human_template=prompts.task_refiner.human_template,
+            change=True,
+            change_model="gpt-3.5-turbo-16k-0613",
             instruction=instruction,
             tasks=tasks,
             feedback=feedback,
@@ -233,6 +237,8 @@ class Chains:
         code = cls.getChain(
             system_template=prompts.combine_v2.system_template,
             human_template=prompts.combine_v2.human_template,
+            change=True,
+            change_model="gpt-3.5-turbo-16k-0613",
             code_snippets=code_snippets,
             function_names=function_names,
         )

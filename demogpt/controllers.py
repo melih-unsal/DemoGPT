@@ -277,7 +277,7 @@ def checkAppTypeCompatiblity(tasks, app_type):
 
     app_chat = app_type["is_chat"] == "true"
     app_search = app_type["is_search"] == "true"
-    if not app_chat:
+    if not (app_chat or app_search):
         if app_type["is_ai"] == "true":
             app_prompt_template = 1
         else:
@@ -287,6 +287,9 @@ def checkAppTypeCompatiblity(tasks, app_type):
         if app_search:
             must_search_tasks.remove("plan_and_execute")
             must_chat_tasks.remove("chat")
+        else:
+            must_search_tasks.remove("search_chat")
+            must_chat_tasks.remove("search_chat")
     else:
         must_search_tasks.remove("search_chat")
         must_chat_tasks.remove("search_chat")

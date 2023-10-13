@@ -12,7 +12,7 @@ from functools import reduce
 from demogpt.chains.task_chains import TaskChains
 from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
 
-AI_VARIETY_TEMPERATURE = 0.5
+AI_VARIETY_TEMPERATURE = 0.7
 
 def init(title="", app_type={}):
     initial_code = IMPORTS_CODE_SNIPPET 
