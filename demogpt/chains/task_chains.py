@@ -129,12 +129,20 @@ else:
         variable = ", ".join(task["output_key"])
         instruction = task["description"]
 
-        code = cls.getChain(
+        placeholder = cls.getChain(
             human_template=prompts.ui_input_chat.human_template,
             instruction=instruction,
             variable=variable,
         )
-        return utils.refine(code)
+        
+        code = f"""
+if {variable} := st.chat_input("{placeholder}"):
+    with st.chat_message("user"):
+        st.markdown({variable})
+    st.session_state.messages.append({{"role": "user", "content": {variable}}})
+        """
+        
+        return code
 
     @classmethod
     def uiOutputChat(cls, task):
