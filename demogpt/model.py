@@ -10,8 +10,6 @@ from demogpt.chains.chains import Chains
 from demogpt.chains.task_chains import TaskChains
 from demogpt.utils import getCodeSnippet, getFunctionNames, init, reorderTasksForChatApp
 import streamlit as st
-import re
-
 
 class DemoGPT:
     def __init__(
@@ -19,6 +17,7 @@ class DemoGPT:
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
         model_name="gpt-3.5-turbo-0613",
         max_steps=10,
+        plan_max_steps = 3,
         openai_api_base="",
     ):
         assert len(
@@ -27,6 +26,7 @@ class DemoGPT:
         self.model_name = model_name
         self.openai_api_key = openai_api_key
         self.max_steps = max_steps  # max iteration for refining the model purpose
+        self.plan_max_steps = plan_max_steps # max iteration for refining the plan
         self.openai_api_base = openai_api_base
         self.FAIL_MESSAGE = """ðŸš€âœ¨ Impressive! While DemoGPT can handle a galaxy of app ideas, 
         you've shot for the stars with a unique one. We're ramping up our engines to meet such visionary requests. 
@@ -128,7 +128,7 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
 
         plan_controller_result = Chains.planController(plan=plan, app_type=app_type)
 
-        for _ in trange(self.max_steps//2):
+        for _ in trange(self.plan_max_steps):
             if not plan_controller_result["valid"]:
                 plan = Chains.planRefiner(
                     instruction=instruction,
@@ -283,14 +283,7 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
             # finalize the format
             final_code = autopep8.fix_code(final_code)
             
-            how_to_markdown = Chains.howToUse(code_snippets=final_code)
-            sleep(1)
-            about = Chains.about(instruction=instruction, title=title)
-            pattern = r'(openai_api_key\s*=\s*st\.sidebar\.text_input\((?:[^()]*|\([^)]*\))*\))'
-            # replacement string with additional code
-            replacement = how_to_markdown + r'\1' + about
-            # substitute using regex
-            final_code = re.sub(pattern, replacement, final_code, flags=re.DOTALL)
+            final_code = Chains.addAboutAndHTU(instruction, title, final_code)
 
             yield {
                 "stage": "final",

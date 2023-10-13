@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from time import sleep
 
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
@@ -136,7 +137,7 @@ class Chains:
         return cls.getChain(
             system_template=prompts.plan_refiner.system_template,
             human_template=prompts.plan_refiner.human_template,
-            change=False,
+            change=True,
             instruction=instruction,
             plan=plan,
             feedback=feedback,
@@ -261,6 +262,19 @@ class Chains:
                 refined_plan.append(f"{index}. {current_step}")
                 index += 1
         return "\n".join(refined_plan)
+    
+    @classmethod
+    def addAboutAndHTU(cls, instruction, title, code_snippets):
+        sleep(1)
+        how_to_markdown = cls.howToUse(code_snippets=code_snippets)
+        sleep(2)
+        about = cls.about(instruction=instruction, title=title)
+        pattern = r'(openai_api_key\s*=\s*st\.sidebar\.text_input\((?:[^()]*|\([^)]*\))*\))'
+        # replacement string with additional code
+        replacement = how_to_markdown + r'\1' + about
+        # substitute using regex
+        final_code = re.sub(pattern, replacement, code_snippets, flags=re.DOTALL)
+        return final_code
 
     @classmethod
     def refine(cls, instruction, code, feedback):
