@@ -3,7 +3,7 @@ import os
 import signal
 
 import streamlit as st
-from utils import  generateImage, getUrl
+from utils import  generateImage, getUrl, getEmbeddings
 import components
 from demogpt import DemoGPT
 import requests
@@ -48,15 +48,23 @@ toast_messages = [
 def create(code):
     image = generateImage(demo_idea, openai_api_key, openai_api_base)
     index = 0
+    embeddings = getEmbeddings(demo_idea, openai_api_key)
     with tempfile.NamedTemporaryFile("w", suffix=".jpg") as tmp:
         cv2.imwrite(tmp.name, image)
         tmp.flush()  # Make sure the data is written to disk
         while True:
             if index < len(toast_messages) - 1:
                 index += 1
+                
+            data={
+                "code": code, 
+                "prompt":demo_idea, 
+                "title":st.session_state.title,
+                "embeddings":embeddings
+                }
 
             with open(tmp.name, 'rb') as file:
-                res = requests.post(DEPLOY_URL + "create", data={"code": code, "prompt":demo_idea, "title":st.session_state.title}, files={"image": file})
+                res = requests.post(DEPLOY_URL + "create", data=data, files={"image": file})
                 try:
                     st.session_state.app_id = res.json()["id"]
                     st.session_state.url = getUrl(st.session_state.app_id) 
