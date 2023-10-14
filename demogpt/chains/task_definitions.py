@@ -173,7 +173,7 @@ def jsonFixer(data):
     data = json.dumps(data, indent=4)
     return data.replace("{", "{{").replace("}", "}}")
 
-def isTaskAvailable(task, app_chat, app_prompt_template, app_search):
+def isTaskAvailable(task, app_chat, app_prompt_template, app_search, app_summary):
     if not app_chat:
         if "chat" in task["name"]:
             return False
@@ -192,9 +192,12 @@ def isTaskAvailable(task, app_chat, app_prompt_template, app_search):
             "prompt_template",
             "doc_loader",
             "doc_to_string",
-            "string_to_doc",
-            "doc_summarizer",
+            "string_to_doc"
         ]:
+            return False
+        
+    if not app_summary:
+        if task["name"] == "doc_summarizer":
             return False
         
     elif task["name"] == "python":
@@ -217,13 +220,12 @@ def getAvailableTasks(app_type):
 
     app_chat = app_type["is_chat"] == "true"
     app_search = app_type["is_search"] == "true"
-    if not app_chat:
-        if app_type["is_ai"] == "false":
-            app_prompt_template = False
+    app_summary = app_type["is_summary"] == "true"
+    app_prompt_template = app_type["is_ai"] == "true"
 
     tasks = []
     for task in ALL_TASKS[:AVAILABLE_TASKS_COUNT]:
-        if isTaskAvailable(task, app_chat, app_prompt_template, app_search):
+        if isTaskAvailable(task, app_chat, app_prompt_template, app_search, app_summary):
             tasks.append(task)
 
     return tasks
@@ -256,17 +258,27 @@ def getTasks(app_type):
 def getPlanGenHelper(app_type):
     prompt_template_must = False
     app_chat_must = app_type["is_chat"] == "true"
+    app_summarize_must = app_type["is_summary"] == "true"
     app_search_must = app_type["is_search"] == "true"
-    if not app_chat_must:
+    if not (app_chat_must or app_summarize_must or app_search_must):
         if app_type["is_ai"] == "true":
             prompt_template_must = True
 
     helper = ""
     if prompt_template_must:
-        helper += "Since the application is AI-based, you must use 'prompt_template' task in the steps.\n"
+        helper += "Since the application is AI-based, you must use either 'prompt_template' task in the steps.\n"
+    if app_summarize_must:
+        helper += "Since the application requires summarization, you must use 'doc_summarizer' task in the steps.\n"
     if app_search_must:
-        helper += "Since the application requires up to date knowledge in the web, you must use 'plan_and_execute' task in the steps.\n"
+        if app_chat_must:
+            helper += "Since the application requires up to date knowledge in the web, you must use either 'search_chat' task in the steps.\n"
+        else:
+            helper += "Since the application requires up to date knowledge in the web, you must use either 'plan_and_execute' task in the steps.\n"
+            
     if app_chat_must:
-        helper += "Since the application is chat-based, you must use 'ui_input_chat', 'chat' and 'ui_output_chat' task in the steps.\n"
+        if app_search_must:
+            helper += "Since the application is chat-based, you must use 'ui_input_chat' and 'ui_output_chat' and 'search_chat' tasks in the steps.\n"
+        else:
+            helper += "Since the application is chat-based, you must use 'ui_input_chat' and 'ui_output_chat' and 'chat' tasks in the steps.\n"
 
     return helper

@@ -186,12 +186,14 @@ def checkInputOutputLengthCompatiblity(tasks, app_type):
 def checkAppTypeCompatiblity_old(tasks, app_type):
     must_chat_tasks = {"ui_input_chat", "chat", "ui_output_chat"}
     must_prompt_template_tasks = {"prompt_template"}
+    must_summary_template_tasks = {"doc_summarizer"}
     must_search_tasks = {"plan_and_execute"}
 
     task_types_list= [task["task_type"] for task in tasks]
     task_types = set(task_types_list)
 
     task_prompt_template = must_prompt_template_tasks & task_types
+    task_summary = must_summary_template_tasks & task_types
     task_search = must_search_tasks & task_types
     task_chat = must_chat_tasks & task_types
 
@@ -199,7 +201,8 @@ def checkAppTypeCompatiblity_old(tasks, app_type):
 
     app_chat = app_type["is_chat"] == "true"
     app_search = app_type["is_search"] == "true"
-    if not app_chat:
+    app_summary = app_type["is_summary"] == "true"
+    if not (app_chat or app_search or app_summary):
         if app_type["is_ai"] == "true":
             app_prompt_template = 1
         else:
@@ -234,6 +237,14 @@ def checkAppTypeCompatiblity_old(tasks, app_type):
     elif app_prompt_template == -1:
         for task_type in task_prompt_template:
             feedback += f"The app is not ai-based but you used {task_type} in your tasks which is redundant. Please remove it and try again\n"
+    ################################################################################################################################################
+    # prompt_template app check
+    if app_summary:
+        for task_type in must_summary_template_tasks - task_summary:
+            feedback += f"The app requires summarization but you didn't use {task_type} in your tasks. Please add it and try again\n"
+    else:
+        for task_type in task_summary:
+            feedback += f"The app does not require summarization but you used {task_type} in your tasks which is redundant. Please remove it and try again\n"
     ################################################################################################################################################
     # search-python compatiblity
     python_tasks = [task for task in tasks if task["task_type"] == "python"]
@@ -268,6 +279,7 @@ def checkAppTypeCompatiblity_old(tasks, app_type):
 def checkAppTypeCompatiblity(tasks, app_type):
     must_chat_tasks = {"ui_input_chat", "chat", "ui_output_chat", "search_chat"}
     must_prompt_template_tasks = {"prompt_template"}
+    must_summary_template_tasks = {"doc_summarizer"}
     must_search_tasks = {"plan_and_execute", "search_chat"}
 
     task_types_list= [task["task_type"] for task in tasks]
@@ -277,7 +289,8 @@ def checkAppTypeCompatiblity(tasks, app_type):
 
     app_chat = app_type["is_chat"] == "true"
     app_search = app_type["is_search"] == "true"
-    if not (app_chat or app_search):
+    app_summary = app_type["is_summary"] == "true"
+    if not (app_chat or app_search or app_summary):
         if app_type["is_ai"] == "true":
             app_prompt_template = 1
         else:
@@ -295,6 +308,7 @@ def checkAppTypeCompatiblity(tasks, app_type):
         must_chat_tasks.remove("search_chat")
         
     task_prompt_template = must_prompt_template_tasks & task_types
+    task_summary = must_summary_template_tasks & task_types
     task_search = must_search_tasks & task_types
     task_chat = must_chat_tasks & task_types        
 
@@ -327,6 +341,14 @@ def checkAppTypeCompatiblity(tasks, app_type):
     elif app_prompt_template == -1:
         for task_type in task_prompt_template:
             feedback += f"The app is not ai-based but you used {task_type} in your tasks which is redundant. Please remove it and try again\n"
+    ################################################################################################################################################
+    # summarization app check
+    if app_summary:
+        for task_type in must_summary_template_tasks - task_summary:
+            feedback += f"The app requires summarization but you didn't use {task_type} in your tasks. Please add it and try again\n"
+    else:
+        for task_type in task_summary:
+            feedback += f"The app does not require summarization but you used {task_type} in your tasks which is redundant. Please remove it and try again\n"
     ################################################################################################################################################
     # search-python compatiblity
     python_tasks = [task for task in tasks if task["task_type"] == "python"]

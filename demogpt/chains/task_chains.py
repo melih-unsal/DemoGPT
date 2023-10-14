@@ -462,16 +462,16 @@ from langchain.docstore.document import Document
 from langchain.chat_models import ChatOpenAI
 from langchain.chains.summarize import load_summarize_chain
 
-def {function_name}(docs):
+def {function_name}({argument}):
     llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
     chain = load_summarize_chain(llm, chain_type="stuff")
     with st.spinner('DemoGPT is working on it. It might take 5-10 seconds...'):
-        return chain.run(docs)
+        return chain.run({argument})
 if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
     {variable} = ""
 elif {argument}:
-    {variable} = summarize({argument})
+    {variable} = {function_name}({argument})
 else:
     variable = ""
 """
