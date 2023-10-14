@@ -230,6 +230,7 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
                 "percentage": 60,
                 "done": False,
                 "message": "Converting tasks to code snippets...",
+                "title":title
             }
 
             num_of_tasks = len(task_list)
@@ -245,6 +246,7 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
                     "done": False,
                     "message": f"{i+1}/{num_of_tasks} tasks have been converted to code",
                     "code": code,
+                    "title":title
                 }
 
             sleep(1)
@@ -255,6 +257,7 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
                 "percentage": 85,
                 "done": False,
                 "message": "Code snippets are being combined...",
+                "title":title
             }
 
             chat_app = any(
@@ -292,4 +295,5 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
                 "done": True,
                 "message": "Final code has been generated. Directing to the demo page...",
                 "code": final_code,
+                "title":title
             }
