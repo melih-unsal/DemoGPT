@@ -28,8 +28,8 @@ except Exception as e:
     logging.error("dotenv import error but no needed")
 
 
-def generate_response(txt, title):
-    for data in agent(txt, title):
+def generate_response(txt):
+    for data in agent(txt):
         yield data
         
 toast_messages = [
@@ -56,7 +56,7 @@ def create(code):
                 index += 1
 
             with open(tmp.name, 'rb') as file:
-                res = requests.post(DEPLOY_URL + "create", data={"code": code, "prompt":demo_idea, "title":demo_title}, files={"image": file})
+                res = requests.post(DEPLOY_URL + "create", data={"code": code, "prompt":demo_idea, "title":st.session_state.title}, files={"image": file})
                 try:
                     st.session_state.app_id = res.json()["id"]
                     st.session_state.url = getUrl(st.session_state.app_id) 
@@ -71,7 +71,7 @@ def sendEmail(email):
                         data={
                             "email": email, 
                             "description":demo_idea,
-                            "title":demo_title
+                            "title":st.session_state.title
                             }
                         )
                      
@@ -123,25 +123,29 @@ model_name = st.sidebar.selectbox("Model", models)
 st.sidebar.markdown(components.about)
 st.sidebar.markdown(components.faq)
 
-empty_idea = st.empty()
-demo_idea = empty_idea.text_area(
-    "Enter your LLM-based demo idea",
-    placeholder="Type your demo idea here",
+overview = st.text_area(
+    "Explain your LLM-based application idea *",
+    placeholder="Type your application idea here",
     height=100,
     help="""## Example prompts
-* Character Clone: Want an app that converses like Jeff Bezos? Prompt - "Create me a chat-based application that talks like Jeff Bezos."
-* Language Mastery: Need help in learning French? Prompt - "Create me an application that translates English sentences to French and provides pronunciation guidance for learners. 
-* Content Generation: Looking to generate content? Prompt - "Create a system that can write ready to share Medium article from website. The resulting Medium article should be creative and interesting and written in a markdown format."
+* Character Clone: Want an app that converses like Jeff Bezos? Prompt - "A chat-based application that talks like Jeff Bezos."
+* Language Mastery: Need help in learning French? Prompt - "An application that translates English sentences to French and provides pronunciation guidance for learners. 
+* Content Generation: Looking to generate content? Prompt - "A system that can write ready to share Medium article from website. The resulting Medium article should be creative and interesting and written in a markdown format."
     """,
 )
 
-empty_title = st.empty()
-demo_title = empty_title.text_input(
-    "Give a name for your application",
-    placeholder="Title",
-    help="It will be displayed as a title in your app",
-)
+features = st.text_input(
+    "List all specific features desired for your app (comma seperated)",
+    placeholder="Document interpretation, question answering, ...",
+    help="Please provide a comprehensive list of specific features and functionalities you envision in your application, ensuring each element supports your overall objectives and user needs.(comma seperated)"
+    )
 
+if overview and features:
+    demo_idea = f"Overview:{overview}\nFeatures:{features}"
+elif overview:
+    demo_idea = overview
+else:
+    demo_idea = ""
 
 def progressBar(percentage, bar=None):
     if bar:
@@ -162,13 +166,12 @@ with st.form("a", clear_on_submit=True):
 if submitted:
     if not demo_idea:
         st.warning("Please enter your demo idea", icon="⚠️")
-    if not demo_title:
-        st.warning("Please enter your demo title (which will be the title of the generated app)", icon="⚠️")
+        st.stop()
         
     st.session_state.messages = []
     if not openai_api_key.startswith("sk-"):
         st.warning("Please enter your OpenAI API Key!", icon="⚠️")
-    elif demo_idea and demo_title:
+    elif demo_idea:
         bar = progressBar(0)
         st.session_state.container = st.container()
         try:
@@ -182,7 +185,7 @@ if submitted:
             st.session_state.done = False
             st.session_state.app_deployed = False
             st.session_state.app_editted = False
-            for data in generate_response(demo_idea, demo_title):
+            for data in generate_response(demo_idea):
                 done = data.get("done",False)
                 failed = data.get("failed", False)
                 message = data.get("message","")
@@ -197,6 +200,7 @@ if submitted:
 
                 if done or failed:
                     st.session_state.code = code
+                    st.session_state.title=data.get("title","")
                     break
                 
                 st.info(message,icon="🧩") 
