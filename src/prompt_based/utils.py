@@ -1,17 +1,17 @@
+import json
 from subprocess import PIPE, Popen
 
+import cv2
+import numpy as np
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
+from langchain.embeddings import OpenAIEmbeddings
 from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
-from langchain.embeddings import OpenAIEmbeddings
-
-from pilmoji import Pilmoji
 from PIL import Image, ImageDraw, ImageFont
-import numpy as np
-import cv2
-import json
+from pilmoji import Pilmoji
+
 
 # Function to generate a random color
 def random_color():

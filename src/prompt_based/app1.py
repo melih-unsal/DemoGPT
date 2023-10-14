@@ -1,16 +1,16 @@
 import logging
 import os
 import signal
-
-import streamlit as st
-from utils import  generateImage, getUrl
-import components
-from demogpt import DemoGPT
-import requests
 import tempfile
-import cv2
 import webbrowser
 from time import sleep
+
+import components
+import cv2
+import requests
+import streamlit as st
+from demogpt import DemoGPT
+from utils import generateImage, getUrl
 
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_ENDPOINT"]="https://api.smith.langchain.com"
