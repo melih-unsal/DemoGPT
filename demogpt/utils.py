@@ -226,7 +226,7 @@ if not openai_api_key.startswith('sk-'):
     {variable} = ""
 elif {' and '.join(inputs)}:
     with st.spinner('DemoGPT is working on it. It takes less than 10 seconds...'):
-        {variable} = chat_llm_chain.run({run_call})
+        {variable} = {signature}
 else:
     {variable} = ""
 """
@@ -243,17 +243,20 @@ from langchain.chat_models import ChatOpenAI
 
 msgs = StreamlitChatMessageHistory()
 
-prompt = PromptTemplate(
-    input_variables={input_variables}, template='''{system_template}'''
-)
-memory = ConversationBufferMemory(memory_key="chat_history", input_key="{human_input}", chat_memory=msgs, return_messages=True)
-llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key, temperature={temperature})
-chat_llm_chain = LLMChain(
-    llm=llm,
-    prompt=prompt,
-    verbose=False,
-    memory=memory,
-)
+def {signature}:
+    prompt = PromptTemplate(
+        input_variables={input_variables}, template='''{system_template}'''
+    )
+    memory = ConversationBufferMemory(memory_key="chat_history", input_key="{human_input}", chat_memory=msgs, return_messages=True)
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key, temperature={temperature})
+    chat_llm_chain = LLMChain(
+        llm=llm,
+        prompt=prompt,
+        verbose=False,
+        memory=memory
+        )
+    
+    return chat_llm_chain.run({run_call})
     
 {function_call} 
 
