@@ -25,7 +25,7 @@ except Exception as e:
     logging.error("dotenv import error but no needed")
 
 
-def generate_response(txt, title):
+def generate_response(txt):
     """
     Generate response using the LangChainCoder.
 
@@ -35,7 +35,7 @@ def generate_response(txt, title):
     Yields:
         dict: A dictionary containing response information.
     """
-    for data in agent(txt, title):
+    for data in agent(txt):
         yield data
 
 
@@ -82,25 +82,29 @@ models = (
 
 model_name = st.sidebar.selectbox("Model", models)
 
-empty_idea = st.empty()
-demo_idea = empty_idea.text_area(
-    "Enter your LLM-based demo idea",
-    placeholder="Type your demo idea here",
+overview = st.text_area(
+    "Explain your LLM-based application idea *",
+    placeholder="Type your application idea here",
     height=100,
     help="""## Example prompts
-* Character Clone: Want an app that converses like Jeff Bezos? Prompt - "Create me a chat-based application that talks like Jeff Bezos."
-* Language Mastery: Need help in learning French? Prompt - "Create me an application that translates English sentences to French and provides pronunciation guidance for learners. 
-* Content Generation: Looking to generate content? Prompt - "Create a system that can write ready to share Medium article from website. The resulting Medium article should be creative and interesting and written in a markdown format."
+* Character Clone: Want an app that converses like Jeff Bezos? Prompt - "A chat-based application that talks like Jeff Bezos."
+* Language Mastery: Need help in learning French? Prompt - "An application that translates English sentences to French and provides pronunciation guidance for learners. 
+* Content Generation: Looking to generate content? Prompt - "A system that can write ready to share Medium article from website. The resulting Medium article should be creative and interesting and written in a markdown format."
     """,
 )
 
-empty_title = st.empty()
-demo_title = empty_title.text_input(
-    "Give a name for your application",
-    placeholder="Title",
-    help="It will be displayed as a title in your app",
-)
+features = st.text_input(
+    "List all specific features desired for your app (comma seperated)",
+    placeholder="Document interpretation, question answering, ...",
+    help="Please provide a comprehensive list of specific features and functionalities you envision in your application, ensuring each element supports your overall objectives and user needs.(comma seperated)"
+    )
 
+if overview and features:
+    demo_idea = f"Overview:{overview}\nFeatures:{features}"
+elif overview:
+    demo_idea = overview
+else:
+    demo_idea = ""
 
 def progressBar(percentage, bar=None):
     if bar:
@@ -130,10 +134,14 @@ def kill():
 
 
 if submitted:
+    if not demo_idea:
+        st.warning("Please enter your demo idea", icon="⚠️")
+        st.stop()
+        
     st.session_state.messages = []
     if not openai_api_key:
         st.warning("Please enter your OpenAI API Key!", icon="⚠️")
-    else:
+    elif demo_idea:
         bar = progressBar(0)
         st.session_state.container = st.container()
         try:
@@ -145,7 +153,7 @@ if submitted:
             kill()
             code_empty = st.empty()
             st.session_state.container = st.container()
-            for data in generate_response(demo_idea, demo_title):
+            for data in generate_response(demo_idea):
                 done = data.get("done", False)
                 failed = data.get("failed", False)
                 message = data.get("message", "")
