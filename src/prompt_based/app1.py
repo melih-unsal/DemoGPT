@@ -123,20 +123,31 @@ model_name = st.sidebar.selectbox("Model", models)
 st.sidebar.markdown(components.about)
 st.sidebar.markdown(components.faq)
 
-empty_idea = st.empty()
-demo_idea = empty_idea.text_area(
+overview = st.text_area(
     "Enter your LLM-based demo idea",
     placeholder="Type your demo idea here",
     height=100,
     help="""## Example prompts
-* Character Clone: Want an app that converses like Jeff Bezos? Prompt - "Create me a chat-based application that talks like Jeff Bezos."
-* Language Mastery: Need help in learning French? Prompt - "Create me an application that translates English sentences to French and provides pronunciation guidance for learners. 
-* Content Generation: Looking to generate content? Prompt - "Create a system that can write ready to share Medium article from website. The resulting Medium article should be creative and interesting and written in a markdown format."
+* Character Clone: Want an app that converses like Jeff Bezos? Prompt - "A chat-based application that talks like Jeff Bezos."
+* Language Mastery: Need help in learning French? Prompt - "An application that translates English sentences to French and provides pronunciation guidance for learners. 
+* Content Generation: Looking to generate content? Prompt - "A system that can write ready to share Medium article from website. The resulting Medium article should be creative and interesting and written in a markdown format."
     """,
 )
 
-empty_title = st.empty()
-demo_title = empty_title.text_input(
+features = st.text_input(
+    "Enter your requested comma seperated features",
+    placeholder="Document interpretation, question answering, ..."
+    )
+
+if overview and features:
+    demo_idea = f"Overview:{overview}\nFeatures:{features}"
+elif overview:
+    demo_idea = overview
+else:
+    demo_idea = ""
+    
+
+demo_title = st.text_input(
     "Give a name for your application",
     placeholder="Title",
     help="It will be displayed as a title in your app",
@@ -162,13 +173,12 @@ with st.form("a", clear_on_submit=True):
 if submitted:
     if not demo_idea:
         st.warning("Please enter your demo idea", icon="⚠️")
-    if not demo_title:
-        st.warning("Please enter your demo title (which will be the title of the generated app)", icon="⚠️")
+        st.stop()
         
     st.session_state.messages = []
     if not openai_api_key.startswith("sk-"):
         st.warning("Please enter your OpenAI API Key!", icon="⚠️")
-    elif demo_idea and demo_title:
+    elif demo_idea:
         bar = progressBar(0)
         st.session_state.container = st.container()
         try:
