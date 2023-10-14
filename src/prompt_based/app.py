@@ -59,7 +59,7 @@ def create(code):
                 res = requests.post(DEPLOY_URL + "create", data={"code": code, "prompt":demo_idea, "title":demo_title}, files={"image": file})
                 try:
                     st.session_state.app_id = res.json()["id"]
-                    st.session_state.url = getUrl(st.session_state.app_id, demo_title, demo_idea) 
+                    st.session_state.url = getUrl(st.session_state.app_id) 
                 except:
                     yield index
                 else:
