@@ -340,27 +340,21 @@ def runStreamlit(code, openai_api_key, openai_api_base=None):
     tmp = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False, encoding="utf-8")
     tmp.write(code)
     tmp.flush()
-    environmental_variables = {
-        "OPENAI_API_KEY": openai_api_key,
-        "STREAMLIT_SERVER_PORT": "8502",
-        "OPENAI_API_BASE": openai_api_base,
-    }
-    streamlit_path = shutil.which("streamlit")
-    if True or platform.system() == "Windows":
-        env = os.environ.copy()
-        env["PYTHONPATH"] = ""
-        env["OPENAI_API_KEY"] = openai_api_key
-        env["STREAMLIT_SERVER_PORT"] = "8502"
-        if openai_api_base:
-            env["OPENAI_API_BASE"] = openai_api_base
-        python_path = sys.executable
-        process = Popen(
-            [python_path, "-m", "streamlit", "run", tmp.name],
-            env=env,
-            stdout=PIPE,
-            stderr=PIPE,
-        )
-        threading.Thread(target=runThread, args=(process,)).start()
+    env = os.environ.copy()
+    env["PYTHONPATH"] = ""
+    env["OPENAI_API_KEY"] = openai_api_key
+    #env["STREAMLIT_SERVER_PORT"] = "8502"
+    env["OPENAI_API_BASE"] = openai_api_base
+    if openai_api_base:
+        env["OPENAI_API_BASE"] = openai_api_base
+    python_path = sys.executable
+    process = Popen(
+        [python_path, "-m", "streamlit", "run", tmp.name],
+        env=env,
+        stdout=PIPE,
+        stderr=PIPE,
+    )
+    threading.Thread(target=runThread, args=(process,)).start()
     try:
         tmp.close()
     except PermissionError:
