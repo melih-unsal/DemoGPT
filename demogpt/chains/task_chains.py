@@ -29,6 +29,7 @@ class TaskChains:
             openai_api_key=openai_api_key,
             temperature=temperature,
             openai_api_base=openai_api_base,
+            request_timeout=120
         )
 
     @classmethod
@@ -230,7 +231,7 @@ memory = ConversationBufferMemory(
 )
 
 def {function_name}({argument}):
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key)
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key, request_timeout=120)
     llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
     tools = [
         DuckDuckGoSearchRun(name="Search"),
@@ -299,7 +300,7 @@ def {function_name}({argument}):
             description="useful for when you need to answer questions about math"
         ),
     ]
-    model = ChatOpenAI(openai_api_key=openai_api_key, temperature=0)
+    model = ChatOpenAI(openai_api_key=openai_api_key, temperature=0, request_timeout=120)
     agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
     st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
     return agent.run(search_input, callbacks=[st_cb])
@@ -463,7 +464,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains.summarize import load_summarize_chain
 
 def {function_name}({argument}):
-    llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
+    llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k", request_timeout=120)
     chain = load_summarize_chain(llm, chain_type="stuff")
     with st.spinner('DemoGPT is working on it. It might take 5-10 seconds...'):
         return chain.run({argument})
