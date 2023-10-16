@@ -35,8 +35,7 @@ class Chains:
             model=model,
             openai_api_key=openai_api_key,
             temperature=temperature,
-            openai_api_base=openai_api_base,
-            request_timeout=80,  max_retries=10
+            openai_api_base=openai_api_base
         )
         cls.model = model
     
@@ -47,8 +46,7 @@ class Chains:
                 model=change_model,
                 openai_api_key=cls.openai_api_key,
                 temperature=temperature,
-                openai_api_base=cls.openai_api_base,
-                request_timeout=80,  max_retries=10
+                openai_api_base=cls.openai_api_base
         )
         
         if temperature > 0:
@@ -56,8 +54,7 @@ class Chains:
                 model=cls.model,
                 openai_api_key=cls.openai_api_key,
                 temperature=temperature,
-                openai_api_base=cls.openai_api_base,
-                request_timeout=80,  max_retries=10
+                openai_api_base=cls.openai_api_base
         )
         
         return cls.llm
