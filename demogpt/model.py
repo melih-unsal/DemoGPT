@@ -1,16 +1,19 @@
 import os
+import textwrap
 from time import sleep
-import openai
 
 import autopep8
+import openai
+import streamlit as st
 from tqdm import trange
 
 from demogpt.chains.chains import Chains
 from demogpt.chains.task_chains import TaskChains
 from demogpt.chains.task_chains_seperate import TaskChainsSeperate
-from demogpt.utils import getCodeSnippet, getFunctionNames, init, initSeperate, reorderTasksForChatApp, getCodeSnippetSeperate
-import streamlit as st
-import textwrap
+from demogpt.utils import (getCodeSnippet, getCodeSnippetSeperate,
+                           getFunctionNames, init, initSeperate,
+                           reorderTasksForChatApp)
+
 
 class DemoGPT:
     def __init__(

@@ -1,6 +1,8 @@
 import re
 from functools import reduce
+
 from demogpt.chains.task_definitions import getTasks
+
 
 def planToTaskFormat(plan):
     pattern = re.compile(r"\b(\w+)\(([^)]*)\)( ---> ([\w_,\s]+))?")

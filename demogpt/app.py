@@ -4,7 +4,6 @@ import signal
 import sys
 
 import streamlit as st
-
 import streamlit.components.v1 as components
 
 current_file_path = os.path.abspath(__file__)
@@ -15,7 +14,6 @@ sys.path.append(grandparent_directory)
 
 from model import DemoGPT
 from utils import runStreamlit
-
 
 try:
     from dotenv import load_dotenv
