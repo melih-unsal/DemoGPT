@@ -21,7 +21,7 @@ Please classify your app idea based on the following criteria and generate the a
     
 4. is_summary:
     - True if:
-        a. The app idea explicitly mention summarization need.
+        a. The app idea explicitly requires summarization.
     - False otherwise.
     
 Example JSON Format:

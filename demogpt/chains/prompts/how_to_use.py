@@ -6,14 +6,14 @@ Aware that you continue on this below. This lines are mandatory:
 '''
 # How to use
 
-1. Enter your [OpenAI API key](https://platform.openai.com/account/api-keys) below🔑
+1. Enter your [OpenAI API key](https://platform.openai.com/account/api-keys) above🔑
 
 '''
 
 Since OpenAI API Key is mentioned once, don't mention again, try to be as concise as possible.
 Don't generate redundant steps.
 Start with # How to use
-Then 1. Enter your [OpenAI API key](https://platform.openai.com/account/api-keys) below🔑
+Then 1. Enter your [OpenAI API key](https://platform.openai.com/account/api-keys) above🔑
 Then continue 2....
 """
 

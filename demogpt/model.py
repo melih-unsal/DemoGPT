@@ -1,5 +1,4 @@
 import os
-import sys
 from time import sleep
 import openai
 
@@ -8,8 +7,10 @@ from tqdm import trange
 
 from demogpt.chains.chains import Chains
 from demogpt.chains.task_chains import TaskChains
-from demogpt.utils import getCodeSnippet, getFunctionNames, init, reorderTasksForChatApp
+from demogpt.chains.task_chains_seperate import TaskChainsSeperate
+from demogpt.utils import getCodeSnippet, getFunctionNames, init, initSeperate, reorderTasksForChatApp, getCodeSnippetSeperate
 import streamlit as st
+import textwrap
 
 class DemoGPT:
     def __init__(
@@ -56,6 +57,9 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
         TaskChains.setLlm(
             self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
         )
+        TaskChainsSeperate.setLlm(
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+        )
                     
     @property
     def hasGPT4(self):
@@ -69,6 +73,9 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
             self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, has_gpt4=self.hasGPT4
         )
         TaskChains.setLlm(
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+        )
+        TaskChainsSeperate.setLlm(
             self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
         )
 
@@ -297,3 +304,258 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
                 "code": final_code,
                 "title":title
             }
+
+    def call(
+        self,
+        instruction="Create a translation system that converts English to French",
+        title="",
+    ):
+        
+        def getCode(imports, functions, prefix, inputs, outputs, how_to, about, title):
+            return f"""
+{imports}
+
+{functions}
+
+{prefix}
+
+{how_to}
+
+{about}
+
+with st.form(key="form"):
+    st.title('{title}')
+{inputs}
+    submit_button = st.form_submit_button(label='Submit')
+    if not openai_api_key.startswith('sk-'):
+        st.warning('Please enter your OpenAI API key!', icon='âš ')
+    if submit_button:
+{outputs}
+"""
+        
+        yield {
+            "stage": "system_inputs",
+            "completed": False,
+            "percentage": 0,
+            "done": False,
+            "message": "System inputs are being detected...",
+            "failed": False,
+        }
+
+        app_type = Chains.appType(instruction=instruction)
+        
+        if app_type["is_chat"] == "true":
+            for data in self.__call__(instruction):
+                yield data            
+        else:
+        
+            system_inputs = Chains.systemInputs(instruction=instruction)
+
+            yield {
+                "stage": "plan",
+                "completed": False,
+                "percentage": 10,
+                "done": False,
+                "message": "Plan creation has started...",
+                "failed": False,
+            }
+            
+            sleep(10)
+
+            plan = Chains.planWithInputs(
+                instruction=instruction, system_inputs=system_inputs, app_type=app_type
+            )
+
+            yield {
+                "stage": "plan",
+                "completed": True,
+                "percentage": 20,
+                "done": False,
+                "message": "Plan has been generated.",
+                "failed": False,
+            }
+
+            sleep(10)
+
+            yield {
+                "stage": "plan_controlling",
+                "completed": True,
+                "percentage": 25,
+                "done": False,
+                "message": "Plan is being controlled.",
+                "failed": False,
+            }
+
+            plan_controller_result = Chains.planController(plan=plan, app_type=app_type)
+
+            for _ in trange(self.plan_max_steps):
+                sleep(10)
+                if not plan_controller_result["valid"]:
+                    plan = Chains.planRefiner(
+                        instruction=instruction,
+                        plan=plan,
+                        feedback=plan_controller_result["feedback"],
+                        app_type=app_type,
+                    )
+                    plan_controller_result = Chains.planController(
+                        plan=plan, app_type=app_type
+                    )
+                else:
+                    break
+
+            yield {
+                "stage": "task",
+                "completed": False,
+                "percentage": 30,
+                "done": False,
+                "message": "Task generation has started...",
+                "failed": False,
+            }
+
+            task_list = Chains.tasks(
+                instruction=instruction, plan=plan, app_type=app_type
+            )
+
+            yield {
+                "stage": "task",
+                "completed": True,
+                "percentage": 50,
+                "done": False,
+                "message": "Tasks have been generated.",
+                "tasks": task_list,
+                "failed": False,
+            }
+
+            sleep(10)
+
+            yield {
+                "stage": "task_controlling",
+                "completed": True,
+                "percentage": 55,
+                "done": False,
+                "message": "Tasks are being controlled.",
+                "failed": False,
+            }
+
+            task_controller_result = Chains.taskController(
+                tasks=task_list, app_type=app_type
+            )
+
+            for _ in trange(self.max_steps):
+                sleep(10)
+                if not task_controller_result["valid"]:
+                    try:
+                        task_list = Chains.refineTasks(
+                            instruction=instruction,
+                            tasks=task_list,
+                            feedback=task_controller_result["feedback"],
+                            app_type=app_type,
+                        )
+                        task_controller_result = Chains.taskController(
+                            tasks=task_list, app_type=app_type
+                        )
+                    except Exception as e:
+                        print(e)
+                        if "16k" in Chains.model:
+                            break
+                        st.toast(
+                            "To increase the window size, changing model type to gpt-3.5-turbo-16k-0613"
+                        )
+                        Chains.setModel("gpt-3.5-turbo-16k-0613")
+                else:
+                    break
+
+            if not task_controller_result["valid"]:
+
+                yield {
+                    "stage": "task",
+                    "completed": False,
+                    "percentage": 100,
+                    "done": False,
+                    "message": self.FAIL_MESSAGE,
+                    "failed": True,
+                }
+
+            else:
+                
+                imports = ""
+                functions = ""
+                inputs = ""
+                outputs = ""
+                
+                title = Chains.title(instruction=instruction)
+                
+                task_list = reorderTasksForChatApp(task_list) # for chat apps, remove the code between chat input and chat output
+                
+                res = initSeperate(title)
+                
+                prefix = res["prefix"]
+                
+                imports = res["imports"]
+                
+                code_snippets = res["code"]
+                
+                sleep(1)
+
+                yield {
+                    "stage": "draft",
+                    "completed": False,
+                    "percentage": 60,
+                    "done": False,
+                    "message": "Converting tasks to code snippets...",
+                    "title":title
+                }
+
+                num_of_tasks = len(task_list)
+
+                for i, task in enumerate(task_list):
+                    res = getCodeSnippetSeperate(task, code_snippets, self.max_steps)
+                    code = "#" + task["description"] + "\n" + res["code"]
+                    
+                    if res["imports"] not in imports:
+                        imports += res["imports"] + "\n"
+                    functions += res["functions"] + "\n"
+                    inputs += res["inputs"] + "\n"
+                    outputs += res["outputs"] + "\n"
+                    
+                    code_snippets += code
+                    
+                    yield {
+                        "stage": "draft",
+                        "completed": i + 1 == num_of_tasks,
+                        "percentage": 60 + int(20 * (i + 1) / num_of_tasks),
+                        "done": False,
+                        "message": f"{i+1}/{num_of_tasks} tasks have been converted to code",
+                        "code": code,
+                        "title":title
+                    }
+
+                sleep(1)
+
+                yield {
+                    "stage": "draft",
+                    "completed": False,
+                    "percentage": 85,
+                    "done": False,
+                    "message": "Code snippets are being combined...",
+                    "title":title
+                }
+                
+                inputs = textwrap.indent(inputs, 4*' ')
+                outputs = textwrap.indent(outputs, 8*' ')
+                
+                how_to, about = Chains.getAboutAndHTU(instruction, title, code_snippets)
+                
+                final_code = getCode(imports, functions, prefix, inputs, outputs, how_to, about, title)
+                # finalize the format
+                final_code = autopep8.fix_code(final_code)
+
+                yield {
+                    "stage": "final",
+                    "completed": True,
+                    "percentage": 100,
+                    "done": True,
+                    "message": "Final code has been generated. Directing to the demo page...",
+                    "code": final_code,
+                    "title":title
+                }

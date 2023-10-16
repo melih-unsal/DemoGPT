@@ -13,7 +13,7 @@ from demogpt import utils
 from demogpt.chains import prompts
 
 
-class TaskChains:
+class TaskChainsSeperate:
     llm = None
 
     @classmethod
@@ -51,7 +51,16 @@ class TaskChains:
             instruction=instruction,
             variable=variable,
         )
-        return utils.refine(code)
+        
+        code = utils.refine(code)
+        
+        return {
+            "imports":"",
+            "functions":"",
+            "inputs":code,
+            "outputs":"",
+            "code":code + "\n"
+        }
 
     @classmethod
     def uiOutputText(cls, task):
@@ -67,7 +76,15 @@ class TaskChains:
             args=args,
             data_type=data_type,
         )
-        return utils.refine(code)
+        code = utils.refine(code)
+        
+        return {
+            "imports":"",
+            "functions":"",
+            "inputs":"",
+            "outputs":code,
+            "code":code + "\n"
+        }
 
     @classmethod
     def uiInputFile(cls, task):
@@ -82,8 +99,10 @@ class TaskChains:
         res = json.loads(res)
         title = res.get("title")
         data_type = res.get("data_type")
-        code = f"""
+        inputs = f"""
 uploaded_file = st.file_uploader("{title}", type={data_type}, key='{variable}')
+        """
+        outputs = f"""
 if uploaded_file is not None:
     # Create a temporary file to store the uploaded content
     extension = uploaded_file.name.split(".")[-1]
@@ -93,7 +112,13 @@ if uploaded_file is not None:
 else:
     {variable} = ''
         """
-        return code
+        return {
+            "imports":"",
+            "functions":"",
+            "inputs":inputs,
+            "outputs":outputs,
+            "code":inputs + "\n" + outputs + "\n"
+        }
 
     @classmethod
     def pathToContent(cls, task, code_snippets):
@@ -109,8 +134,18 @@ else:
             variable=variable,
             code_snippets=code_snippets,
         )
-        return utils.refine(code)
+        code = utils.refine(code)
+        
+        imports, functions, inputs = utils.separateCode(code)
 
+        return {
+            "imports":imports,
+            "functions":functions,
+            "inputs":inputs,
+            "outputs":"",
+            "code":imports + "\n" + functions + "\n" + inputs + "\n"
+        }
+        
     @classmethod
     def promptTemplate(cls, task):
         inputs = ", ".join(task["input_key"])
@@ -147,15 +182,19 @@ if {variable} := st.chat_input("{placeholder}"):
     st.session_state.messages.append({{"role": "user", "content": {variable}}})
         """
         
-        return code
+        return {
+            "imports":"",
+            "functions":"",
+            "inputs":"",
+            "outputs":code,
+            "code":code + "\n"
+        }
 
     @classmethod
     def uiOutputChat(cls, task):
         res = ", ".join(task["input_key"])
 
         code = f"""
-import time
-
 with st.chat_message("assistant"):
     message_placeholder = st.empty()
     full_response = ""
@@ -170,7 +209,14 @@ with st.chat_message("assistant"):
     if full_response:
         st.session_state.messages.append({{"role": "assistant", "content": full_response}})        
         """
-        return code
+        
+        return {
+            "imports":"import time",
+            "functions":"",
+            "inputs":"",
+            "outputs":code,
+            "code":code + "\n"
+        }
 
     @classmethod
     def chat(cls, task):
@@ -219,7 +265,7 @@ with st.chat_message("assistant"):
         
         res = res.replace('"',"'")
 
-        code = f"""
+        imports = f"""
 from langchain.agents import ConversationalChatAgent, AgentExecutor
 from langchain.tools import DuckDuckGoSearchRun
 from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
@@ -233,7 +279,8 @@ msgs = StreamlitChatMessageHistory()
 memory = ConversationBufferMemory(
     chat_memory=msgs, return_messages=True, memory_key="chat_history", output_key="output"
 )
-
+        """
+        functions = f"""
 def {function_name}({argument}):
     llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key, request_timeout=80,  max_retries=10)
     llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
@@ -254,7 +301,8 @@ def {function_name}({argument}):
     )
     st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
     return executor({argument}, callbacks=[st_cb])["output"]
-
+        """
+        code = """
 if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
     {variable} = ""
@@ -262,10 +310,15 @@ elif {argument}:
     {variable} = {function_name}({argument})
 else:
     {variable} = ''
-  
         """
         
-        return code
+        return {
+            "imports":imports,
+            "functions":functions,
+            "inputs":"",
+            "outputs":code,
+            "code":imports + "\n" + functions + "\n" + code + "\n"
+        }
 
     @classmethod
     def search(cls, task):
@@ -283,7 +336,7 @@ else:
         
         res = res.replace('"',"'")
 
-        code = f"""
+        imports = f"""
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from langchain.tools import DuckDuckGoSearchRun
@@ -291,7 +344,8 @@ from langchain.agents.tools import Tool
 from langchain.agents import initialize_agent, AgentType
 from langchain.chains import LLMMathChain
 from langchain.callbacks import StreamlitCallbackHandler
-
+        """
+        functions = f"""
 def {function_name}({argument}):
     search_input = "{res}".format({argument}={argument})
     llm = OpenAI(openai_api_key=openai_api_key, temperature=0)
@@ -308,7 +362,8 @@ def {function_name}({argument}):
     agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
     st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
     return agent.run(search_input, callbacks=[st_cb])
-        
+        """
+        code = f"""
 if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
     {variable} = ""
@@ -317,7 +372,14 @@ elif {argument}:
 else:
     {variable} = ''
         """
-        return code
+        
+        return {
+            "imports":imports,
+            "functions":functions,
+            "inputs":"",
+            "outputs":code,
+            "code":imports + "\n" + functions + "\n" + code + "\n"
+        }
 
     @classmethod
     def docLoad(cls, task, code_snippets):
@@ -425,37 +487,65 @@ else:
             
             loader_line = getLoaderCall(loader)
             
-        code = f"""
+        imports = f"""
 import shutil
 from langchain.document_loaders import *
+
+        """
+        functions = f"""
 
 def {function_name}({argument}):
     {loader_line}
     docs = loader.load()
     return docs
+        """
+        code = f"""
 if {argument}:
     {variable} = {function_name}({argument})
 else:
     {variable} = ''
         """
-        return code
+        
+        return {
+            "imports":imports,
+            "functions":functions,
+            "inputs":"",
+            "outputs":code,
+            "code":imports + "\n" + functions + "\n" + code + "\n"
+        }
 
     @classmethod
     def stringToDoc(cls, task):
         argument = ", ".join(task["input_key"])
         variable = ", ".join(task["output_key"])
-        code = f"""
+        imports = f"""
 from langchain.docstore.document import Document
+        """
+        code = f"""
 {variable} =  [Document(page_content={argument}, metadata={{'source': 'local'}})]
         """
-        return code
+        
+        return {
+            "imports":imports,
+            "functions":"",
+            "inputs":"",
+            "outputs":code,
+            "code":imports + "\n" + code + "\n"
+        }
 
     @classmethod
     def docToString(cls, task):
         argument = ", ".join(task["input_key"])
         variable = ", ".join(task["output_key"])
         code = f'{variable} = "".join([doc.page_content for doc in {argument}])'
-        return code
+        
+        return {
+            "imports":"",
+            "functions":"",
+            "inputs":"",
+            "outputs":code,
+            "code":code + "\n"
+        }
 
     @classmethod
     def summarize(cls, task):
@@ -463,24 +553,33 @@ from langchain.docstore.document import Document
         variable = ", ".join(task["output_key"])
         function_name = task["task_name"]
 
-        code = f"""
+        imports = f"""
 from langchain.chat_models import ChatOpenAI
 from langchain.chains.summarize import load_summarize_chain
-
+        """
+        functions = f"""
 def {function_name}({argument}):
     llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k", request_timeout=80,  max_retries=10)
     chain = load_summarize_chain(llm, chain_type="stuff")
     with st.spinner('DemoGPT is working on it. It might take 5-10 seconds...'):
         return chain.run({argument})
+        """
+        code = f"""
 if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
     {variable} = ""
 elif {argument}:
     {variable} = {function_name}({argument})
 else:
-    {variable} = ""
+    variable = ""
 """
-        return code
+        return {
+            "imports":imports,
+            "functions":functions,
+            "inputs":"",
+            "outputs":code,
+            "code":imports + "\n" + functions + "\n" + code + "\n"
+        }
 
     @classmethod
     def pythonCoder(cls, task, code_snippets):
@@ -498,4 +597,14 @@ else:
             function_name=function_name,
             code_snippets=code_snippets,
         )
-        return utils.refine(code)
+        code = utils.refine(code)
+        
+        imports, functions, outputs = utils.separateCode(code)
+
+        return {
+            "imports":imports,
+            "functions":functions,
+            "inputs":"",
+            "outputs":outputs,
+            "code":code
+        }

@@ -35,7 +35,7 @@ def generate_response(txt):
     Yields:
         dict: A dictionary containing response information.
     """
-    for data in agent(txt):
+    for data in agent.call(txt):
         yield data
 
 

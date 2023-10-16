@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import autopep8
 from time import sleep
 
 from langchain.chains import LLMChain
@@ -35,7 +36,7 @@ class Chains:
             openai_api_key=openai_api_key,
             temperature=temperature,
             openai_api_base=openai_api_base,
-            request_timeout=120
+            request_timeout=80,  max_retries=10
         )
         cls.model = model
     
@@ -47,7 +48,7 @@ class Chains:
                 openai_api_key=cls.openai_api_key,
                 temperature=temperature,
                 openai_api_base=cls.openai_api_base,
-                request_timeout=120
+                request_timeout=80,  max_retries=10
         )
         
         if temperature > 0:
@@ -56,7 +57,7 @@ class Chains:
                 openai_api_key=cls.openai_api_key,
                 temperature=temperature,
                 openai_api_base=cls.openai_api_base,
-                request_timeout=120
+                request_timeout=80,  max_retries=10
         )
         
         return cls.llm
@@ -151,18 +152,31 @@ class Chains:
     @classmethod
     def tasks(cls, instruction, plan, app_type):
         TASK_DESCRIPTIONS, TASK_NAMES= getTasks(app_type)[:2]
-
+        
         task_list = cls.getChain(
             system_template=prompts.tasks.system_template,
             human_template=prompts.tasks.human_template,
-            change=True,
-            change_model="gpt-3.5-turbo-16k-0613",
             instruction=instruction,
             plan=plan,
             TASK_DESCRIPTIONS=TASK_DESCRIPTIONS,
             TASK_NAMES=TASK_NAMES,
         )
-        tasks = json.loads(task_list)
+        try:
+            tasks = json.loads(task_list)
+        except:
+            print("Switching to 16k...")
+            task_list = cls.getChain(
+                system_template=prompts.tasks.system_template,
+                human_template=prompts.tasks.human_template,
+                change=True,
+                change_model="gpt-3.5-turbo-16k-0613",
+                instruction=instruction,
+                plan=plan,
+                TASK_DESCRIPTIONS=TASK_DESCRIPTIONS,
+                TASK_NAMES=TASK_NAMES,
+            )
+            tasks = json.loads(task_list)
+            
         return utils.reformatTasks(tasks)
 
     @classmethod
@@ -176,20 +190,33 @@ class Chains:
     @classmethod
     def refineTasks(cls, instruction, tasks, feedback, app_type):
         _, TASK_NAMES, _, TASK_PURPOSES = getTasks(app_type)[:4]
-
-        task_list = cls.getChain(
-            system_template=prompts.task_refiner.system_template,
-            human_template=prompts.task_refiner.human_template,
-            change=True,
-            change_model="gpt-3.5-turbo-16k-0613",
-            instruction=instruction,
-            tasks=tasks,
-            feedback=feedback,
-            TASK_NAMES=TASK_NAMES,
-            TASK_PURPOSES=TASK_PURPOSES,
-        )
-
-        tasks = json.loads(task_list)
+        
+        try:
+            task_list = cls.getChain(
+                system_template=prompts.task_refiner.system_template,
+                human_template=prompts.task_refiner.human_template,
+                instruction=instruction,
+                tasks=tasks,
+                feedback=feedback,
+                TASK_NAMES=TASK_NAMES,
+                TASK_PURPOSES=TASK_PURPOSES
+                )
+            tasks = json.loads(task_list)
+        except:
+            print("Switching to 16k...")
+            task_list = cls.getChain(
+                system_template=prompts.task_refiner.system_template,
+                human_template=prompts.task_refiner.human_template,
+                change=True,
+                change_model="gpt-3.5-turbo-16k-0613",
+                instruction=instruction,
+                tasks=tasks,
+                feedback=feedback,
+                TASK_NAMES=TASK_NAMES,
+                TASK_PURPOSES=TASK_PURPOSES,
+            )
+            tasks = json.loads(task_list)
+            
         return utils.reformatTasks(tasks)
 
     @classmethod
@@ -241,11 +268,28 @@ class Chains:
             system_template=prompts.combine_v2.system_template,
             human_template=prompts.combine_v2.human_template,
             change=True,
-            change_model="gpt-3.5-turbo-16k-0613",
+            change_model="gpt-3.5-turbo",
             code_snippets=code_snippets,
             function_names=function_names,
         )
-        return utils.refine(code)
+        code = utils.refine(code)
+        code = autopep8.fix_code(code)
+        
+        has_problem = utils.catchErrors(code)
+        
+        if has_problem:
+            print("Switching to the 16k...")
+            code = cls.getChain(
+                system_template=prompts.combine_v2.system_template,
+                human_template=prompts.combine_v2.human_template,
+                change=True,
+                change_model="gpt-3.5-turbo-16k-0613",
+                code_snippets=code_snippets,
+                function_names=function_names
+            )
+            code = utils.refine(code)
+        
+        return code
 
     @classmethod
     def feedback(cls, instruction, code):
@@ -284,6 +328,14 @@ class Chains:
         # substitute using regex
         final_code = re.sub(pattern, replacement, code_snippets, flags=re.DOTALL)
         return final_code
+    
+    @classmethod
+    def getAboutAndHTU(cls, instruction, title, code_snippets):
+        sleep(1)
+        how_to = cls.howToUse(code_snippets=code_snippets)
+        sleep(2)
+        about = cls.about(instruction=instruction, title=title)
+        return how_to, about 
 
     @classmethod
     def refine(cls, instruction, code, feedback):
