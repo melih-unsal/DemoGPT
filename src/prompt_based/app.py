@@ -131,9 +131,12 @@ model_name = st.sidebar.selectbox("Model", models)
 st.sidebar.markdown(components.about)
 st.sidebar.markdown(components.faq)
 
+url_data = st.experimental_get_query_params()
+
 overview = st.text_area(
     "Explain your LLM-based application idea *",
     placeholder="Type your application idea here",
+    value = url_data["prompt"][0] if "prompt" in url_data else "",
     height=100,
     help="""## Example prompts
 * Character Clone: Want an app that converses like Jeff Bezos? Prompt - "A chat-based application that talks like Jeff Bezos."
