@@ -356,7 +356,7 @@ with st.form(key="form"):
                 "failed": False,
             }
 
-            sleep(10)
+            sleep(1)
 
             yield {
                 "stage": "plan_controlling",
@@ -407,7 +407,7 @@ with st.form(key="form"):
                 "failed": False,
             }
 
-            sleep(10)
+            sleep(1)
 
             yield {
                 "stage": "task_controlling",

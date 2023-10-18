@@ -266,14 +266,14 @@ def getPlanGenHelper(app_type):
 
     helper = ""
     if prompt_template_must:
-        helper += "Since the application is AI-based, you must use either 'prompt_template' task in the steps.\n"
+        helper += "Since the application is AI-based, you must use 'prompt_template' task in the steps.\n"
     if app_summarize_must:
         helper += "Since the application requires summarization, you must use 'doc_summarizer' task in the steps.\n"
     if app_search_must:
         if app_chat_must:
-            helper += "Since the application requires up to date knowledge in the web, you must use either 'search_chat' task in the steps.\n"
+            helper += "Since the application requires up to date knowledge in the web, you must use 'search_chat' task in the steps.\n"
         else:
-            helper += "Since the application requires up to date knowledge in the web, you must use either 'plan_and_execute' task in the steps.\n"
+            helper += "Since the application requires up to date knowledge in the web, you must use 'plan_and_execute' task in the steps.\n"
             
     if app_chat_must:
         if app_search_must:

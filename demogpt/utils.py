@@ -11,6 +11,11 @@ from demogpt.chains.task_chains import TaskChains
 from demogpt.chains.task_chains_seperate import TaskChainsSeperate
 from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
 
+def inputs_joiner(var):
+    """
+    used in generating if statement. Instead of if var1 and var2 and ..., it also checks if it is bool.
+    """
+    return f"(isinstance({var},bool) or {var})"
 
 def separateCode(source):
     class CodeSeparator(ast.NodeVisitor):
@@ -244,7 +249,7 @@ def getCodeSnippetSeperate(task, code_snippets, iters=10):
     #task = refineKeyTypeCompatiblity(task)
     task_type = task["task_type"]
     if task_type == "ui_input_text":
-        res = TaskChainsSeperate.uiInputText(task=task)
+        res = TaskChainsSeperate.uiInputText(task=task, code_snippets=code_snippets)
     elif task_type == "ui_output_text":
         res = TaskChainsSeperate.uiOutputText(task=task)
     elif task_type in ["prompt_template", "chat"]:
@@ -327,8 +332,6 @@ def reformatTasks(tasks):
             io = [var.strip() for var in io.split(",")]
         return io
     
-    tasks = filterTasks(tasks)
-
     processed_tasks = []
     for task in tasks:
         task_input = preprocess(task["input_key"])
@@ -336,6 +339,8 @@ def reformatTasks(tasks):
         task["input_key"] = task_input
         task["output_key"] = task_output
         processed_tasks.append(task)
+        
+    processed_tasks = filterTasks(processed_tasks)
 
     return processed_tasks
 
@@ -374,7 +379,7 @@ def getChatCode(template, task):
 if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
     {variable} = ""
-elif {' and '.join(inputs)}:
+elif {" and ".join(list(map(inputs_joiner,inputs)))}:
     with st.spinner('DemoGPT is working on it. It takes less than 10 seconds...'):
         {variable} = {signature}
 else:
@@ -450,7 +455,7 @@ def getChatCodeSeperate(template, task):
 if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
     {variable} = ""
-elif {' and '.join(inputs)}:
+elif {" and ".join(list(map(inputs_joiner,inputs)))}:
     with st.spinner('DemoGPT is working on it. It takes less than 10 seconds...'):
         {variable} = {signature}
 else:
@@ -528,7 +533,7 @@ def getPromptChatTemplateCode(templates, task):
 if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
     {variable} = ""
-elif {' and '.join(inputs)}:
+elif {" and ".join(list(map(inputs_joiner,inputs)))}:
     with st.spinner('DemoGPT is working on it. It takes less than 10 seconds...'):
         {variable} = {signature}
 else:
@@ -584,7 +589,14 @@ def getPromptChatTemplateCodeSeperate(templates, task):
 
     if inputs == "none":
         signature = f"{templates['function_name']}()"
-        function_call = f"{variable} = {signature}"
+        function_call = f"""
+if not openai_api_key.startswith('sk-'):
+    st.warning('Please enter your OpenAI API key!', icon='⚠')
+    {variable} = ""
+else:
+    with st.spinner('DemoGPT is working on it. It takes less than 10 seconds...'):
+        {variable} = {signature}
+        """
     else:
         if isinstance(inputs, str):
             if inputs.startswith("["):
@@ -598,7 +610,7 @@ def getPromptChatTemplateCodeSeperate(templates, task):
 if not openai_api_key.startswith('sk-'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
     {variable} = ""
-elif {' and '.join(inputs)}:
+elif {" and ".join(list(map(inputs_joiner,inputs)))}:
     with st.spinner('DemoGPT is working on it. It takes less than 10 seconds...'):
         {variable} = {signature}
 else:

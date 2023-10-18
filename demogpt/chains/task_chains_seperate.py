@@ -42,13 +42,14 @@ class TaskChainsSeperate:
         return LLMChain(llm=cls.llm, prompt=chat_prompt).run(**kwargs)
 
     @classmethod
-    def uiInputText(cls, task):
+    def uiInputText(cls, task, code_snippets):
         variable = ", ".join(task["output_key"])
         instruction = task["description"]
         code = cls.getChain(
             human_template=prompts.ui_input_text.human_template,
             instruction=instruction,
             variable=variable,
+            code_snippets=code_snippets
         )
         
         code = utils.refine(code)

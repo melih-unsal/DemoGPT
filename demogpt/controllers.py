@@ -56,7 +56,8 @@ def checkTaskNames(tasks, app_type):
     }
 
 def validate(input, app_type):
-    if isinstance(input,str):#means plan
+    is_plan = isinstance(input,str) 
+    if is_plan:
         input = planToTaskFormat(input) 
     
     res1 = checkTaskNames(input, app_type)
@@ -64,6 +65,8 @@ def validate(input, app_type):
     res3 = checkRedundantTasks(input)
     res4 = checkInputOutputLengthCompatiblity(input, app_type)
     res5 = checkInputOuputCompatibility(input)
+    if not is_plan:
+        res6 = checkDTypes(input, app_type)
 
     feedback = ""
     
@@ -77,6 +80,9 @@ def validate(input, app_type):
         feedback += "\n" + res4["feedback"]
     if not res5["valid"]:
         feedback += "\n" + res5["feedback"]
+    if not is_plan:
+        if not res6["valid"]:
+            feedback += "\n" + res6["feedback"]
 
     valid = len(feedback) == 0
     
@@ -159,34 +165,23 @@ def checkInputOutputLengthCompatiblity(tasks, app_type):
             continue
         
         original_task = TASK_TYPE2_TASK[task_type]
-        
-        input_length = len(task["input_key"])
-        output_length = len(task["output_key"])
-        
         # input check
         if original_task["input_data_type"] == "none":
-            if input_length > 0:
+            if len(task["input_key"]) > 0:
                 feedback += f"Task {task_type} cannot have input\n"
         
         elif not original_task["input_data_type"].startswith("*"):
-            if input_length > 1:
+            if len(task["input_key"]) > 1:
                 feedback += f"Task {task_type} can only have single input but you gave multiple"
-        else:
-            if input_length != 1:
-                feedback += f"Task {task_type} must have single input but it has {input_length} inputs"
                 
         # output check
         if original_task["output_data_type"] == "none":
-            if output_length > 0:
+            if len(task["output_key"]) > 0:
                 feedback += f"Task {task_type} cannot have output\n"
                 
         elif not original_task["output_data_type"].startswith("*"):
-            if output_length > 1:
+            if len(task["output_key"]) > 1:
                 feedback += f"Task {task_type} can only have single output but you gave multiple"
-        else:
-            if output_length != 1:
-                feedback += f"Task {task_type} must have single output but it has {output_length} outputs"
-            
                 
     valid = len(feedback) == 0
     
@@ -415,7 +410,7 @@ def checkDTypes(tasks, app_type):
         reference_output = reference["output_data_type"]
 
         if task["step"] == 1:
-            if input_key != "none":
+            if len(input_key) > 0:
                 feedback += f"Since {name} is the first task, its input data type is supposed to be none but it is {input_key}.Please find another way.\n"
 
         elif reference_input == "*":
