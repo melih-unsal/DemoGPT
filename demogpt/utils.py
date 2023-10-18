@@ -80,14 +80,15 @@ def catchErrors(code):
     temp_path = ''
     try:
         # Create a temporary file
-        with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.py') as temp:
+        with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', delete=False, suffix='.py') as temp:
             # Write the code to the temporary file
             temp.write(code)
             temp_path = temp.name  # Get the path of the temporary file
 
         # Run flake8 on the temporary file
         result = subprocess.run(['flake8', '--select=E', '--ignore=E501', temp_path], capture_output=True, text=True)
-
+    except:
+        return True
     finally:
         # Clean up the temporary file if it has been created
         if temp_path and os.path.exists(temp_path):

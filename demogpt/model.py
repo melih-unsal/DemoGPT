@@ -85,10 +85,11 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
     def __repr__(self) -> str:
         return f"DemoGPT(model_name='{self.model_name}',max_steps={self.max_steps})"
 
-    def __call__(
+    def callForChat(
         self,
         instruction="Create a translation system that converts English to French",
         title="",
+        app_type={}
     ):
         
         yield {
@@ -101,7 +102,6 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
         }
 
         system_inputs = Chains.systemInputs(instruction=instruction)
-        app_type = Chains.appType(instruction=instruction)
 
         yield {
             "stage": "plan",
@@ -270,29 +270,7 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
                 "title":title
             }
 
-            chat_app = any(
-                [
-                    task["task_type"] in ["ui_input_chat", "ui_output_chat", "chat"]
-                    for task in task_list
-                ]
-            )
-
-            if chat_app:
-                final_code = code_snippets
-                sleep(1)
-            else:
-                function_names = getFunctionNames(code_snippets)
-                draft_code = Chains.combine_v2(
-                    code_snippets=code_snippets, function_names=function_names
-                )
-                import_statements = Chains.imports(code_snippets=code_snippets)
-                extra = ''
-                if f"st.title('{title}')" not in draft_code:
-                    extra = f"\nst.title('{title}')\n"
-                if extra:
-                    draft_code = extra + draft_code
-                final_code = import_statements + draft_code
-
+            final_code = code_snippets
             # finalize the format
             final_code = autopep8.fix_code(final_code)
             
@@ -308,7 +286,7 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
                 "title":title
             }
 
-    def call(
+    def __call__(
         self,
         instruction="Create a translation system that converts English to French",
         title="",
@@ -348,7 +326,7 @@ with st.form(key="form"):
         app_type = Chains.appType(instruction=instruction)
         
         if app_type["is_chat"] == "true":
-            for data in self.__call__(instruction):
+            for data in self.callForChat(instruction, app_type=app_type):
                 yield data            
         else:
         
