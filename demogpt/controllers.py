@@ -421,15 +421,11 @@ def checkDTypes(tasks, app_type):
         # Check input data types
         elif reference_input.startswith("*"):
             reference_input = reference_input.replace("*", "")
-            for res, data_type in zip(input_key, input_data_type):
-                if data_type != reference_input:
-                    feedback += f"""
-                    {name} expects all inputs as {reference_input} but data type of {res} is {data_type} not {reference_input}. Please find another way.\n
-                    """
-        elif input_data_type != reference_input:
-            feedback += f"""
-            {name} expects all inputs as {reference_input} but the data type of {input_key} is {input_data_type} not {reference_input}. Please find another way.\n
-            """
+        for res, data_type in zip(input_key, input_data_type):
+            if data_type != reference_input:
+                feedback += f"""
+                {name} expects all inputs as {reference_input} but data type of {res} is {data_type} not {reference_input}. Please find another way.\n
+                """
 
         if reference_output == "*":
             continue

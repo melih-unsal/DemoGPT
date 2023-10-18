@@ -285,8 +285,22 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
                 "code": final_code,
                 "title":title
             }
-
-    def __call__(
+            
+    def __call__(self, instruction, title=""):
+        try:
+            for data in self.run(instruction):
+                yield data  
+        except Exception as e:
+            print(e)
+            yield {
+                "stage": "task",
+                "completed": False,
+                "percentage": 100,
+                "done": False,
+                "message": self.FAIL_MESSAGE,
+                "failed": True
+                }
+    def run(
         self,
         instruction="Create a translation system that converts English to French",
         title="",
@@ -313,7 +327,6 @@ with st.form(key="form"):
     if submit_button:
 {outputs}
 """
-        
         yield {
             "stage": "system_inputs",
             "completed": False,

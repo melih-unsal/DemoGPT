@@ -334,10 +334,12 @@ def reformatTasks(tasks):
     
     processed_tasks = []
     for task in tasks:
-        task_input = preprocess(task["input_key"])
-        task_output = preprocess(task["output_key"])
-        task["input_key"] = task_input
-        task["output_key"] = task_output
+        input_key = preprocess(task["input_key"])
+        output_key = preprocess(task["output_key"])
+        input_data_type = preprocess(task["input_data_type"])
+        task["input_key"] = input_key
+        task["output_key"] = output_key
+        task["input_data_type"] = input_data_type
         processed_tasks.append(task)
         
     processed_tasks = filterTasks(processed_tasks)
