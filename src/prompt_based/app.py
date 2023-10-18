@@ -64,7 +64,7 @@ def create(code):
                 }
 
             with open(tmp.name, 'rb') as file:
-                res = requests.post(DEPLOY_URL + "create", data=data, files={"image": file})
+                res = requests.post(DEPLOY_URL + "create", data=data, files={"image": file}, timeout=400)
                 try:
                     st.session_state.app_id = res.json()["id"]
                     st.session_state.url = getUrl(st.session_state.app_id) 
