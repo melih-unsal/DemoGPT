@@ -159,23 +159,34 @@ def checkInputOutputLengthCompatiblity(tasks, app_type):
             continue
         
         original_task = TASK_TYPE2_TASK[task_type]
+        
+        input_length = len(task["input_key"])
+        output_length = len(task["output_key"])
+        
         # input check
         if original_task["input_data_type"] == "none":
-            if len(task["input_key"]) > 0:
+            if input_length > 0:
                 feedback += f"Task {task_type} cannot have input\n"
         
         elif not original_task["input_data_type"].startswith("*"):
-            if len(task["input_key"]) > 1:
+            if input_length > 1:
                 feedback += f"Task {task_type} can only have single input but you gave multiple"
+        else:
+            if input_length != 1:
+                feedback += f"Task {task_type} must have single input but it has {input_length} inputs"
                 
         # output check
         if original_task["output_data_type"] == "none":
-            if len(task["output_key"]) > 0:
+            if output_length > 0:
                 feedback += f"Task {task_type} cannot have output\n"
                 
         elif not original_task["output_data_type"].startswith("*"):
-            if len(task["output_key"]) > 1:
+            if output_length > 1:
                 feedback += f"Task {task_type} can only have single output but you gave multiple"
+        else:
+            if output_length != 1:
+                feedback += f"Task {task_type} must have single output but it has {output_length} outputs"
+            
                 
     valid = len(feedback) == 0
     

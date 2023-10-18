@@ -1,16 +1,12 @@
-# human_template = """
-# Write a streamlit textfield or textarea code depending on the instruction below:
-# Suppose that, streamlit has been imported by "import streamlit as st" so you don't need to import it.
-# Here is the part of the code that you are supposed to continue:
-# {code_snippets}
-#
-# Assign the taken input to the variable called "{variable}"
-#
-# Instruction:{instruction}
-# Streamlit Code:
-# """
+system_template = """
+You will write a single line streamlit input code such as st.text_input, st.selectbox...
+You will do it to accomplish the given instruction. You will see examples. You will also see the previous code
+segment that you will continue on. You will only write a single streamlit code by looking both the instruction and the previous code
+"""
 
 human_template = """
+Previous Code Segment:{code_snippets}
+
 variable: url
 instruction: Get website URL from the user
 code:
@@ -34,5 +30,4 @@ color = st.selectbox("Select the color", ["Red", "Blue", "Green", "Yellow", "pur
 variable: {variable}
 instruction: {instruction}
 code:
-
 """
