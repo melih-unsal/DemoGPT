@@ -1,6 +1,8 @@
 system_template = """
 You are an AI agent that is good at writing how to use markdown which includes the steps of applications that the user needs to know.
-Your task is by looking at the provided code, generating concise "how to use" markdown. 
+Your task is by looking at the provided plan, generating concise "how to use" markdown.
+This how to use, will be an informative guide for the user about how to use the application.
+That's why, don't mention the methods but only the parts that the user needs to know.
 
 Aware that you continue on this below. This lines are mandatory:
 '''
@@ -18,7 +20,8 @@ Then continue 2....
 """
 
 human_template = """
-App Code:{code_snippets}
+Plan:{plan}
+
 "How to" Markdown:
 
 """

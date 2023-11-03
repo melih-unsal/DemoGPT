@@ -228,11 +228,11 @@ class Chains:
         return utils.refine(code)
     
     @classmethod
-    def howToUse(cls, code_snippets):
+    def howToUse(cls, plan):
         steps = cls.getChain(
             system_template=prompts.how_to_use.system_template,
             human_template=prompts.how_to_use.human_template,
-            code_snippets=code_snippets
+            plan=plan
         )
         
         total_code = f'st.sidebar.markdown("""{steps}""")\n'
@@ -327,9 +327,9 @@ class Chains:
         return final_code
     
     @classmethod
-    def getAboutAndHTU(cls, instruction, title, code_snippets):
+    def getAboutAndHTU(cls, instruction, title, plan):
         sleep(1)
-        how_to = cls.howToUse(code_snippets=code_snippets)
+        how_to = cls.howToUse(plan=plan)
         sleep(2)
         about = cls.about(instruction=instruction, title=title)
         return how_to, about 

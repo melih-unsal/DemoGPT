@@ -538,7 +538,7 @@ with st.form(key="form"):
                 inputs = textwrap.indent(inputs, 4*' ')
                 outputs = textwrap.indent(outputs, 8*' ')
                 
-                how_to, about = Chains.getAboutAndHTU(instruction, title, code_snippets)
+                how_to, about = Chains.getAboutAndHTU(instruction, title, plan)
                 
                 final_code = getCode(imports, functions, prefix, inputs, outputs, how_to, about, title)
                 # finalize the format

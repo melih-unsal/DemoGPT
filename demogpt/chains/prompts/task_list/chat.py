@@ -31,7 +31,7 @@ You are a chatbot having a conversation with a human. You are supposed to write 
 "function_name": "chat_blogger"
 }}
 ##########################################
-Instruction: Talk like a psychologist with a given tone.
+Instruction: Generate a response in the style of a psychologist with a given tone.
 Inputs: ["talk_input","tone"]
 Args: {{
 "system_template": "You are a psychologist. Reply to your patience with the given tone\n\nTone:{{tone}}\n\n{{chat_history}}\nPatience: {{talk_input}}\nPsychologist:",
@@ -49,7 +49,7 @@ Args: {{
 "function_name": "talk_like_a_psychologist"
 }}
 ##########################################
-Instruction: Talk like a mathematician
+Instruction: Generate answer similar to a mathematician
 Inputs: ["human_input"]
 Args: {{
 "system_template": "You are a mathematician. Solve the human's mathematics problem as efficient as possible.\n\n{{chat_history}}\nHuman: {{human_input}}\nMathematician:",
