@@ -274,7 +274,7 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
             # finalize the format
             final_code = autopep8.fix_code(final_code)
             
-            final_code = Chains.addAboutAndHTU(instruction, title, final_code)
+            final_code = Chains.addAboutAndHTU(instruction, title, final_code, plan)
 
             yield {
                 "stage": "final",

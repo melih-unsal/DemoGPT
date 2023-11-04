@@ -314,9 +314,9 @@ class Chains:
         return "\n".join(refined_plan)
     
     @classmethod
-    def addAboutAndHTU(cls, instruction, title, code_snippets):
+    def addAboutAndHTU(cls, instruction, title, code_snippets, plan):
         sleep(1)
-        how_to_markdown = cls.howToUse(code_snippets=code_snippets)
+        how_to_markdown = cls.howToUse(plan=plan)
         sleep(2)
         about = cls.about(instruction=instruction, title=title)
         pattern = r'(openai_api_key\s*=\s*st\.sidebar\.text_input\((?:[^()]*|\([^)]*\))*\))'
