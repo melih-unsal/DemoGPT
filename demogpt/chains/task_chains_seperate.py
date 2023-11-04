@@ -69,14 +69,16 @@ class TaskChainsSeperate:
         if isinstance(args, list):
             args = ",".join(args)
         instruction = task["description"]
-        code = cls.getChain(
+        """code = cls.getChain(
             system_template=prompts.ui_output_text.system_template,
             human_template=prompts.ui_output_text.human_template,
             instruction=instruction,
             args=args,
             data_type=data_type,
         )
-        code = utils.refine(code)
+        code = utils.refine(code)"""
+        
+        code = f"st.markdown({args})"
         
         return {
             "imports":"",
@@ -147,10 +149,11 @@ else:
         }
         
     @classmethod
-    def getDetailedDescription(cls, plan, description):
+    def getDetailedDescription(cls, instruction, plan, description):
         return cls.getChain(
             system_template=prompts.detailed_description.system_template,
             human_template=prompts.detailed_description.human_template,
+            instruction=instruction,
             plan=plan,
             description=description,
         )

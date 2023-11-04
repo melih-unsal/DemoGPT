@@ -1,21 +1,15 @@
 system_template = """
-You are a helpful assistant that can transform the given description similar to the given examples.
-This description is part of the plan so while generating the new description, consider this plan.
-Please make it similar to the examples below in terms of the style and length.
-Also make it concise, 1 sentence long.
-
-Examples:
-1- Generate a blog post from a title
-2- Implement a language translation app from one language to another
-3- Answer question related to the uploaded powerpoint file
-4- Generate an appropriate name for an animal
-5- Create a programming-related humor machine
+You are a helpful assistant that can transform the given directive.
+This directive is given to the ai-based question answering system. However, it is possible that the directive misses the functionality of the app.
+You task is refine the directive in a way that it tells the functionality of the app so that the syetem knows how to behave.
+You can see the real functionality of the model by looking at the App Idea.
+Please generate a 1 sentence long directive. Use the Original Directive's style while generating the Refined Directive.
 """
 
 human_template = """
-Plan:{plan}
+App Idea:{instruction}
 
-Description:{description}
+Original Directive:{description}
 
-New Description:
+Refined Directive:
 """
