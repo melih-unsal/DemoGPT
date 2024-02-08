@@ -191,13 +191,13 @@ if st.session_state.done:
                 st.session_state["pid"] = runStreamlit(
                     new_code, openai_api_key, openai_api_base
                 )
-                st.experimental_rerun()
+                st.rerun()
 
         else:
             code_empty.code(st.session_state.code)
             if st.button("Edit"):
                 st.session_state.edit_mode = True  # Enter edit mode
-                st.experimental_rerun()
+                st.rerun()
     example_submitted = False
     if submitted:
         st.session_state["pid"] = runStreamlit(code, openai_api_key, openai_api_base)

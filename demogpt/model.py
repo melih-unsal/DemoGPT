@@ -246,7 +246,7 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
             num_of_tasks = len(task_list)
 
             for i, task in enumerate(task_list):
-                code = getCodeSnippet(task, code_snippets, self.max_steps)
+                code = getCodeSnippet(instruction, task, code_snippets, self.max_steps)
                 code = "#" + task["description"] + "\n" + code
                 code_snippets += code
                 yield {
@@ -503,7 +503,7 @@ with st.form(key="form"):
                 num_of_tasks = len(task_list)
 
                 for i, task in enumerate(task_list):
-                    res = getCodeSnippetSeperate(task, code_snippets, self.max_steps)
+                    res = getCodeSnippetSeperate(instruction, task, code_snippets, self.max_steps)
                     code = "#" + task["description"] + "\n" + res["code"]
                     
                     if res["imports"] not in imports:

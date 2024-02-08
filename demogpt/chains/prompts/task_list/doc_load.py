@@ -46,3 +46,24 @@ Instruction: {instruction}
 Previous Code: {code_snippets}
 Loader Option:
 """
+
+imports = """
+import shutil
+from langchain.document_loaders import *
+
+"""
+
+functions = """
+
+def {function_name}({argument}):
+    {loader_line}
+    docs = loader.load()
+    return docs
+"""
+
+outputs = """
+if {argument}:
+    {variable} = {function_name}({argument})
+else:
+    {variable} = ''
+"""

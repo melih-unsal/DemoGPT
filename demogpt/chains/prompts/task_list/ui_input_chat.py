@@ -20,3 +20,14 @@ variable: {variable}
 instruction: {instruction}
 placeholder:
 """
+
+code = """
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):  
+        st.markdown(message["content"])
+        
+if {variable} := st.chat_input("{placeholder}"):
+    with st.chat_message("user"):
+        st.markdown({variable})
+    st.session_state.messages.append({{"role": "user", "content": {variable}}})
+"""

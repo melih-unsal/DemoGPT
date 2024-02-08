@@ -37,3 +37,5 @@ instruction:{instruction}
 code:
 
 """
+
+code = "st.markdown({args})"

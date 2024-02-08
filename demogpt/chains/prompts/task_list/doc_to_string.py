@@ -17,3 +17,5 @@ Argument:{argument}
 Variable:{variable}
 Python Code:
 """
+
+outputs = '{variable} = "".join([doc.page_content for doc in {argument}])'

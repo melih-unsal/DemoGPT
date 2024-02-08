@@ -81,17 +81,11 @@ class TaskChains:
         res = json.loads(res)
         title = res.get("title")
         data_type = res.get("data_type")
-        code = f"""
-uploaded_file = st.file_uploader("{title}", type={data_type}, key='{variable}')
-if uploaded_file is not None:
-    # Create a temporary file to store the uploaded content
-    extension = uploaded_file.name.split(".")[-1]
-    with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{{extension}}') as temp_file:
-        temp_file.write(uploaded_file.read())
-        {variable} = temp_file.name # it shows the file path
-else:
-    {variable} = ''
-        """
+        code = prompts.ui_input_file.code.format(instruction=instruction,
+                                                 title=title,
+                                                 data_type=data_type,
+                                                 variable=variable
+                                                 )
         return code
 
     @classmethod
@@ -109,9 +103,18 @@ else:
             code_snippets=code_snippets,
         )
         return utils.refine(code)
+    
+    @classmethod
+    def getDetailedDescription(cls, app_idea, instruction):
+        return cls.getChain(
+            system_template=prompts.detailed_description.system_template,
+            human_template=prompts.detailed_description.human_template,
+            app_idea=app_idea,
+            instruction=instruction
+        )
 
     @classmethod
-    def promptTemplate(cls, task):
+    def promptTemplate(cls, app_idea, task):
         inputs = ", ".join(task["input_key"])
         instruction = task["description"]
 
@@ -135,16 +138,7 @@ else:
             variable=variable,
         )
         
-        code = f"""
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):  
-        st.markdown(message["content"])
-        
-if {variable} := st.chat_input("{placeholder}"):
-    with st.chat_message("user"):
-        st.markdown({variable})
-    st.session_state.messages.append({{"role": "user", "content": {variable}}})
-        """
+        code = prompts.ui_input_chat.code.format(variable=variable, placeholder=placeholder)
         
         return code
 
@@ -152,39 +146,24 @@ if {variable} := st.chat_input("{placeholder}"):
     def uiOutputChat(cls, task):
         res = ", ".join(task["input_key"])
 
-        code = f"""
-import time
-
-with st.chat_message("assistant"):
-    message_placeholder = st.empty()
-    full_response = ""
-    # Simulate stream of response with milliseconds delay
-    for chunk in {res}.split():
-        full_response += chunk + " "
-        time.sleep(0.05)
-        # Add a blinking cursor to simulate typing
-        message_placeholder.markdown(full_response + "▌")
-    message_placeholder.markdown(full_response)
-    # Add assistant response to chat history
-    if full_response:
-        st.session_state.messages.append({{"role": "assistant", "content": full_response}})        
-        """
+        code = prompts.ui_output_chat.code.format(res=res)
+        
         return code
 
     @classmethod
-    def chat(cls, task):
+    def chat(cls, app_idea, task):
         inputs = ", ".join(task["input_key"])
         instruction = task["description"]
+        
+        new_instruction = cls.getDetailedDescription(app_idea=app_idea,instruction=instruction)
 
         res = cls.getChain(
             system_template=prompts.chat.system_template,
             human_template=prompts.chat.human_template,
-            instruction=instruction,
+            instruction=new_instruction,
             inputs=inputs,
         )
         res = res.replace("'''", '"""')
-        print("chat:")
-        print(res)
         res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res, strict=False)
 
@@ -197,8 +176,6 @@ with st.chat_message("assistant"):
             feedback=feedback,
             inputs=inputs,
         )
-        print("promptTemplateRefiner:")
-        print(res)
         res = res[res.find("{") : res.rfind("}") + 1]
         return json.loads(res)
     
@@ -210,59 +187,19 @@ with st.chat_message("assistant"):
         instruction = task["description"]
 
         res = cls.getChain(
-            system_template=prompts.search.system_template,
-            human_template=prompts.search.human_template,
+            system_template=prompts.search_chat.system_template,
+            human_template=prompts.search_chat.human_template,
             instruction=instruction,
             inputs=argument,
         )
         
         res = res.replace('"',"'")
 
-        code = f"""
-from langchain.agents import ConversationalChatAgent, AgentExecutor
-from langchain.tools import DuckDuckGoSearchRun
-from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
-from langchain.memory import ConversationBufferMemory
-from langchain.agents.tools import Tool
-from langchain.chains import LLMMathChain
-from langchain.chat_models import ChatOpenAI
-from langchain.callbacks import StreamlitCallbackHandler
-
-msgs = StreamlitChatMessageHistory()
-memory = ConversationBufferMemory(
-    chat_memory=msgs, return_messages=True, memory_key="chat_history", output_key="output"
-)
-
-def {function_name}({argument}):
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key)
-    llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
-    tools = [
-        DuckDuckGoSearchRun(name="Search"),
-        Tool(
-            name="Calculator",
-            func=llm_math_chain.run,
-            description="useful for when you need to answer questions about math"
-        )]
-    chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm, tools=tools)
-    executor = AgentExecutor.from_agent_and_tools(
-        agent=chat_agent,
-        tools=tools,
-        memory=memory,
-        return_intermediate_steps=True,
-        handle_parsing_errors=True,
-    )
-    st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
-    return executor({argument}, callbacks=[st_cb])["output"]
-
-if not openai_api_key.startswith('sk-'):
-    st.warning('Please enter your OpenAI API key!', icon='⚠')
-    {variable} = ""
-elif {argument}:
-    {variable} = {function_name}({argument})
-else:
-    {variable} = ''
-  
-        """
+        imports = prompts.search_chat.imports
+        functions = prompts.search_chat.functions.format(function_name=function_name, argument=argument)
+        outputs = prompts.search_chat.outputs.format(function_name=function_name, argument=argument,variable=variable)
+        
+        code = imports + "\n" + functions + "\n" + outputs + "\n"
         
         return code
 
@@ -282,40 +219,11 @@ else:
         
         res = res.replace('"',"'")
 
-        code = f"""
-from langchain.chat_models import ChatOpenAI
-from langchain.llms import OpenAI
-from langchain.tools import DuckDuckGoSearchRun
-from langchain.agents.tools import Tool
-from langchain.agents import initialize_agent, AgentType
-from langchain.chains import LLMMathChain
-from langchain.callbacks import StreamlitCallbackHandler
-
-def {function_name}({argument}):
-    search_input = "{res}".format({argument}={argument})
-    llm = OpenAI(openai_api_key=openai_api_key, temperature=0)
-    llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
-    tools = [
-        DuckDuckGoSearchRun(name="Search"),
-        Tool(
-            name="Calculator",
-            func=llm_math_chain.run,
-            description="useful for when you need to answer questions about math"
-        ),
-    ]
-    model = ChatOpenAI(openai_api_key=openai_api_key, temperature=0)
-    agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
-    st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
-    return agent.run(search_input, callbacks=[st_cb])
+        imports = prompts.search.imports
+        functions = prompts.search.functions.format(function_name=function_name, argument=argument,res=res)
+        outputs = prompts.search_chat.outputs.format(function_name=function_name, argument=argument,variable=variable)
+        code = imports + "\n" + functions + "\n" + outputs + "\n"
         
-if not openai_api_key.startswith('sk-'):
-    st.warning('Please enter your OpenAI API key!', icon='⚠')
-    {variable} = ""
-elif {argument}:
-    {variable} = {function_name}({argument})
-else:
-    {variable} = ''
-        """
         return code
 
     @classmethod
@@ -424,29 +332,22 @@ else:
             
             loader_line = getLoaderCall(loader)
             
-        code = f"""
-import shutil
-from langchain.document_loaders import *
-
-def {function_name}({argument}):
-    {loader_line}
-    docs = loader.load()
-    return docs
-if {argument}:
-    {variable} = {function_name}({argument})
-else:
-    {variable} = ''
-        """
+        imports = prompts.doc_load.imports
+        functions = prompts.doc_load.functions.format(function_name=function_name, argument=argument, loader_line=loader_line)
+        outputs = prompts.doc_load.outputs.format(argument=argument, function_name=function_name, variable=variable)
+        
+        code = imports + "\n" + functions + "\n" + outputs + "\n"
+        
         return code
 
     @classmethod
     def stringToDoc(cls, task):
         argument = ", ".join(task["input_key"])
         variable = ", ".join(task["output_key"])
-        code = f"""
-from langchain.docstore.document import Document
-{variable} =  [Document(page_content={argument}, metadata={{'source': 'local'}})]
-        """
+        imports = prompts.string_to_doc.imports
+        outputs = prompts.string_to_doc.outputs.format(variable=variable, argument=argument)
+        code = imports + "\n" + outputs + "\n"
+        
         return code
 
     @classmethod
@@ -462,23 +363,12 @@ from langchain.docstore.document import Document
         variable = ", ".join(task["output_key"])
         function_name = task["task_name"]
 
-        code = f"""
-from langchain.chat_models import ChatOpenAI
-from langchain.chains.summarize import load_summarize_chain
-
-def {function_name}({argument}):
-    llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key)
-    chain = load_summarize_chain(llm, chain_type="stuff")
-    with st.spinner('DemoGPT is working on it. It might take 5-10 seconds...'):
-        return chain.run({argument})
-if not openai_api_key.startswith('sk-'):
-    st.warning('Please enter your OpenAI API key!', icon='⚠')
-    {variable} = ""
-elif {argument}:
-    {variable} = {function_name}({argument})
-else:
-    {variable} = ""
-"""
+        imports = prompts.summarize.imports
+        functions = functions = prompts.summarize.functions.format(function_name=function_name, argument=argument)
+        outputs = prompts.string_to_doc.outputs.format(function_name=function_name, variable=variable, argument=argument)
+        
+        code = imports + "\n" + functions + "\n" + outputs + "\n"
+        
         return code
 
     @classmethod

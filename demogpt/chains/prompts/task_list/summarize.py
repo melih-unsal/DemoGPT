@@ -24,3 +24,16 @@ Argument Name : {argument}
 Variable Name : {variable}
 Summarization Code:
 """
+
+imports = """
+from langchain.chat_models import ChatOpenAI
+from langchain.chains.summarize import load_summarize_chain
+"""
+
+functions = """
+def {function_name}({argument}):
+    llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k", openai_api_key=openai_api_key)
+    chain = load_summarize_chain(llm, chain_type="stuff")
+    with st.spinner('DemoGPT is working on it. It might take 5-10 seconds...'):
+        return chain.run({argument})
+"""

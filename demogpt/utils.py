@@ -177,7 +177,7 @@ def getFunctionNames(code):
     return re.findall(pattern, code)
 
 
-def getGenericPromptTemplateCode(task, iters):
+def getGenericPromptTemplateCode(app_idea, task, iters):
     res = ""
     is_valid = False
     task_type = task["task_type"]
@@ -191,7 +191,7 @@ def getGenericPromptTemplateCode(task, iters):
     additional_inputs = []
     if task_type == "chat":
         additional_inputs.append("chat_history")
-    res = prompt_func(task=task)
+    res = prompt_func(app_idea=app_idea, task=task)
     function_name = res.get("function_name")
     variety = res.get("variety")
     index = 0
@@ -211,13 +211,13 @@ def getGenericPromptTemplateCode(task, iters):
     res["variety"] = variety
     return finalizer_func(res, task)
 
-def getGenericPromptTemplateCodeSeperate(task, iters):
+def getGenericPromptTemplateCodeSeperate(app_idea, task, iters):
     res = ""
     is_valid = False
     task_type = task["task_type"]
     inputs = task["input_key"]
     prompt_func = (
-        TaskChains.promptTemplate if task_type == "prompt_template" else TaskChains.chat
+        TaskChainsSeperate.promptTemplate if task_type == "prompt_template" else TaskChainsSeperate.chat
     )
     finalizer_func = (
         getPromptChatTemplateCodeSeperate if task_type == "prompt_template" else getChatCodeSeperate
@@ -225,7 +225,7 @@ def getGenericPromptTemplateCodeSeperate(task, iters):
     additional_inputs = []
     if task_type == "chat":
         additional_inputs.append("chat_history")
-    res = prompt_func(task=task)
+    res = prompt_func(app_idea, task=task)
     function_name = res.get("function_name")
     variety = res.get("variety")
     index = 0
@@ -235,7 +235,7 @@ def getGenericPromptTemplateCodeSeperate(task, iters):
         is_valid = check["valid"]
         feedback = check["feedback"]
         if not is_valid:
-            res = TaskChains.promptTemplateRefiner(res, inputs, feedback)
+            res = TaskChainsSeperate.promptTemplateRefiner(res, inputs, feedback)
         else:
             break
         index += 1
@@ -245,7 +245,7 @@ def getGenericPromptTemplateCodeSeperate(task, iters):
     res["variety"] = variety
     return finalizer_func(res, task)
 
-def getCodeSnippetSeperate(task, code_snippets, iters=10):
+def getCodeSnippetSeperate(app_idea, task, code_snippets, iters=10):
     #task = refineKeyTypeCompatiblity(task)
     task_type = task["task_type"]
     if task_type == "ui_input_text":
@@ -253,7 +253,7 @@ def getCodeSnippetSeperate(task, code_snippets, iters=10):
     elif task_type == "ui_output_text":
         res = TaskChainsSeperate.uiOutputText(task=task)
     elif task_type in ["prompt_template", "chat"]:
-        res = getGenericPromptTemplateCodeSeperate(task, iters=iters)
+        res = getGenericPromptTemplateCodeSeperate(app_idea, task, iters=iters)
     elif task_type == "path_to_content":
         res = TaskChainsSeperate.pathToContent(task=task, code_snippets=code_snippets)
     elif task_type == "doc_to_string":
@@ -267,7 +267,7 @@ def getCodeSnippetSeperate(task, code_snippets, iters=10):
     elif task_type == "doc_summarizer":
         res = TaskChainsSeperate.summarize(task=task)
     elif task_type == "ui_input_chat":
-        res = TaskChains.uiInputChat(task=task)
+        res = TaskChainsSeperate.uiInputChat(task=task)
     elif task_type == "ui_output_chat":
         res = TaskChainsSeperate.uiOutputChat(task=task)
     elif task_type == "python":
@@ -279,7 +279,7 @@ def getCodeSnippetSeperate(task, code_snippets, iters=10):
     return res
 
 
-def getCodeSnippet(task, code_snippets, iters=10):
+def getCodeSnippet(app_idea, task, code_snippets, iters=10):
     #task = refineKeyTypeCompatiblity(task)
     task_type = task["task_type"]
     code = ""
@@ -288,7 +288,7 @@ def getCodeSnippet(task, code_snippets, iters=10):
     elif task_type == "ui_output_text":
         code = TaskChains.uiOutputText(task=task)
     elif task_type in ["prompt_template", "chat"]:
-        code = getGenericPromptTemplateCode(task, iters=iters)
+        code = getGenericPromptTemplateCode(app_idea, task, iters=iters)
     elif task_type == "path_to_content":
         code = TaskChains.pathToContent(task=task, code_snippets=code_snippets)
     elif task_type == "doc_to_string":

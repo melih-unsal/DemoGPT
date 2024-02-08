@@ -20,6 +20,7 @@ IMPORTANT NOTE:
 - ONLY the variables listed under "Inputs" MUST be included in either the "system_template" section within curly braces (e.g., '{{variable_name}}'). Do NOT include any other parameters within curly braces.
 - Ensure that the exact variable names listed in "Inputs" are used without any modifications.
 - If a variable is listed in "Inputs," it must appear within curly braces in the "system_template".
+- It should be strictly a JSON format so that it can be directly used by json.loads function in Python.
 =========================================
 Instruction: Generate a blog post from a title.
 Inputs: ["human_input","title"]

@@ -11,3 +11,30 @@ human_template = """
 Instruction:{instruction}
 JSON:
 """
+
+code = """
+uploaded_file = st.file_uploader("{title}", type={data_type}, key='{variable}')
+if uploaded_file is not None:
+    # Create a temporary file to store the uploaded content
+    extension = uploaded_file.name.split(".")[-1]
+    with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{{extension}}') as temp_file:
+        temp_file.write(uploaded_file.read())
+        {variable} = temp_file.name # it shows the file path
+else:
+    {variable} = ''
+        """
+        
+inputs = """
+uploaded_file = st.file_uploader("{title}", type={data_type}, key='{variable}')
+"""
+
+outputs = """
+if uploaded_file is not None:
+    # Create a temporary file to store the uploaded content
+    extension = uploaded_file.name.split(".")[-1]
+    with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{{extension}}') as temp_file:
+        temp_file.write(uploaded_file.read())
+        {variable} = temp_file.name # it shows the file path
+else:
+    {variable} = ''
+"""

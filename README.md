@@ -82,6 +82,7 @@ demogpt
 - [Usage](#-usage)
 - [To-Do](#to-do-)
 - [Contribute](#-contribute)
+- [Citations](#-citations) 
 - [License](#-license)
 
 ## 📌 Introduction
@@ -220,6 +221,17 @@ streamlit run demogpt/app.py
 Contributions to the DemoGPT project are welcomed! Whether you're fixing bugs, improving the documentation, or proposing new features, your efforts are highly appreciated. Please check the open issues before starting any work.
 
 > Please read [`CONTRIBUTING`](CONTRIBUTING.md) for details on our [`CODE OF CONDUCT`](CODE_OF_CONDUCT.md), and the process for submitting pull requests to us.
+
+## 📄 Citations
+
+DemoGPT has been referenced in various research papers for its innovative approach to app creation using autonomous AI agents. Below is a list of papers that have cited DemoGPT:
+
+- Lei Wang, Chen Ma , Xueyang Feng , Zeyu Zhang, Hao Yang, Jingsen Zhang, Zhiyuan Chen, Jiakai Tang, Xu Chen, Yankai Lin, Wayne Xin , Zhao, Zhewei Wei, Ji-Rong Wen, "A Survey on Large Language Model based Autonomous Agents", 2023. [Link to paper](https://arxiv.org/pdf/2308.11432.pdf)
+- Yuan Li, Yixuan Zhang, Lichao Sun, "METAAGENTS: SIMULATING INTERACTIONS OF HUMAN BEHAVIORS FOR LLM-BASED TASK-ORIENTED COORDINATION VIA COLLABORATIVE GENERATIVE AGENTS" Journal/Conference, 2023. [Link to paper](https://arxiv.org/pdf/2310.06500.pdf)
+- Yuheng Cheng, Ceyao Zhang, Zhengwen Zhang, Xiangrui Meng, Sirui Hong, Wenhao Li, Zihao Wang, Zekai Wang, Feng Yin, Junhua Zhao, Xiuqiang He, "EXPLORING LARGE LANGUAGE MODEL BASED INTELLIGENT AGENTS: DEFINITIONS, METHODS, AND PROSPECTS", 2024. [Link to paper](https://arxiv.org/pdf/2401.03428.pdf)
+
+This acknowledgment from the academic community highlights the potential and utility of DemoGPT in advancing the field of AI-driven development tools.
+
 
 ## 📜 License
 
