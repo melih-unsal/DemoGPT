@@ -229,6 +229,7 @@ DemoGPT has been referenced in various research papers for its innovative approa
 - Lei Wang, Chen Ma , Xueyang Feng , Zeyu Zhang, Hao Yang, Jingsen Zhang, Zhiyuan Chen, Jiakai Tang, Xu Chen, Yankai Lin, Wayne Xin , Zhao, Zhewei Wei, Ji-Rong Wen, "A Survey on Large Language Model based Autonomous Agents", 2023. [Link to paper](https://arxiv.org/pdf/2308.11432.pdf)
 - Yuan Li, Yixuan Zhang, Lichao Sun, "METAAGENTS: SIMULATING INTERACTIONS OF HUMAN BEHAVIORS FOR LLM-BASED TASK-ORIENTED COORDINATION VIA COLLABORATIVE GENERATIVE AGENTS" Journal/Conference, 2023. [Link to paper](https://arxiv.org/pdf/2310.06500.pdf)
 - Yuheng Cheng, Ceyao Zhang, Zhengwen Zhang, Xiangrui Meng, Sirui Hong, Wenhao Li, Zihao Wang, Zekai Wang, Feng Yin, Junhua Zhao, Xiuqiang He, "EXPLORING LARGE LANGUAGE MODEL BASED INTELLIGENT AGENTS: DEFINITIONS, METHODS, AND PROSPECTS", 2024. [Link to paper](https://arxiv.org/pdf/2401.03428.pdf)
+- Mikhail, Poludin. Optimalizace LLM agentů pro analýzu tabulkových dat: Integrace LoRA pro zvýšení kvality. MS thesis. České vysoké učení technické v Praze. Vypočetní a informační centrum., 2024. [Link to paper] (https://dspace.cvut.cz/bitstream/handle/10467/115388/F3-DP-2024-Poludin-Mikhail-Optimizing_LLM-Powered_Agents_for_Tabular_Data_Analytics_Integrating_LoRA_for_Enhanced_Quality.pdf?sequence=-1)
 
 This acknowledgment from the academic community highlights the potential and utility of DemoGPT in advancing the field of AI-driven development tools.
 
