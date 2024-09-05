@@ -6,7 +6,7 @@ import sys
 import tempfile
 import threading
 from subprocess import PIPE, Popen
-
+from langchain_core.messages import AIMessage
 from demogpt.chains.task_chains import TaskChains
 from demogpt.chains.task_chains_seperate import TaskChainsSeperate
 from demogpt.controllers import checkPromptTemplates, refineKeyTypeCompatiblity
@@ -314,13 +314,22 @@ def getCodeSnippet(app_idea, task, code_snippets, iters=10):
     return code.strip() + "\n"
 
 
-def refine(code):
-    if "```" in code:
-        code = code.split("```")[1]
-        if code.startswith("python"):
-            code = code[len("python") :].strip()
-    return code
-
+def refine(data):
+    def helper(code):
+        if "```json" in code:
+            start = code.index("```json")
+            end = code.index("```", start + 1)
+            return code[start:end].strip("```json").strip("```")
+        elif "```python" in code:
+            start = code.index("```python")
+            end = code.index("```", start + 1)
+            return code[start:end].strip("```python").strip("```")
+        else:
+            return code
+    if isinstance(data, str):
+        return helper(data)
+    else:
+        return AIMessage(content=helper(data.content))
 
 def reformatTasks(tasks):
     def preprocess(io):

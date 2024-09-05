@@ -67,16 +67,19 @@ openai_api_base = st.sidebar.text_input(
     placeholder="https://api.openai.com/v1",
 )
 
-models = (
-    "gpt-3.5-turbo-0613",
-    "gpt-3.5-turbo-0301",
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-16k",
-    "gpt-3.5-turbo-16k-0613",
-    "gpt-4",
-    "gpt-4-0314",
-    "gpt-4-0613",
-)
+# models = (
+#     "gpt-3.5-turbo-0613",
+#     "gpt-3.5-turbo-0301",
+#     "gpt-3.5-turbo",
+#     "gpt-3.5-turbo-16k",
+#     "gpt-3.5-turbo-16k-0613",
+#     "gpt-4",
+#     "gpt-4-0314",
+#     "gpt-4-0613",
+# )
+
+models = DemoGPT.get_available_models(openai_api_key)
+
 
 model_name = st.sidebar.selectbox("Model", models)
 

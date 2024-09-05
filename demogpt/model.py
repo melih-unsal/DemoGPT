@@ -3,7 +3,7 @@ import textwrap
 from time import sleep
 
 import autopep8
-import openai
+from openai import OpenAI
 import streamlit as st
 from tqdm import trange
 
@@ -38,21 +38,37 @@ class DemoGPT:
         Care to leave your email? We'll notify you when we're ready for this stellar journey!"""
         
         self.gpt4_message = """
-🚫 Access Denied to GPT-4!
+🚫 Access Denied to {model_name}!
 
-Hey there! It looks like you're trying to create an app with GPT-4, but unfortunately, you don't have the required access. Fear not! You can:
+Hey there! It looks like you're trying to create an app with {model_name}, but unfortunately, you don't have the required access. Fear not! You can:
 
 Upgrade your access through OpenAI's platform.
 Opt for another model that you have access to and give it another whirl.
 We appreciate your understanding and look forward to seeing what you create! 😊
             """
+        self.available_models = self.get_available_models(openai_api_key)
+    
+    @classmethod
+    def get_available_models(cls, openai_api_key):
+        if not openai_api_key:
+            return []
         try:
-            self.available_models = [model["id"] for model in openai.Model.list(api_key=openai_api_key)["data"] if "gpt" in model["id"]]
-        except:
-            self.available_models = []
-            raise AssertionError("Invalid OpenAI API Key")
-        else:
-            assert (not self.model_name) or self.model_name in self.available_models , self.gpt4_message
+            client = OpenAI(api_key = openai_api_key)
+            models = client.models.list()
+            return [model.id for model in models.data if "gpt" in model.id]
+        except Exception as e:
+            return []
+        
+        
+    @property
+    def hasGPT4(self):
+        return "gpt-4-0613" in self.available_models
+                
+    def setModel(self, model_name):
+        self.model_name = model_name
+        
+        assert self.model_name, f"No model is selected, the selected model is {self.model_name}" 
+        assert self.model_name in self.available_models , self.gpt4_message.format(model_name=self.model_name)
                 
         Chains.setLlm(
             self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, has_gpt4=self.hasGPT4
@@ -63,15 +79,6 @@ We appreciate your understanding and look forward to seeing what you create! �
         TaskChainsSeperate.setLlm(
             self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
         )
-                    
-    @property
-    def hasGPT4(self):
-        return "gpt-4-0613" in self.available_models
-                
-    def setModel(self, model_name):
-        if model_name not in self.available_models:
-            raise AssertionError(self.gpt4_message)
-        self.model_name = model_name
         Chains.setLlm(
             self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, has_gpt4=self.hasGPT4
         )

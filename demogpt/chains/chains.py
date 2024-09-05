@@ -5,10 +5,11 @@ from time import sleep
 
 import autopep8
 from langchain.chains import LLMChain
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
+from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 
 from demogpt import utils
 from demogpt.chains.task_definitions import getPlanGenHelper, getTasks
@@ -64,14 +65,25 @@ class Chains:
         cls.model = model
 
     @classmethod
-    def getChain(cls, system_template="", human_template="", change=False, change_model="gpt-4-0613", temperature=0, **kwargs):
+    def getChain(cls, system_template="", human_template="", change=False, change_model="gpt-4-0613", temperature=0, return_type="text", **kwargs):
         prompts = []
         if system_template:
             prompts.append(SystemMessagePromptTemplate.from_template(system_template))
         if human_template:
             prompts.append(HumanMessagePromptTemplate.from_template(human_template))
         chat_prompt = ChatPromptTemplate.from_messages(prompts)
-        return LLMChain(llm=cls.getModel(change=change, temperature=temperature, change_model=change_model), prompt=chat_prompt).run(**kwargs)
+        
+        if return_type == "json":
+            parser = utils.refine | JsonOutputParser()
+        elif return_type == "code":
+            parser = utils.refine | StrOutputParser()
+        else:
+            parser = StrOutputParser()
+        
+        chain = chat_prompt | cls.getModel(change=change, temperature=temperature, change_model=change_model) | parser
+        
+        return chain.invoke(kwargs)
+        #return LLMChain(llm=cls.getModel(change=change, temperature=temperature, change_model=change_model), prompt=chat_prompt).run(**kwargs)
     
     @classmethod
     def title(cls, instruction):
@@ -85,14 +97,13 @@ class Chains:
 
     @classmethod
     def appType(cls, instruction):
-        app_type = cls.getChain(
+        return cls.getChain(
             system_template=prompts.app_type.system_template,
             human_template=prompts.app_type.human_template,
             change=True,
             instruction=instruction,
+            return_type="json"
         )
-
-        return json.loads(app_type)
 
     @classmethod
     def systemInputs(cls, instruction):
@@ -122,15 +133,14 @@ class Chains:
 
     @classmethod
     def planFeedback(cls, instruction, plan):
-        feedback = cls.getChain(
+        return cls.getChain(
             system_template=prompts.plan_feedback.system_template,
             human_template=prompts.plan_feedback.human_template,
             change=False,
             instruction=instruction,
             plan=plan,
+            return_type="json"
         )
-
-        return json.loads(feedback)
 
     @classmethod
     def planRefiner(cls, instruction, plan, feedback, app_type):
@@ -150,29 +160,15 @@ class Chains:
     def tasks(cls, instruction, plan, app_type):
         TASK_DESCRIPTIONS, TASK_NAMES= getTasks(app_type)[:2]
         
-        task_list = cls.getChain(
+        tasks = cls.getChain(
             system_template=prompts.tasks.system_template,
             human_template=prompts.tasks.human_template,
             instruction=instruction,
             plan=plan,
             TASK_DESCRIPTIONS=TASK_DESCRIPTIONS,
             TASK_NAMES=TASK_NAMES,
+            return_type="json"
         )
-        try:
-            tasks = json.loads(task_list)
-        except:
-            print("Switching to 16k...")
-            task_list = cls.getChain(
-                system_template=prompts.tasks.system_template,
-                human_template=prompts.tasks.human_template,
-                change=True,
-                change_model="gpt-3.5-turbo-16k-0613",
-                instruction=instruction,
-                plan=plan,
-                TASK_DESCRIPTIONS=TASK_DESCRIPTIONS,
-                TASK_NAMES=TASK_NAMES,
-            )
-            tasks = json.loads(task_list)
             
         return utils.reformatTasks(tasks)
 
@@ -188,44 +184,29 @@ class Chains:
     def refineTasks(cls, instruction, tasks, feedback, app_type):
         _, TASK_NAMES, _, TASK_PURPOSES = getTasks(app_type)[:4]
         
-        try:
-            task_list = cls.getChain(
-                system_template=prompts.task_refiner.system_template,
-                human_template=prompts.task_refiner.human_template,
-                instruction=instruction,
-                tasks=tasks,
-                feedback=feedback,
-                TASK_NAMES=TASK_NAMES,
-                TASK_PURPOSES=TASK_PURPOSES
-                )
-            tasks = json.loads(task_list)
-        except:
-            print("Switching to 16k...")
-            task_list = cls.getChain(
-                system_template=prompts.task_refiner.system_template,
-                human_template=prompts.task_refiner.human_template,
-                change=True,
-                change_model="gpt-3.5-turbo-16k-0613",
-                instruction=instruction,
-                tasks=tasks,
-                feedback=feedback,
-                TASK_NAMES=TASK_NAMES,
-                TASK_PURPOSES=TASK_PURPOSES,
+        tasks = cls.getChain(
+            system_template=prompts.task_refiner.system_template,
+            human_template=prompts.task_refiner.human_template,
+            instruction=instruction,
+            tasks=tasks,
+            feedback=feedback,
+            TASK_NAMES=TASK_NAMES,
+            TASK_PURPOSES=TASK_PURPOSES,
+            return_type="json"
             )
-            tasks = json.loads(task_list)
             
         return utils.reformatTasks(tasks)
 
     @classmethod
     def combine(cls, instruction, code_snippets, plan):
-        code = cls.getChain(
+        return cls.getChain(
             system_template=prompts.combine.system_template,
             human_template=prompts.combine.human_template,
             instruction=instruction,
             code_snippets=code_snippets,
             plan=plan,
+            return_type="code"
         )
-        return utils.refine(code)
     
     @classmethod
     def howToUse(cls, plan):
@@ -247,17 +228,17 @@ class Chains:
             title=title
         )
         
-        code = f'\nst.sidebar.markdown("# About")\nst.sidebar.markdown("{markdown}")'
+        code = f'\nst.sidebar.markdown("# About")\nst.sidebar.markdown("""{markdown}""")'
         return code
 
     @classmethod
     def imports(cls, code_snippets):
-        code = cls.getChain(
+        return cls.getChain(
             system_template=prompts.imports.system_template,
             human_template=prompts.imports.human_template,
             code_snippets=code_snippets,
+            return_type="code"
         )
-        return utils.refine(code)
 
     @classmethod
     def combine_v2(cls, code_snippets, function_names):
@@ -268,8 +249,9 @@ class Chains:
             change_model="gpt-3.5-turbo",
             code_snippets=code_snippets,
             function_names=function_names,
+            return_type="code"
         )
-        code = utils.refine(code)
+        
         code = autopep8.fix_code(code)
         
         has_problem = utils.catchErrors(code)
@@ -282,9 +264,9 @@ class Chains:
                 change=True,
                 change_model="gpt-3.5-turbo-16k-0613",
                 code_snippets=code_snippets,
-                function_names=function_names
+                function_names=function_names,
+                return_type="code"
             )
-            code = utils.refine(code)
         
         return code
 
@@ -336,20 +318,20 @@ class Chains:
 
     @classmethod
     def refine(cls, instruction, code, feedback):
-        code = cls.getChain(
+        return cls.getChain(
             system_template=prompts.refine.system_template,
             human_template=prompts.refine.human_template,
             instruction=instruction,
             code=code,
             feedback=feedback,
+            return_type="code"
         )
-        return utils.refine(code)
 
     @classmethod
     def final(cls, draft_code):
-        code = cls.getChain(
+        return cls.getChain(
             system_template=prompts.final.system_template,
             human_template=prompts.final.human_template,
             draft_code=draft_code,
+            return_type="code"
         )
-        return utils.refine(code)
