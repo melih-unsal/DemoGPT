@@ -1,11 +1,11 @@
-# ![favicon](assets/puzzle.png) DemoGPT: Autonomous AI Agent for Effortless App Creation 🚀
+# 🤖 From Demo to Product: The All-in-One Agent Library
 
 <p align="center">
 <a href=""><img src="assets/banner_small.png" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="450px"></a>
 </p>
 
 <p align="center">
-<b>⚡ With just a prompt, you can create interactive Streamlit apps via 🦜️🔗 LangChain's transformative capabilities.⚡</b>
+<b>⚡ Everything you need to create an LLM Agent is here. Access a comprehensive suite of tools, prompts, frameworks, and a knowledge hub of LLM models—all in one place to streamline your agent development.</b>
 </p>
 <p align="center">
 <a href="https://pepy.tech/project/demogpt"><img src="https://static.pepy.tech/badge/demogpt" alt="Downloads"></a>
