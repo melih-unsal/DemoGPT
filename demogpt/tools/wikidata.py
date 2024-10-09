@@ -1,8 +1,10 @@
 from langchain_community.tools.wikidata.tool import WikidataAPIWrapper, WikidataQueryRun
+from demogpt.tools import BaseTool
 
-class WikiDataTool:
+class WikiDataTool(BaseTool):
     def __init__(self):
         self.tool = WikidataQueryRun(api_wrapper=WikidataAPIWrapper())
+        super().__init__()
 
     def run(self, query):
         return self.tool.run(query)

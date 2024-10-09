@@ -1,9 +1,11 @@
 from langchain_community.tools.pubmed.tool import PubmedQueryRun
+from demogpt.tools import BaseTool
 
-class PubmedTool:
+class PubmedTool(BaseTool):
     def __init__(self):
         self.tool = PubmedQueryRun()
-    
+        super().__init__()
+        
     def run(self, query):
         return self.tool.invoke(query)
 

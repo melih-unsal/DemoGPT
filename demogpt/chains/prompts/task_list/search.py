@@ -18,7 +18,7 @@ Prompt:
 """
 
 imports = """
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from langchain.tools import DuckDuckGoSearchRun
 from langchain.agents.tools import Tool

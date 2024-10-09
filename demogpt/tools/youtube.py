@@ -1,9 +1,11 @@
 from langchain_community.tools import YouTubeSearchTool as Youtube
+from demogpt.tools import BaseTool
 
-class YouTubeSearchTool:
+class YouTubeSearchTool(BaseTool):
     def __init__(self):
         self.tool = Youtube()
-    
+        super().__init__()
+
     def run(self, query):
         return self.tool.run(query)
     

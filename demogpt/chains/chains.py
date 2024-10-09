@@ -4,8 +4,7 @@ import re
 from time import sleep
 
 import autopep8
-from langchain.chains import LLMChain
-from langchain_openai import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
@@ -83,7 +82,6 @@ class Chains:
         chain = chat_prompt | cls.getModel(change=change, temperature=temperature, change_model=change_model) | parser
         
         return chain.invoke(kwargs)
-        #return LLMChain(llm=cls.getModel(change=change, temperature=temperature, change_model=change_model), prompt=chat_prompt).run(**kwargs)
     
     @classmethod
     def title(cls, instruction):

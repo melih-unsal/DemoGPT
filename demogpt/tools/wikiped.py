@@ -1,10 +1,12 @@
 from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
+from demogpt.tools import BaseTool
 
-class WikipediaTool:
+class WikipediaTool(BaseTool):
     def __init__(self):
         self.tool = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
-        
+        super().__init__()
+
     def run(self, query):
         return self.tool.run(query)
     

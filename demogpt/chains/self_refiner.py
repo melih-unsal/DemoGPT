@@ -1,7 +1,7 @@
 import os
 
 from langchain.chains import LLMChain
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts.chat import (AIMessagePromptTemplate,
                                     ChatPromptTemplate,
                                     HumanMessagePromptTemplate,

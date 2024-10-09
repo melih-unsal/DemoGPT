@@ -1,8 +1,10 @@
 from langchain_community.utilities import TextRequestsWrapper
+from demogpt.tools import BaseTool
 
-class RequestUrlTool:
+class RequestUrlTool(BaseTool):
     def __init__(self):
         self.tool = TextRequestsWrapper()
+        super().__init__()
         
     def run(self, url):
         return self.tool.get(url)

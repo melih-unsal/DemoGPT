@@ -1,9 +1,11 @@
 from langchain_community.utilities import StackExchangeAPIWrapper
+from demogpt.tools import BaseTool
 
-class StackOverFlowTool:
+class StackOverFlowTool(BaseTool):
     def __init__(self):
         self.tool = StackExchangeAPIWrapper()
-    
+        super().__init__()
+        
     def run(self, query):
         return self.tool.run(query)
     

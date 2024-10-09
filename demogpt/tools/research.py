@@ -1,9 +1,11 @@
 from langchain_community.utilities import ArxivAPIWrapper
+from demogpt.tools import BaseTool
 
-class ArxivTool:
+class ArxivTool(BaseTool):
     def __init__(self):
         self.tool = ArxivAPIWrapper()
-        
+        super().__init__()
+
     def run(self, query):
         return self.tool.run(query)
     

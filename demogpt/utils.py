@@ -405,7 +405,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
 from langchain.memory import ConversationBufferMemory
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 
 msgs = StreamlitChatMessageHistory()
 
@@ -490,7 +490,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
 from langchain.memory import ConversationBufferMemory
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 
     """
     inputs = """
@@ -566,7 +566,7 @@ else:
 
     code = f"""\n
 from langchain.chains import LLMChain
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate)
 
 def {signature}:
@@ -641,7 +641,7 @@ else:
 
     imports = f"""\n
 from langchain.chains import LLMChain
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts.chat import (ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate)
     """
     

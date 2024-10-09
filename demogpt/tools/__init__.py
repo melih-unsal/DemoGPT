@@ -1,3 +1,4 @@
+from demogpt.tools.base import BaseTool
 from demogpt.tools.duckduckgo import DuckDuckGoSearchTool
 from demogpt.tools.bash import BashTool
 from demogpt.tools.repl import PythonTool
