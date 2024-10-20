@@ -1,5 +1,5 @@
 from langchain_community.tools import ShellTool
-from demogpt.tools import BaseTool
+from demogpt_agenthub.tools import BaseTool
 class BashTool(BaseTool):
     def __init__(self):
         self.tool = ShellTool()

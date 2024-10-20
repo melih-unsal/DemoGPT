@@ -1,7 +1,7 @@
 import os
 from langchain_community.utilities import OpenWeatherMapAPIWrapper
 from langchain_community.tools.openweathermap.tool import OpenWeatherMapQueryRun
-from demogpt.tools import BaseTool
+from demogpt_agenthub.tools import BaseTool
 
 class WeatherTool(BaseTool):
     def __init__(self):

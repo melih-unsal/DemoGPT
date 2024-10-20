@@ -1,6 +1,6 @@
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
-from demogpt.assistants.prompts import tool_decider, final_answer
+from demogpt_agenthub.assistants.prompts import tool_decider, final_answer
 
 from dotenv import load_dotenv
 

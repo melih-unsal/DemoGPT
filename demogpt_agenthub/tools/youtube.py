@@ -1,5 +1,5 @@
 from langchain_community.tools import YouTubeSearchTool as Youtube
-from demogpt.tools import BaseTool
+from demogpt_agenthub.tools import BaseTool
 
 class YouTubeSearchTool(BaseTool):
     def __init__(self):

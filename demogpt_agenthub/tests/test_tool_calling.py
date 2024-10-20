@@ -1,6 +1,6 @@
-from demogpt.assistants import ToolCallingAssistant
-from demogpt.llms import OpenAIChatModel
-from demogpt.tools import DuckDuckGoSearchTool, WeatherTool, WikipediaTool
+from demogpt_agenthub.assistants import ToolCallingAssistant
+from demogpt_agenthub.llms import OpenAIChatModel
+from demogpt_agenthub.tools import DuckDuckGoSearchTool, WeatherTool, WikipediaTool
 
 if __name__ == "__main__":
     search_tool = DuckDuckGoSearchTool()

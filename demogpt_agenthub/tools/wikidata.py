@@ -1,5 +1,5 @@
 from langchain_community.tools.wikidata.tool import WikidataAPIWrapper, WikidataQueryRun
-from demogpt.tools import BaseTool
+from demogpt_agenthub.tools import BaseTool
 
 class WikiDataTool(BaseTool):
     def __init__(self):

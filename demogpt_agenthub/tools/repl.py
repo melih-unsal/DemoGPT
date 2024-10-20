@@ -1,5 +1,5 @@
 from langchain_experimental.utilities import PythonREPL
-from demogpt.tools import BaseTool
+from demogpt_agenthub.tools import BaseTool
 
 class PythonTool(BaseTool):
     def __init__(self):

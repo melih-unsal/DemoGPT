@@ -1,6 +1,6 @@
 from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
-from demogpt.tools import BaseTool
+from demogpt_agenthub.tools import BaseTool
 
 class WikipediaTool(BaseTool):
     def __init__(self):

@@ -1,5 +1,5 @@
 from langchain_community.utilities import StackExchangeAPIWrapper
-from demogpt.tools import BaseTool
+from demogpt_agenthub.tools import BaseTool
 
 class StackOverFlowTool(BaseTool):
     def __init__(self):

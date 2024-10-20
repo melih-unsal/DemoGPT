@@ -1,4 +1,4 @@
-from demogpt.tools import BaseTool
+from demogpt_agenthub.tools import BaseTool
 
 class DuckDuckGoSearchTool(BaseTool):
     def __init__(self, raw_results=False, max_results=4, backend="text"):

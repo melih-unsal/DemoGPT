@@ -1,4 +1,4 @@
-from demogpt.assistants import BaseAssistant
+from demogpt_agenthub.assistants import BaseAssistant
 
 class ToolCallingAssistant(BaseAssistant):
     def __init__(self, tools, llm, verbose=False):
@@ -24,8 +24,8 @@ class ToolCallingAssistant(BaseAssistant):
         return answer
 
 if __name__ == "__main__":
-    from demogpt.tools import DuckDuckGoSearchTool, WeatherTool, WikipediaTool    
-    from demogpt.llms import OpenAIChatModel
+    from demogpt_agenthub.tools import DuckDuckGoSearchTool, WeatherTool, WikipediaTool    
+    from demogpt_agenthub.llms import OpenAIChatModel
     search_tool = DuckDuckGoSearchTool()
     weather_tool = WeatherTool()
     wikipedia_tool = WikipediaTool()

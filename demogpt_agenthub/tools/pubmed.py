@@ -1,5 +1,5 @@
 from langchain_community.tools.pubmed.tool import PubmedQueryRun
-from demogpt.tools import BaseTool
+from demogpt_agenthub.tools import BaseTool
 
 class PubmedTool(BaseTool):
     def __init__(self):
