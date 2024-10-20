@@ -60,7 +60,7 @@ DemoGPT AgentHub comes with several built-in tools:
 - 🗃 WikiDataTool
 - 🏥 PubmedTool
 
-## 🤖 Creating an Agent
+## 🤖 Initializing an Agent
 
 To create an agent, you'll need to:
 
