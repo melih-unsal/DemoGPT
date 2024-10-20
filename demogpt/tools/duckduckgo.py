@@ -1,4 +1,5 @@
 from demogpt.tools import BaseTool
+
 class DuckDuckGoSearchTool(BaseTool):
     def __init__(self, raw_results=False, max_results=4, backend="text"):
         if raw_results:
@@ -7,8 +8,9 @@ class DuckDuckGoSearchTool(BaseTool):
         else:
             from langchain_community.tools import DuckDuckGoSearchRun
             self.tool = DuckDuckGoSearchRun()
-        super().__init__()
         
+        super().__init__()
+    
     def run(self, inp):
         return self.tool.run(inp)
     

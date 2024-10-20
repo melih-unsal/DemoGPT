@@ -30,6 +30,9 @@ pdfminer-six = "*"
 autopep8 = "*"
 numexpr = "*"
 flake8 = "*"
+duckduckgo-search = "6.3.2"
+wikipedia = "1.4.0"
+pyowm = "3.3.0"
 
 [tool.poetry.dev-dependencies]
 
