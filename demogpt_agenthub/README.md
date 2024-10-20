@@ -1,13 +1,13 @@
 # 🚀 DemoGPT AgentHub
 
-Welcome to DemoGPT AgentHub! This powerful library allows you to create, customize, and use AI agents with various tools. Let's dive in and explore how you can leverage this amazing toolkit! 🎉
+Welcome to DemoGPT AgentHub! This powerful library allows you to create, customize, and use AI agents with various tools. Let's dive in and explore how you can leverage this amazing library! 🎉
 
 ## 📚 Table of Contents
 
 - [Installation](#-installation)
 - [Creating Tools](#-creating-tools)
 - [Available Tools](#-available-tools)
-- [Creating an Agent](#-creating-an-agent)
+- [Initializing an Agent](#-initializing-an-agent)
 - [Using an Agent](#-using-an-agent)
 - [Available Agent Types](#-available-agent-types)
 - [Contributing](#-contributing)
