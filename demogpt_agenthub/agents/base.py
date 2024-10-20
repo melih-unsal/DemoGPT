@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class BaseAssistant:
+class BaseAgent:
     def __init__(self, tools, llm, verbose=False):
         self.llm = llm
         self.tool_decider_prompt = ChatPromptTemplate.from_messages([
@@ -62,13 +62,13 @@ class BaseAssistant:
         Abstract method to process a user's prompt and return a response.
 
         This method should be implemented by subclasses to define the specific
-        behavior of how the assistant processes and responds to user prompts.
+        behavior of how the agent processes and responds to user prompts.
 
         Args:
             prompt (str): The user's input prompt or question.
 
         Returns:
-            str: The assistant's response to the user's prompt.
+            str: The agent's response to the user's prompt.
 
         Raises:
             NotImplementedError: If the subclass does not implement this method.
