@@ -1,6 +1,8 @@
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
-from demogpt_agenthub.prompts import tool_decider, final_answer
+from demogpt_agenthub.utils.parsers import BooleanOutputParser
+from demogpt_agenthub.prompts.agents.tool_calling import tool_decider, final_answer
+from demogpt_agenthub.prompts.agents.react import success_decider
 
 from dotenv import load_dotenv
 
@@ -19,6 +21,14 @@ class BaseAgent:
             ("human", final_answer.human_template)
         ])
         self.final_answer = self.final_answer_prompt | self.llm | StrOutputParser()
+
+        self.success_decider_prompt = ChatPromptTemplate.from_messages([
+            ("system", success_decider.system_template),
+            ("human", success_decider.human_template)
+        ])
+
+        self.success_decider = self.success_decider_prompt | self.llm | BooleanOutputParser()
+
         self.history = []
         self.tools = tools
         self.verbose = verbose
@@ -43,11 +53,17 @@ class BaseAgent:
             message_type (str): The type of message (e.g., "Decision", "Tool call", "Tool result", "Answer").
             content (str): The content to be displayed.
         """
+
+        if not self.verbose:
+            return
+
         color_codes = {
-            "Decision": "\033[92m",  # Green
-            "Tool call": "\033[94m",  # Blue
-            "Tool result": "\033[93m",  # Yellow
-            "Answer": "\033[95m"  # Magenta
+            "Decision": "\033[95m",  # Magenta
+            "Reasoning": "\033[94m",  # Blue
+            "Tool call": "\033[93m",  # Yellow  
+            "Tool args": "\033[93m",  # Yellow
+            "Tool result": "\033[92m",  # Green
+            "Answer": "\033[92m"  # Green
         }
 
         if message_type in color_codes:
