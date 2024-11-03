@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class BaseAgent:
-    def __init__(self, tools, llm, verbose=False):
+    def __init__(self, tools, llm, verbose=False, max_iter=10):
         self.llm = llm
         self.tool_decider_prompt = ChatPromptTemplate.from_messages([
             ("system", tool_decider.system_template),
@@ -33,6 +33,7 @@ class BaseAgent:
         self.tools = tools
         self.verbose = verbose
         self.tools = {tool.name: tool for tool in tools}
+        self.max_iter = max_iter
 
     @property
     def tool_explanations(self):
@@ -63,6 +64,7 @@ class BaseAgent:
             "Tool call": "\033[93m",  # Yellow  
             "Tool args": "\033[93m",  # Yellow
             "Tool result": "\033[92m",  # Green
+            "Not Completed": "\033[91m",  # Red
             "Answer": "\033[92m"  # Green
         }
 

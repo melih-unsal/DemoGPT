@@ -9,7 +9,7 @@ Your response should be a valid JSON object in the following format:
 {{
     "reasoning": <reasoning>,
     "tool": <tool_name>,
-    "args": <tool_args>
+    "argument": <tool_argument>
 }}
 """
 

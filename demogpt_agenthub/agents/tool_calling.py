@@ -11,7 +11,7 @@ class ToolCallingAgent(BaseAgent):
         self.pretty_print("Reasoning", decision["reasoning"])
         self.pretty_print("Tool call", decision["tool"])
         tool_call = self.tools[decision["tool"]]
-        tool_args = decision["args"]
+        tool_args = decision["argument"]
         tool_result = tool_call.run(tool_args)
         self.add_message(decision["tool"], tool_result)
         self.pretty_print("Tool result", tool_result)

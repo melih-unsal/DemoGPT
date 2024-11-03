@@ -8,12 +8,16 @@ You will be given a task and the current context.
 You need to decide if the context includes all the necessary information needed to complete the task.
 You will first reason about the task and the context.
 Then, you will give if there is any missing information.
-If you think the context includes all the necessary information needed to complete the task, respond with "<YES>".
-If you think the context misses even a single piece of information needed to complete the task, respond with "<NO>".
+If the task requires a computation, you must use the necessary tool provided to get the missing information.
+For the computation heavy tasks, you must use the necessary tool provided to get the missing information.
+If you think the there is no need to use any tool, respond with "<YES>".
+If you think the you still need to call a tool, respond with "<NO>".
 """
 
 human_template = """
 Task: {task}
+
+Tools: {tools}
 
 Context: {context}
 
