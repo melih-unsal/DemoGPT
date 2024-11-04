@@ -49,7 +49,7 @@ class BaseRAG:
         prompt = ChatPromptTemplate.from_template(template)
 
         self.rag_chain = (
-            {"context": lambda x: print(self.retriever.invoke(x)) or self.retriever.invoke(x), "question": RunnablePassthrough()}
+            {"context": self.retriever, "question": RunnablePassthrough()}
             | prompt
             | self.llm
             | self.output_parser
@@ -104,7 +104,6 @@ class BaseRAG:
                 docs.extend(loader.load())
             except Exception as e:
                 logger.error(f"Error loading file {file}: {e}")
-        print("0"*1000, docs)
         self._add_documents(docs)
 
     def query(self, query: str):
