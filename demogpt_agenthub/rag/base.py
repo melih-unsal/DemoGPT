@@ -15,7 +15,6 @@ import os
 import logging
 
 from demogpt_agenthub.llms.base import BaseLLM
-from demogpt_agenthub.llms.openai import OpenAIModel
 from demogpt_agenthub.prompts.rag.base import template
 
 logging.basicConfig(level=logging.INFO)
@@ -50,7 +49,7 @@ class BaseRAG:
         prompt = ChatPromptTemplate.from_template(template)
 
         self.rag_chain = (
-            {"context": self.retriever, "question": RunnablePassthrough()}
+            {"context": lambda x: print(self.retriever.invoke(x)) or self.retriever.invoke(x), "question": RunnablePassthrough()}
             | prompt
             | self.llm
             | self.output_parser
@@ -62,7 +61,7 @@ class BaseRAG:
             self.embedding_model = OpenAIEmbeddings(model=model_name)
         else:
             from langchain_huggingface import HuggingFaceEmbeddings
-            self.embedding_model = HuggingFaceEmbeddings(model=model_name)
+            self.embedding_model = HuggingFaceEmbeddings(model_name=model_name)
 
     def load_vectorstore(self, vectorstore):
         if vectorstore == "chroma":
@@ -105,18 +104,20 @@ class BaseRAG:
                 docs.extend(loader.load())
             except Exception as e:
                 logger.error(f"Error loading file {file}: {e}")
-
+        print("0"*1000, docs)
         self._add_documents(docs)
 
     def query(self, query: str):
         return self.rag_chain.invoke(query)
 
 if __name__ == "__main__":
-    rag = BaseRAG(llm=OpenAIModel(model="gpt-4o-mini"), 
+    from demogpt_agenthub.llms.openai import OpenAIChatModel
+    rag = BaseRAG(llm=OpenAIChatModel(model="gpt-4o-mini"), 
                   vectorstore="chroma", 
                   persistent_path="rag_chroma", 
                   index_name="rag_index",
-                  embedding_model_name="sentence-transformers/all-mpnet-base-v2"
+                  embedding_model_name="sentence-transformers/all-mpnet-base-v2",
+                  filter={"search_kwargs": {"score_threshold": 0.5}}
                   )
-    rag.add_files(["C:/Users/melih/Downloads/2407.20183v1.pdf"])
-    print(rag.query("Who are the authors of the paper?"))
+    rag.add_files(["/home/melih/Downloads/results - 2024-11-04T160209.186.pdf"])
+    print(rag.query("How many people joined the interview with Age 40 to 49?"))

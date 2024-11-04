@@ -1,5 +1,4 @@
-from langchain_openai import OpenAI
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import OpenAI, ChatOpenAI
 from demogpt_agenthub.llms.base import BaseLLM
 
 class OpenAIModel(OpenAI, BaseLLM):

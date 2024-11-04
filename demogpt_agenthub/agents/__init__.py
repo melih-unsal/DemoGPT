@@ -1,2 +1,3 @@
 from demogpt_agenthub.agents.base import BaseAgent
 from demogpt_agenthub.agents.tool_calling import ToolCallingAgent
+from demogpt_agenthub.agents.react import ReactAgent

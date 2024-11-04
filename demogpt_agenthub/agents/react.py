@@ -9,6 +9,10 @@ class ReactAgent(BaseAgent):
         result_ready = False
         iter = 0
         while not result_ready and iter < self.max_iter:
+            result_ready = self.success_decider.invoke({"task": prompt, "context": self.context, "tools": self.tool_explanations})
+            self.pretty_print("Decision", result_ready)
+            if result_ready:
+                break
             decision = self.tool_decider.invoke({"task": prompt, "context": self.context, "tools": self.tool_explanations})
             self.add_message("Agent", decision["reasoning"])
             self.pretty_print("Reasoning", decision["reasoning"])
@@ -19,8 +23,6 @@ class ReactAgent(BaseAgent):
             tool_result = tool_call.run(tool_args)
             self.add_message(decision["tool"], tool_result)
             self.pretty_print("Tool result", tool_result)
-            result_ready = self.success_decider.invoke({"task": prompt, "context": self.context, "tools": self.tool_explanations})
-            self.pretty_print("Decision", result_ready)
             iter += 1
         if not result_ready:
             self.pretty_print("Not Completed", """The task was not completed within the maximum number of iterations. The agent will try to answer with the available context.
