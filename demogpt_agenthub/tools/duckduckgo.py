@@ -11,7 +11,7 @@ class DuckDuckGoSearchTool(BaseTool):
         
         super().__init__()
     
-    def run(self, inp):
+    def run(self, inp: str):
         return self.tool.run(inp)
     
 if __name__ == "__main__":

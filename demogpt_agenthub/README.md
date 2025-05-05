@@ -87,7 +87,7 @@ Once you've created an agent, you can use it to ask questions or perform tasks:
 
 ```python
 query = "What's the weather like in New York today?"
-response = agent.ask(query)
+response = agent.run(query)
 print(response)
 ```
 

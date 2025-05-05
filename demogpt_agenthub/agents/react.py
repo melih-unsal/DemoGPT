@@ -4,7 +4,7 @@ class ReactAgent(BaseAgent):
     def __init__(self, tools, llm, verbose=False, max_iter=10):
         super().__init__(tools, llm, verbose, max_iter)
     
-    def ask(self, prompt):
+    def run(self, prompt):
         self.add_message("User", prompt)
         result_ready = False
         iter = 0
@@ -20,7 +20,7 @@ class ReactAgent(BaseAgent):
             tool_call = self.tools[decision["tool"]]
             tool_args = decision["argument"]
             self.pretty_print("Tool args", tool_args)
-            tool_result = tool_call.run(tool_args)
+            tool_result = tool_call.run(**tool_args)
             self.add_message(decision["tool"], tool_result)
             self.pretty_print("Tool result", tool_result)
             iter += 1
@@ -40,4 +40,4 @@ if __name__ == "__main__":
     python_tool = PythonTool()
     agent = ReactAgent(tools=[search_tool, weather_tool, python_tool], llm=OpenAIChatModel(model_name="gpt-4o-mini"), verbose=True)
     query = "What is the weather's temperature's square root in the country where Christiano Ronaldo is currently playing? Please precisely calculate the result."
-    print(agent.ask(query))
+    print(agent.run(query))

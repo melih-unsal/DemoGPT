@@ -16,6 +16,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8.1"
+pydantic = "<2.0.0"
 streamlit = "*"
 altair = "<5"
 langchain = "*"

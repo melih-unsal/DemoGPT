@@ -5,6 +5,7 @@ from demogpt_agenthub.prompts.agents.tool_calling import tool_decider, final_ans
 from demogpt_agenthub.prompts.agents.react import success_decider
 
 from dotenv import load_dotenv
+import inspect
 
 load_dotenv()
 
@@ -37,7 +38,21 @@ class BaseAgent:
 
     @property
     def tool_explanations(self):
-        return {f"{tool.name}: {tool.description}" for tool in self.tools.values()}
+        explanations = {}
+        for tool in self.tools.values():
+            # Get the run function signature
+            sig = inspect.signature(tool.run)
+            # Format parameters, excluding 'self'
+            params = [f"{name}: {param.annotation.__name__ if param.annotation != inspect._empty else 'any'}"
+                     for name, param in sig.parameters.items() if name != 'self']
+            param_str = ", ".join(params)
+            
+            explanations[tool.name] = {
+                "description": tool.description,
+                "run_description": tool.run.__doc__ or "No description available",
+                "parameters": f"Input parameters: ({param_str})"
+            }
+        return explanations
 
     @property
     def context(self):
@@ -75,7 +90,7 @@ class BaseAgent:
             print(f"{message_type}:")
             print(content)
     
-    def ask(self, prompt: str):
+    def run(self, prompt: str):
         """
         Abstract method to process a user's prompt and return a response.
 
