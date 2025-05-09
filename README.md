@@ -40,15 +40,107 @@
 <a href="https://huggingface.co/spaces/melihunsal/demogpt"><img src="https://img.shields.io/badge/%F0%9F%A4%97-Spaces-yellow"></a>
 </p>
 
-## ⭐ Star History
+## 🤖 DemoGPT AgentHub
 
-[![Star History Chart](https://api.star-history.com/svg?repos=melih-unsal/DemoGPT&type=Timeline)](https://star-history.com/#melih-unsal/DemoGPT&Timeline)
+DemoGPT AgentHub is a powerful library that allows you to create, customize, and use AI agents with various tools.
 
-⭐ Consider starring us if you're using DemoGPT so more people hear about us!
+### 🛠 Installation
+
+To use DemoGPT AgentHub, simply install the main package:
+
+```bash 
+pip install demogpt
+```
+
+### 🔧 Creating Tools
+
+Creating custom tools is easy:
+
+```python
+from demogpt_agenthub.tools import BaseTool
+class MyCustomTool(BaseTool):
+    def __init__(self):
+        self.name = "MyCustomTool"
+        self.description = "This tool does something amazing!"
+        super().__init__()
+    def run(self, query):
+        # Implement your tool's functionality here
+        return f"Result for: {query}"
+```
+
+### 🧰 Available Tools
+
+DemoGPT AgentHub comes with several built-in tools:
+
+- 🔍 DuckDuckGoSearchTool
+- 🌦 WeatherTool
+- 📚 WikipediaTool
+- 🐚 BashTool
+- 🐍 PythonTool
+- 📄 ArxivTool
+- 🎥 YouTubeSearchTool
+- 💻 StackOverFlowTool
+- 🌐 RequestUrlTool
+- 🗃 WikiDataTool
+- 🏥 PubmedTool
+
+### 🤖 Creating an Agent
+
+To create an agent:
+
+```python
+from demogpt_agenthub.agents import ToolCallingAgent
+from demogpt_agenthub.llms import OpenAIChatModel
+from demogpt_agenthub.tools import DuckDuckGoSearchTool, WeatherTool
+
+search_tool = DuckDuckGoSearchTool()
+weather_tool = WeatherTool()
+llm = OpenAIChatModel(model_name="gpt-4o-mini")
+agent = ToolCallingAgent(tools=[search_tool, weather_tool], llm=llm, verbose=True)
+```
+
+### 🎮 Using an Agent
+
+Once you've created an agent, use it to ask questions or perform tasks:
+
+```python
+query = "What's the weather like in New York today?"
+response = agent.run(query)
+print(response)
+```
+
+### 👥 Available Agent Types
+
+Currently, DemoGPT AgentHub supports:
+
+- 🛠 ToolCallingAgent: An agent that can use multiple tools to answer questions and perform tasks.
+- 🔄 ReactAgent: An agent that shows its reasoning process, makes decisions, and uses tools step-by-step.
+
+### 🧠 Using ReactAgent
+
+The ReactAgent provides a detailed reasoning process:
+
+```python
+from demogpt_agenthub.tools import DuckDuckGoSearchTool, WeatherTool, PythonTool
+from demogpt_agenthub.llms import OpenAIChatModel
+from demogpt_agenthub.agents import ReactAgent
+
+search_tool = DuckDuckGoSearchTool()
+weather_tool = WeatherTool()
+python_tool = PythonTool()
+
+agent = ReactAgent(
+    tools=[search_tool, weather_tool, python_tool],
+    llm=OpenAIChatModel(model_name="gpt-4o-mini"),
+    verbose=True
+)
+
+query = "What is the weather's temperature's square root in the country where Cristiano Ronaldo is currently playing?"
+print(agent.run(query))
+```
 
 ## 🔥 Demo
 
-For quick demo, you can visit [our website](https://demogpt.io)
 
 ![Tweet Generator](assets/web_blogger.gif)
 
