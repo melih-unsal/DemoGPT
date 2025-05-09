@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "demogpt"
-version = "1.2.6.34"
+version = "1.2.7"
 description = "Autonomous AI Agent for Gen-AI App Generation "
 authors = ["Melih Unsal <melihunsal.ai@gmail.com>"]
 license = "MIT"
