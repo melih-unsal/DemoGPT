@@ -59,6 +59,7 @@
   - [Available Agent Types](#-available-agent-types)
   - [Using ReactAgent](#-using-reactagent)
   - [Using RAG](#-using-rag)
+  - [Combining RAG with Agents](#-combining-rag-with-agents)
 - [To-Do](#to-do-)
 - [Contribute](#-contribute)
 - [Citations](#-citations)
@@ -90,6 +91,25 @@ class MyCustomTool(BaseTool):
     def run(self, query):
         # Implement your tool's functionality here
         return f"Result for: {query}"
+```
+
+**Example Usage:**
+```python
+my_tool = MyCustomTool()
+agent = ToolCallingAgent(tools=[my_tool], llm=llm, verbose=True)
+agent.run("Can you use my custom tool?")
+```
+
+**Example Output:**
+```
+Reasoning:
+The user is asking to use the custom tool called MyCustomTool. This tool is described as doing "something amazing", so I will use it to process the query.
+Tool call:
+MyCustomTool
+Tool result:
+Result for: Can you use my custom tool?
+Answer:
+Yes, I successfully used your custom tool! The tool processed your query and returned the following result: "Result for: Can you use my custom tool?"
 ```
 
 ### 🧰 Available Tools
@@ -133,12 +153,76 @@ response = agent.run(query)
 print(response)
 ```
 
-### 👥 Available Agent Types
+**Example Output:**
 
-Currently, DemoGPT AgentHub supports:
+```
+Removing existing vectorstore at rag_chroma
+Decision:
+False
+Reasoning:
+To find the weather in New York today, I first need to retrieve the current weather information. After obtaining the weather information, I can provide you with the current weather conditions. The RAG tool will help me find out the current weather in New York.
+Tool call:
+RAG
+Tool args:
+{'query': 'weather in New York today'}
+Tool result:
+In New York, the current weather is as follows:
+Detailed status: clear sky
+Wind speed: 2.57 m/s, direction: 240°
+Humidity: 56%
+Temperature: 
+  - Current: 24.36°C
+  - High: 25.74°C
+  - Low: 22.05°C
+  - Feels like: 24.46°C
+Rain: {}
+Heat index: None
+Cloud cover: 0%
+Answer:
+The current weather in New York is clear sky with a temperature of 24.36°C (feels like 24.46°C). The humidity is at 56% with a wind speed of 2.57 m/s from the direction of 240°. There is 0% cloud cover.
+```
 
-- 🛠 ToolCallingAgent: An agent that can use multiple tools to answer questions and perform tasks.
-- 🔄 ReactAgent: An agent that shows its reasoning process, makes decisions, and uses tools step-by-step.
+This example demonstrates how an agent can:
+1. Access document information through RAG
+2. Use Python for calculations
+3. Combine multiple tools to answer complex questions
+
+The agent will:
+1. Use RAG to find information about the current weather in New York
+2. Use the Python tool to calculate the current weather conditions
+3. Provide a comprehensive answer using both pieces of information
+
+### 🧰 Example: Creating a Simple Math Tool
+
+Here's an example of creating a custom power calculation tool:
+
+```python
+from demogpt_agenthub.tools import BaseTool
+class MyPowerTool(BaseTool):
+    def __init__(self):
+        self.name = "MyPowerTool"
+        self.description = "This tool is used to calculate the power of a number"
+        super().__init__()
+    def run(self, a: int, b: int):
+        # Implement your tool's functionality here
+        return a**b
+
+power_tool = MyPowerTool()
+agent = ToolCallingAgent(tools=[search_tool, weather_tool, power_tool], llm=llm, verbose=True)
+agent.run("What is the 34 to the power of 26?")
+```
+
+**Example Output:**
+```
+Reasoning:
+The task is to calculate a number raised to the power of another. The most appropriate tool for this calculation is MyPowerTool, which is specifically designed for power calculations.
+Tool call:
+MyPowerTool
+Tool result:
+6583424253569334549714045134721532297216
+Answer:
+34 to the power of 26 is 6583424253569334549714045134721532297216.
+```
 
 ### 🧠 Using ReactAgent
 
@@ -163,6 +247,56 @@ query = "What is the weather's temperature's square root in the country where Cr
 print(agent.run(query))
 ```
 
+**Example Output:**
+```
+Decision:
+False
+Reasoning:
+First, I need to determine the current location where Christiano Ronaldo is playing in order to fetch the current temperature. Then I will use the OpenWeatherMap tool to get the temperature information. Finally, I will calculate the square root of the temperature using the Python Interpreter tool for precise computation.
+Tool call:
+duckduckgo_search
+Tool args:
+{'inp': 'Where is Christiano Ronaldo currently playing?'}
+Tool result:
+Ronaldo started Al Nassr's home match against Saudi Pro League leaders Al Ittihad on May 7. Stefano Pioli's men went into a 2-0 first-half lead but were beaten 3-2 when Houssem Aouar stuck in ... Cristiano Ronaldo and his Al Nassr team endured disappointment in 2023/24 as they failed to win the Saudi Pro League or the AFC Champions League. After Sadio Mane, Seko Fofana, Marcelo Brozovic ... Yes, Cristiano Ronaldo will be in the lineup to play tonight. Now that they once again failed to win the AFC Champions League Elite, Ronaldo will still have some optimism that they can win the league despite being eight points behind Al Ittihad. Despite the club's poor season, Ronaldo has maintained his goalscoring form, netting 23 goals in ... Cristiano Ronaldo currently plays for Al Nassr in the Saudi Pro League. The Portugal international transferred from Manchester United in December 2022 and inked a two-and-a-half-year contract with ... Is Cristiano Ronaldo playing Today? Cristiano Ronaldo is expected to start in today's crucial match. The Portuguese star remains Al Nassr's top scorer in the AFC Champions League, with six goals to his name. His outstanding form has played a pivotal role in the team's journey to the semifinals—now just one win away from reaching a continental final for the first time since 1995, when ...
+Decision:
+False
+Reasoning:
+I need to fetch the current temperature in Saudi Arabia where Cristiano Ronaldo is playing, using the OpenWeatherMap tool. After obtaining the temperature, I will compute its square root using the Python Interpreter tool.
+Tool call:
+open_weather_map
+Tool args:
+{'city': 'Riyadh,SA'}
+Tool result:
+In Riyadh,SA, the current weather is as follows:
+Detailed status: clear sky
+Wind speed: 5.44 m/s, direction: 150°
+Humidity: 7%
+Temperature: 
+  - Current: 39.16°C
+  - High: 39.16°C
+  - Low: 39.16°C
+  - Feels like: 35.82°C
+Rain: {}
+Heat index: None
+Cloud cover: 0%
+Decision:
+False
+Reasoning:
+I need to calculate the square root of the current temperature in Saudi Arabia, which is 39.16°C. I will use the Python Interpreter tool for precise calculation.
+Tool call:
+Python Interpreter
+Tool args:
+{'code': 'import math\nresult = math.sqrt(39.16)\nprint(result)'}
+Tool result:
+6.257795138864806
+
+Decision:
+True
+Answer:
+The square root of the current temperature in Saudi Arabia, where Cristiano Ronaldo is playing, is approximately 6.26.
+```
+
 ### 🧮 Using RAG
 
 BaseRAG provides an easy way to implement Retrieval Augmented Generation with various vector stores:
@@ -183,52 +317,35 @@ rag = BaseRAG(
 )
 
 # Add documents
-rag.add_files(["path/to/your/document.pdf"])  # Supports PDF, TXT, CSV, JSON
-# Or add raw text
-rag.add_texts(["Your text content here"])
+rag.add_files(["~/Downloads/Resume.pdf"])  # Supports PDF, TXT, CSV, JSON
 
 # Query the RAG system
-response = rag.run("What information can you find about X?")
+response = rag.run("What is the GitHub repo of the person?")
+print(response)
 ```
 
-Features:
-- 📚 Multiple vectorstore support (Chroma, Pinecone, FAISS)
-- 🔤 Multiple embedding model options:
-  - Sentence Transformers (e.g., "sentence-transformers/all-mpnet-base-v2")
-  - OpenAI Embeddings ("text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002")
-- 📄 Multiple file format support:
-  - PDF files
-  - Text files
-  - CSV files
-  - JSON files
-  - Web pages (via URLs)
-- 💾 Persistent storage with automatic connection management
-- 🔍 Configurable similarity search with filters and thresholds
+**Example Output:**
+```
+Removing existing vectorstore at rag_chroma
+The GitHub repository of the person is called DemoGPT, and it can be found at https://github.com/melih-unsal.
+```
 
-Example use cases:
-
+**Another Query Example:**
 ```python
-# Example 1: Create a RAG system for a PDF document
-rag = BaseRAG(
-    llm=OpenAIChatModel(model_name="gpt-4o-mini"),
-    vectorstore="chroma",
-    persistent_path="rag_chroma",
-    index_name="rag_index",
-    reset_vectorstore=True
-)
-rag.add_files(["document.pdf"])
-answer = rag.run("What are the key points in the document?")
-
-# Example 2: Create a RAG system with web content
-rag = BaseRAG(
-    llm=OpenAIChatModel(model_name="gpt-4o-mini"),
-    vectorstore="chroma",
-    persistent_path="web_content",
-    index_name="web_index"
-)
-rag.add_files(["https://example.com/article"])
-answer = rag.run("Summarize the web content")
+rag.run("How many stars does the GitHub repo have?")
 ```
+
+**Output:**
+```
+The GitHub repo has 1.8K stars.
+```
+
+These examples provide users with a clear understanding of:
+1. What to expect when running these code blocks
+2. The format of the output
+3. How different agents and tools behave
+4. How the reasoning process works in the ReactAgent
+5. How RAG responds to questions
 
 ## 🔥 Demo
 
