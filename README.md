@@ -347,6 +347,83 @@ These examples provide users with a clear understanding of:
 4. How the reasoning process works in the ReactAgent
 5. How RAG responds to questions
 
+### 🔄 Combining RAG with Agents
+
+You can also use RAG within agents to enable document-based reasoning. Here's an example:
+
+```python
+from demogpt_agenthub.tools import PythonTool
+from demogpt_agenthub.llms import OpenAIChatModel
+from demogpt_agenthub.agents import ReactAgent
+from demogpt_agenthub.rag import BaseRAG
+
+# Initialize RAG system
+rag = BaseRAG(
+    llm=OpenAIChatModel(model_name="gpt-4o-mini"), 
+    vectorstore="chroma", 
+    persistent_path="rag_chroma", 
+    index_name="rag_index",
+    reset_vectorstore=True,
+    embedding_model_name="sentence-transformers/all-mpnet-base-v2",
+    filter={"search_kwargs": {"score_threshold": 0.5}}
+)
+
+# Add your documents
+rag.add_files(["~/Downloads/Melih_ÜNSAL_Resume.pdf"])
+
+# Create an agent with RAG and other tools
+python_tool = PythonTool()
+agent = ReactAgent(
+    tools=[python_tool, rag], 
+    llm=OpenAIChatModel(model_name="gpt-4o-mini"), 
+    verbose=True
+)
+
+# Use the agent with both RAG and other tools
+query = "What is the square root of the number of stars of the github repo of Melih?"
+print(agent.run(query))
+```
+
+**Example Output:**
+```
+Removing existing vectorstore at rag_chroma
+Decision:
+False
+Reasoning:
+To find the square root of the number of stars in Melih's GitHub repo, I first need to retrieve the current number of stars for that repository. After obtaining that number, I can compute its square root. The RAG tool will help me find out the number of stars, and then I'll use the Python Interpreter to calculate the square root.
+Tool call:
+RAG
+Tool args:
+{'query': 'number of stars in the GitHub repository of Melih'}
+Tool result:
+The GitHub repository of Melih ÜNSAL has 1.8K stars.
+Decision:
+False
+Reasoning:
+I need to calculate the square root of 1.8K stars, which is equivalent to 1800 stars. To perform this calculation, I will use the Python Interpreter tool to compute the square root.
+Tool call:
+Python Interpreter
+Tool args:
+{'code': 'import math\nresult = math.sqrt(1800)\nprint(result)'}
+Tool result:
+42.42640687119285
+
+Decision:
+True
+Answer:
+The square root of the number of stars in Melih's GitHub repository, which is 1.8K (or 1800 stars), is approximately 42.43.
+```
+
+This example demonstrates how an agent can:
+1. Access document information through RAG
+2. Use Python for calculations
+3. Combine multiple tools to answer complex questions
+
+The agent will:
+1. Use RAG to find information about the GitHub repository stars
+2. Use the Python tool to calculate the square root
+3. Provide a comprehensive answer using both pieces of information
+
 ## 🔥 Demo
 
 
