@@ -7,6 +7,7 @@
 <p align="center">
 <b>⚡ Everything you need to create an LLM Agent is here. Access a comprehensive suite of tools, prompts, frameworks, and a knowledge hub of LLM models—all in one place to streamline your agent development.</b>
 </p>
+
 <p align="center">
 <a href="https://pepy.tech/project/demogpt"><img src="https://static.pepy.tech/badge/demogpt" alt="Downloads"></a>
 <a href="https://github.com/melih-unsal/DemoGPT/releases"><img src="https://img.shields.io/github/release/melih-unsal/DemoGPT" alt="Releases"></a>
@@ -39,6 +40,29 @@
 <a href="https://demogpt.streamlit.app"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Streamlit application"></a>
 <a href="https://huggingface.co/spaces/melihunsal/demogpt"><img src="https://img.shields.io/badge/%F0%9F%A4%97-Spaces-yellow"></a>
 </p>
+
+## 📑 Table of Contents
+
+- [Introduction](#-introduction)
+- [Architecture](#️-architecture)
+- [Installation](#-installation)
+- [Usage](#-usage)
+  - [Package Version](#-for-the-package-version)
+  - [Python Interface](#-for-the-python-interface)
+  - [Source Code Version](#-for-the-source-code-version)
+- [DemoGPT AgentHub](#-demogpt-agenthub)
+  - [Installation](#-installation-1)
+  - [Creating Tools](#-creating-tools)
+  - [Available Tools](#-available-tools)
+  - [Creating an Agent](#-creating-an-agent)
+  - [Using an Agent](#-using-an-agent)
+  - [Available Agent Types](#-available-agent-types)
+  - [Using ReactAgent](#-using-reactagent)
+  - [Using RAG](#-using-rag)
+- [To-Do](#to-do-)
+- [Contribute](#-contribute)
+- [Citations](#-citations)
+- [License](#-license)
 
 ## 🤖 DemoGPT AgentHub
 
@@ -139,6 +163,73 @@ query = "What is the weather's temperature's square root in the country where Cr
 print(agent.run(query))
 ```
 
+### 🧮 Using RAG
+
+BaseRAG provides an easy way to implement Retrieval Augmented Generation with various vector stores:
+
+```python
+from demogpt_agenthub.rag import BaseRAG
+from demogpt_agenthub.llms import OpenAIChatModel
+
+# Initialize RAG system
+rag = BaseRAG(
+    llm=OpenAIChatModel(model_name="gpt-4o-mini"), 
+    vectorstore="chroma",  # Supports "chroma", "pinecone", "faiss"
+    persistent_path="rag_chroma",  # Where to store the vector database
+    index_name="rag_index",
+    reset_vectorstore=True,  # Whether to reset existing vectorstore
+    embedding_model_name="sentence-transformers/all-mpnet-base-v2",  # Or use OpenAI models
+    filter={"search_kwargs": {"score_threshold": 0.5}}
+)
+
+# Add documents
+rag.add_files(["path/to/your/document.pdf"])  # Supports PDF, TXT, CSV, JSON
+# Or add raw text
+rag.add_texts(["Your text content here"])
+
+# Query the RAG system
+response = rag.run("What information can you find about X?")
+```
+
+Features:
+- 📚 Multiple vectorstore support (Chroma, Pinecone, FAISS)
+- 🔤 Multiple embedding model options:
+  - Sentence Transformers (e.g., "sentence-transformers/all-mpnet-base-v2")
+  - OpenAI Embeddings ("text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002")
+- 📄 Multiple file format support:
+  - PDF files
+  - Text files
+  - CSV files
+  - JSON files
+  - Web pages (via URLs)
+- 💾 Persistent storage with automatic connection management
+- 🔍 Configurable similarity search with filters and thresholds
+
+Example use cases:
+
+```python
+# Example 1: Create a RAG system for a PDF document
+rag = BaseRAG(
+    llm=OpenAIChatModel(model_name="gpt-4o-mini"),
+    vectorstore="chroma",
+    persistent_path="rag_chroma",
+    index_name="rag_index",
+    reset_vectorstore=True
+)
+rag.add_files(["document.pdf"])
+answer = rag.run("What are the key points in the document?")
+
+# Example 2: Create a RAG system with web content
+rag = BaseRAG(
+    llm=OpenAIChatModel(model_name="gpt-4o-mini"),
+    vectorstore="chroma",
+    persistent_path="web_content",
+    index_name="web_index"
+)
+rag.add_files(["https://example.com/article"])
+answer = rag.run("Summarize the web content")
+```
+
 ## 🔥 Demo
 
 
@@ -165,17 +256,6 @@ To use the DemoGPT application, simply type "demogpt" into your terminal:
 demogpt
 ```
 
-
-## 📑 Table of Contents
-
-- [Introduction](#-introduction)
-- [Architecture](#%EF%B8%8F-architecture)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [To-Do](#to-do-)
-- [Contribute](#-contribute)
-- [Citations](#-citations) 
-- [License](#-license)
 
 ## 📌 Introduction
 

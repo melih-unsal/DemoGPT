@@ -66,8 +66,13 @@ class BaseRAG:
             self.embedding_model = HuggingFaceEmbeddings(model_name=model_name)
 
     def load_vectorstore(self, vectorstore, reset_vectorstore: bool = False):
+        # First, close any existing connection
+        if hasattr(self, 'vectorstore') and hasattr(self.vectorstore, '_client'):
+            self.vectorstore._client.close()
+        
         if reset_vectorstore:
             if os.path.exists(self.persistent_path):
+                print(f"Removing existing vectorstore at {self.persistent_path}")
                 shutil.rmtree(self.persistent_path)
         if vectorstore == "chroma":
             from langchain_chroma import Chroma
@@ -115,7 +120,7 @@ class BaseRAG:
                 logger.error(f"Error loading file {file_path}: {e}")
         self._add_documents(docs)
 
-    def query(self, query: str):
+    def run(self, query: str):
         return self.rag_chain.invoke(query)
 
 if __name__ == "__main__":
