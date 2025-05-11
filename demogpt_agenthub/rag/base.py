@@ -36,6 +36,8 @@ class BaseRAG:
                  filter: dict = None,
                  k: int = 4,
                  verbose: bool = False):
+        self.name = "RAG"
+        self.description = "A tool that can search for information in vector database by using a query."
         self.llm = llm
         self.persistent_path = persistent_path
         self.verbose = verbose
