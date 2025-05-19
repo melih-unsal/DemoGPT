@@ -10,3 +10,4 @@ from demogpt_agenthub.tools.wikiped import WikipediaTool
 from demogpt_agenthub.tools.wikidata import WikiDataTool
 from demogpt_agenthub.tools.pubmed import PubmedTool
 from demogpt_agenthub.tools.weather import WeatherTool # requires OPENWEATHERMAP_API_KEY
+from demogpt_agenthub.tools.yolo import YoloTool
