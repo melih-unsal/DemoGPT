@@ -228,6 +228,8 @@ Answer:
 
 The ReactAgent provides a detailed reasoning process:
 
+#### Example 1: Weather and Math Calculations
+
 ```python
 from demogpt_agenthub.tools import DuckDuckGoSearchTool, WeatherTool, PythonTool
 from demogpt_agenthub.llms import OpenAIChatModel
@@ -272,11 +274,11 @@ In Riyadh,SA, the current weather is as follows:
 Detailed status: clear sky
 Wind speed: 5.44 m/s, direction: 150°
 Humidity: 7%
-Temperature: 
-  - Current: 39.16°C
-  - High: 39.16°C
-  - Low: 39.16°C
-  - Feels like: 35.82°C
+Temperature:
+Current: 39.16°C
+High: 39.16°C
+Low: 39.16°C
+Feels like: 35.82°C
 Rain: {}
 Heat index: None
 Cloud cover: 0%
@@ -296,6 +298,65 @@ True
 Answer:
 The square root of the current temperature in Saudi Arabia, where Cristiano Ronaldo is playing, is approximately 6.26.
 ```
+
+#### Example 2: Object Detection in Images
+
+```python
+from demogpt_agenthub.tools import YoloTool
+from demogpt_agenthub.llms import OpenAIChatModel
+from demogpt_agenthub.agents import ReactAgent
+
+yolo_tool = YoloTool()
+
+agent = ReactAgent(tools=[yolo_tool], llm=OpenAIChatModel(model_name="gpt-4o-mini"), verbose=True)
+query = "Give me the objects in the image https://ultralytics.com/images/bus.jpg"
+print(agent.run(query))
+```
+
+**Example Output:**
+```
+Decision:
+False
+Reasoning:
+The task is to identify and list the objects present in a given image. The available tool, 'YOLO Object Detection', is specifically designed for this purpose and can analyze the image to output detailed descriptions of detected objects.
+Tool call:
+YOLO Object Detection
+Tool args:
+{'path': 'https://ultralytics.com/images/bus.jpg'}
+
+Found https://ultralytics.com/images/bus.jpg locally at bus.jpg
+image 1/1 /home/melih/Desktop/projects/DemoGPT/bus.jpg: 640x480 4 persons, 1 bus, 59.1ms
+Speed: 2.0ms preprocess, 59.1ms inference, 38.9ms postprocess per image at shape (1, 3, 640, 480)
+Tool result:
+in the image.
+There are 1 bus, 4 person in the image.
+The bus[1] is from (3, 229) to (796, 728).
+The person[1] is from (671, 394) to (809, 878).
+The person[2] is from (47, 399) to (239, 904).
+The person[3] is from (223, 408) to (344, 860).
+The person[4] is from (0, 556) to (68, 872).
+
+Decision:
+True
+Answer:
+In the image you provided, there are the following objects detected:
+
+- 1 bus
+- 4 persons
+
+The bus is located at coordinates from (3, 229) to (796, 728). The persons are located at the following coordinates:
+
+- Person 1: (671, 394) to (809, 878)
+- Person 2: (47, 399) to (239, 904)
+- Person 3: (223, 408) to (344, 860)
+- Person 4: (0, 556) to (68, 872)
+```
+
+These examples demonstrate how ReactAgent can:
+1. Process complex multi-step queries using multiple tools
+2. Perform computer vision tasks with YOLO object detection
+3. Show detailed reasoning and decision-making process
+4. Provide structured and informative responses
 
 ### 🧮 Using RAG
 
