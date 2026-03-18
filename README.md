@@ -1,4 +1,4 @@
-# 🤖 From Demo to Product: The All-in-One Agent Library
+# 🤖 Create Agents in a Second - with the Best Tools, RAG, Knowledge Graph and Vector Databases
 
 <p align="center">
 <a href=""><img src="assets/banner_small.png" alt="DemoGPT logo: Generate automatic LangChain pipelines" width="450px"></a>
