@@ -1,9 +1,15 @@
 from collections import defaultdict
 from demogpt_agenthub.tools.base import BaseTool
-from ultralytics import YOLO
 
 class YoloTool(BaseTool):
     def __init__(self):
+        try:
+            from ultralytics import YOLO
+        except ImportError:
+            raise ImportError(
+                "YoloTool requires the 'ultralytics' package. "
+                "Install it with: pip install ultralytics"
+            )
         self.model = YOLO("yolo11n.pt")
         super().__init__()
         self.name = "YOLO Object Detection"

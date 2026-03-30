@@ -4,24 +4,25 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "demogpt"
-version = "1.2.7"
+version = "1.3.2"
 description = "Autonomous AI Agent for Gen-AI App Generation "
 authors = ["Melih Unsal <melihunsal.ai@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/melih-unsal/DemoGPT"
 packages = [
-    { include = "demogpt" }
+    { include = "demogpt" },
+    { include = "demogpt_agenthub" }
 ]
 
 [tool.poetry.dependencies]
 python = "^3.8.1"
-pydantic = "<2.0.0"
+pydantic = "*"
 streamlit = "*"
 altair = "<5"
-langchain = "*"
-langchain_experimental = "*"
-langchain_openai = "*"
+langchain = ">=0.3,<1"
+langchain_experimental = ">=0.3,<1"
+langchain_openai = ">=0.2,<0.4"
 openai = "*"
 tiktoken = "*"
 python-dotenv = "*"
@@ -31,7 +32,7 @@ pdfminer-six = "*"
 autopep8 = "*"
 numexpr = "*"
 flake8 = "*"
-duckduckgo-search = "6.3.2"
+langchain-tavily = "*"
 wikipedia = "1.4.0"
 pyowm = "3.3.0"
 

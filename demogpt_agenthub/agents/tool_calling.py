@@ -28,9 +28,9 @@ class ToolCallingAgent(BaseAgent):
         return answer
 
 if __name__ == "__main__":
-    from demogpt_agenthub.tools import DuckDuckGoSearchTool, WeatherTool, WikipediaTool    
+    from demogpt_agenthub.tools import TavilySearchTool, WeatherTool, WikipediaTool
     from demogpt_agenthub.llms import OpenAIChatModel
-    search_tool = DuckDuckGoSearchTool()
+    search_tool = TavilySearchTool()
     weather_tool = WeatherTool()
     wikipedia_tool = WikipediaTool()
     agent = ToolCallingAgent(tools=[search_tool, weather_tool, wikipedia_tool], llm=OpenAIChatModel(model_name="gpt-4o-mini"), verbose=True)

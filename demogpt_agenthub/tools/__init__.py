@@ -1,5 +1,5 @@
 from demogpt_agenthub.tools.base import BaseTool
-from demogpt_agenthub.tools.duckduckgo import DuckDuckGoSearchTool
+from demogpt_agenthub.tools.tavily_search import TavilySearchTool
 from demogpt_agenthub.tools.bash import BashTool
 from demogpt_agenthub.tools.repl import PythonTool
 from demogpt_agenthub.tools.research import ArxivTool

@@ -33,9 +33,9 @@ class ReactAgent(BaseAgent):
         return answer
 
 if __name__ == "__main__":
-    from demogpt_agenthub.tools import DuckDuckGoSearchTool, WeatherTool, PythonTool
+    from demogpt_agenthub.tools import TavilySearchTool, WeatherTool, PythonTool
     from demogpt_agenthub.llms import OpenAIChatModel
-    search_tool = DuckDuckGoSearchTool()
+    search_tool = TavilySearchTool()
     weather_tool = WeatherTool()
     python_tool = PythonTool()
     agent = ReactAgent(tools=[search_tool, weather_tool, python_tool], llm=OpenAIChatModel(model_name="gpt-4o-mini"), verbose=True)

@@ -48,7 +48,7 @@ class MyCustomTool(BaseTool):
 
 DemoGPT AgentHub comes with several built-in tools:
 
-- 🔍 DuckDuckGoSearchTool
+- 🔍 TavilySearchTool
 - 🌦 WeatherTool
 - 📚 WikipediaTool
 - 🐚 BashTool
@@ -73,8 +73,8 @@ Here's an example:
 ```python
 from demogpt_agenthub.agents import ToolCallingAgent
 from demogpt_agenthub.llms import OpenAIChatModel
-from demogpt_agenthub.tools import DuckDuckGoSearchTool, WeatherTool
-search_tool = DuckDuckGoSearchTool()
+from demogpt_agenthub.tools import TavilySearchTool, WeatherTool
+search_tool = TavilySearchTool()
 weather_tool = WeatherTool()
 llm = OpenAIChatModel(model_name="gpt-4o-mini")
 agent = ToolCallingAgent(tools=[search_tool, weather_tool], llm=llm, verbose=True)
