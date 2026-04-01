@@ -4,10 +4,10 @@ import re
 from time import sleep
 
 import autopep8
-from langchain_community.chat_models import ChatOpenAI
-from langchain.prompts.chat import (ChatPromptTemplate,
-                                    HumanMessagePromptTemplate,
-                                    SystemMessagePromptTemplate)
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts.chat import (ChatPromptTemplate,
+                                         HumanMessagePromptTemplate,
+                                         SystemMessagePromptTemplate)
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 
 from demogpt import utils
@@ -18,6 +18,13 @@ from . import prompts
 
 
 class Chains:
+    has_gpt4 = False
+    llm = None
+    model = None
+    openai_api_key = ""
+    temperature = 0.0
+    openai_api_base = None
+
     @classmethod
     def setLlm(
         cls,
@@ -40,7 +47,7 @@ class Chains:
         cls.model = model
     
     @classmethod
-    def getModel(cls, change=False, temperature=0, change_model="gpt-4-0613"):
+    def getModel(cls, change=False, temperature=0, change_model="gpt-4o"):
         if change and cls.has_gpt4:
             return ChatOpenAI(
                 model=change_model,
@@ -64,7 +71,7 @@ class Chains:
         cls.model = model
 
     @classmethod
-    def getChain(cls, system_template="", human_template="", change=False, change_model="gpt-4-0613", temperature=0, return_type="text", **kwargs):
+    def getChain(cls, system_template="", human_template="", change=False, change_model="gpt-4o", temperature=0, return_type="text", **kwargs):
         prompts = []
         if system_template:
             prompts.append(SystemMessagePromptTemplate.from_template(system_template))
@@ -244,23 +251,23 @@ class Chains:
             system_template=prompts.combine_v2.system_template,
             human_template=prompts.combine_v2.human_template,
             change=True,
-            change_model="gpt-3.5-turbo",
+            change_model="gpt-4o-mini",
             code_snippets=code_snippets,
             function_names=function_names,
             return_type="code"
         )
-        
+
         code = autopep8.fix_code(code)
-        
+
         has_problem = utils.catchErrors(code)
-        
+
         if has_problem:
-            print("Switching to the 16k...")
+            print("Switching to a larger context model...")
             code = cls.getChain(
                 system_template=prompts.combine_v2.system_template,
                 human_template=prompts.combine_v2.human_template,
                 change=True,
-                change_model="gpt-3.5-turbo-16k-0613",
+                change_model="gpt-4o-mini",
                 code_snippets=code_snippets,
                 function_names=function_names,
                 return_type="code"

@@ -1,7 +1,7 @@
 from langchain_openai import ChatOpenAI
-from langchain.prompts.chat import (ChatPromptTemplate,
-                                    HumanMessagePromptTemplate,
-                                    SystemMessagePromptTemplate)
+from langchain_core.prompts.chat import (ChatPromptTemplate,
+                                         HumanMessagePromptTemplate,
+                                         SystemMessagePromptTemplate)
 
 def get_prompt(system_template: str, human_template: str):
     prompts = []

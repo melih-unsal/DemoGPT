@@ -116,7 +116,7 @@ Yes, I successfully used your custom tool! The tool processed your query and ret
 
 DemoGPT AgentHub comes with several built-in tools:
 
-- 🔍 DuckDuckGoSearchTool
+- 🔍 TavilySearchTool
 - 🌦 WeatherTool
 - 📚 WikipediaTool
 - 🐚 BashTool
@@ -135,9 +135,9 @@ To create an agent:
 ```python
 from demogpt_agenthub.agents import ToolCallingAgent
 from demogpt_agenthub.llms import OpenAIChatModel
-from demogpt_agenthub.tools import DuckDuckGoSearchTool, WeatherTool
+from demogpt_agenthub.tools import TavilySearchTool, WeatherTool
 
-search_tool = DuckDuckGoSearchTool()
+search_tool = TavilySearchTool()
 weather_tool = WeatherTool()
 llm = OpenAIChatModel(model_name="gpt-4o-mini")
 agent = ToolCallingAgent(tools=[search_tool, weather_tool], llm=llm, verbose=True)
@@ -231,11 +231,11 @@ The ReactAgent provides a detailed reasoning process:
 #### Example 1: Weather and Math Calculations
 
 ```python
-from demogpt_agenthub.tools import DuckDuckGoSearchTool, WeatherTool, PythonTool
+from demogpt_agenthub.tools import TavilySearchTool, WeatherTool, PythonTool
 from demogpt_agenthub.llms import OpenAIChatModel
 from demogpt_agenthub.agents import ReactAgent
 
-search_tool = DuckDuckGoSearchTool()
+search_tool = TavilySearchTool()
 weather_tool = WeatherTool()
 python_tool = PythonTool()
 

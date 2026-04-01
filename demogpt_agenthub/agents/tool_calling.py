@@ -16,6 +16,11 @@ class ToolCallingAgent(BaseAgent):
         decision = self.tool_decider.invoke({"task": prompt, "context": self.context, "tools": formatted_tools})
         self.add_message("Agent", decision["reasoning"])
         self.pretty_print("Reasoning", decision["reasoning"])
+        if decision.get("tool") is None or decision["tool"] not in self.tools:
+            answer = self.final_answer.invoke({"query": prompt, "context": self.context})
+            self.add_message("Agent", answer)
+            self.pretty_print("Answer", answer)
+            return answer
         self.pretty_print("Tool call", decision["tool"])
         tool_call = self.tools[decision["tool"]]
         tool_args = decision["argument"]

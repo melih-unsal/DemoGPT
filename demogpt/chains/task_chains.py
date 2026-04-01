@@ -4,10 +4,10 @@ import re
 from difflib import SequenceMatcher
 
 from langchain.chains import LLMChain
-from langchain_community.chat_models import ChatOpenAI
-from langchain.prompts.chat import (ChatPromptTemplate,
-                                    HumanMessagePromptTemplate,
-                                    SystemMessagePromptTemplate)
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts.chat import (ChatPromptTemplate,
+                                         HumanMessagePromptTemplate,
+                                         SystemMessagePromptTemplate)
 
 from demogpt import utils
 from demogpt.chains import prompts

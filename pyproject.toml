@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "demogpt"
-version = "1.3.2"
+version = "1.3.6"
 description = "Autonomous AI Agent for Gen-AI App Generation "
 authors = ["Melih Unsal <melihunsal.ai@gmail.com>"]
 license = "MIT"
@@ -33,6 +33,13 @@ autopep8 = "*"
 numexpr = "*"
 flake8 = "*"
 langchain-tavily = "*"
+langchain-community = ">=0.3,<1"
+langchain-huggingface = "*"
+langchain-chroma = "*"
+termcolor = "*"
+arxiv = "*"
+youtube-search = "*"
+stackapi = "*"
 wikipedia = "1.4.0"
 pyowm = "3.3.0"
 

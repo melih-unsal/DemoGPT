@@ -19,7 +19,7 @@ class DemoGPT:
     def __init__(
         self,
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
-        model_name="gpt-3.5-turbo-0613",
+        model_name="gpt-4o-mini",
         max_steps=10,
         plan_max_steps = 3,
         openai_api_base="",
@@ -47,6 +47,7 @@ Opt for another model that you have access to and give it another whirl.
 We appreciate your understanding and look forward to seeing what you create! ðŸ˜Š
             """
         self.available_models = self.get_available_models(openai_api_key)
+        self._initLlm()
     
     @classmethod
     def get_available_models(cls, openai_api_key):
@@ -60,10 +61,22 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
             return []
         
         
+    def _initLlm(self):
+        """Initialize LLM chains without model validation."""
+        Chains.setLlm(
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, has_gpt4=self.hasGPT4
+        )
+        TaskChains.setLlm(
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+        )
+        TaskChainsSeperate.setLlm(
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+        )
+
     @property
     def hasGPT4(self):
-        return "gpt-4-0613" in self.available_models
-                
+        return any(m.startswith("gpt-4") for m in self.available_models)
+
     def setModel(self, model_name):
         self.model_name = model_name
         
@@ -214,9 +227,9 @@ We appreciate your understanding and look forward to seeing what you create! ðŸ˜
                     if "16k" in Chains.model:
                         break
                     st.toast(
-                        "To increase the window size, changing model type to gpt-3.5-turbo-16k-0613"
+                        "To increase the window size, changing model type to gpt-4o-mini"
                     )
-                    Chains.setModel("gpt-3.5-turbo-16k-0613")
+                    Chains.setModel("gpt-4o-mini")
             else:
                 break
 
@@ -460,9 +473,9 @@ with st.form(key="form"):
                         if "16k" in Chains.model:
                             break
                         st.toast(
-                            "To increase the window size, changing model type to gpt-3.5-turbo-16k-0613"
+                            "To increase the window size, changing model type to gpt-4o-mini"
                         )
-                        Chains.setModel("gpt-3.5-turbo-16k-0613")
+                        Chains.setModel("gpt-4o-mini")
                 else:
                     break
 

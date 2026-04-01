@@ -1,11 +1,11 @@
 import os
 
 from langchain.chains import LLMChain
-from langchain_community.chat_models import ChatOpenAI
-from langchain.prompts.chat import (AIMessagePromptTemplate,
-                                    ChatPromptTemplate,
-                                    HumanMessagePromptTemplate,
-                                    SystemMessagePromptTemplate)
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts.chat import (AIMessagePromptTemplate,
+                                         ChatPromptTemplate,
+                                         HumanMessagePromptTemplate,
+                                         SystemMessagePromptTemplate)
 from termcolor import colored
 from tqdm import trange
 
