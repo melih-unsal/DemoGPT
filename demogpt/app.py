@@ -2,6 +2,7 @@ import logging
 import os
 import signal
 import sys
+from pathlib import Path
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -15,12 +16,29 @@ sys.path.append(grandparent_directory)
 from model import DemoGPT
 from utils import runStreamlit
 
-try:
-    from dotenv import load_dotenv
 
-    load_dotenv()
-except Exception as e:
-    logging.error("dotenv import error but no needed")
+def load_environment_file() -> None:
+    """Load project .env files from the expected repository and app directories."""
+    try:
+        from dotenv import load_dotenv
+    except Exception:
+        logging.error("dotenv import error but no needed")
+        return
+
+    candidate_paths = [
+        Path(current_directory) / ".env",
+        Path(grandparent_directory) / ".env",
+        Path(current_directory) / "plan" / ".env",
+        Path(parent_directory) / "plan" / ".env",
+    ]
+
+    for path in candidate_paths:
+        if path.is_file():
+            load_dotenv(path)
+
+
+load_environment_file()
+
 
 
 def generate_response(txt):
