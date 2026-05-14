@@ -643,6 +643,186 @@ streamlit run demogpt/app.py
 - [ ] Implement publicly available database to accelerate the generation process by retrieving similar examples during the refining process.
 - [ ] Add all successfully generated steps to a DB to eliminate redundant refinement.
 
+## ❓ Frequently Asked Questions (FAQ)
+
+### What is DemoGPT?
+
+DemoGPT is an open-source LLM Agent framework that provides everything you need to create AI agents with tools, RAG, knowledge graphs, and vector databases. It includes **DemoGPT AgentHub** — a comprehensive library for creating, customizing, and using AI agents with various built-in tools.
+
+### How is DemoGPT different from LangChain or CrewAI?
+
+DemoGPT focuses on **quick agent creation** with:
+- **Pre-built tools** — 12+ built-in tools ready to use (search, weather, Wikipedia, Python, Bash, etc.)
+- **Easy agent creation** — create agents with a few lines of code
+- **RAG integration** — built-in RAG with Chroma, Pinecone, FAISS support
+- **ReactAgent** — detailed reasoning and decision-making process
+- LangChain/CrewAI are more **framework-oriented**, DemoGPT is more **tool-oriented**
+
+### How do I install DemoGPT?
+
+```bash
+pip install demogpt
+```
+
+To run the DemoGPT application:
+```bash
+demogpt
+```
+
+### What is DemoGPT AgentHub?
+
+DemoGPT AgentHub is the core library that provides:
+- **ToolCallingAgent** — agents that use tools to answer questions
+- **ReactAgent** — agents with detailed reasoning and decision process
+- **BaseRAG** — RAG system for document retrieval
+- **Custom Tools** — create your own tools with BaseTool class
+
+### What built-in tools are available?
+
+DemoGPT AgentHub includes 12+ built-in tools:
+- 🔍 **TavilySearchTool** — web search
+- 🌦 **WeatherTool** — weather information
+- 📚 **WikipediaTool** — Wikipedia search
+- 🐚 **BashTool** — shell commands
+- 🐍 **PythonTool** — Python code execution
+- 📄 **ArxivTool** — academic paper search
+- 🎥 **YouTubeSearchTool** — YouTube search
+- 💻 **StackOverFlowTool** — Stack Overflow search
+- 🌐 **RequestUrlTool** — HTTP requests
+- 🗃 **WikiDataTool** — WikiData queries
+- 🏥 **PubmedTool** — PubMed medical literature
+- 📷 **YoloTool** — YOLO object detection
+
+### How do I create a custom tool?
+
+```python
+from demogpt_agenthub.tools import BaseTool
+
+class MyCustomTool(BaseTool):
+    def __init__(self):
+        self.name = "MyCustomTool"
+        self.description = "This tool does something amazing!"
+        super().__init__()
+    
+    def run(self, query):
+        return f"Result for: {query}"
+
+# Use it in an agent
+my_tool = MyCustomTool()
+agent = ToolCallingAgent(tools=[my_tool], llm=llm, verbose=True)
+agent.run("Can you use my custom tool?")
+```
+
+### What is the difference between ToolCallingAgent and ReactAgent?
+
+- **ToolCallingAgent**: Simple agent that uses tools to answer questions
+- **ReactAgent**: Advanced agent with detailed reasoning, decision-making, and multi-step problem solving
+
+### What LLM providers are supported?
+
+DemoGPT supports:
+- **OpenAI** (GPT-4, GPT-4o-mini, etc.)
+- **Anthropic** (Claude models)
+- **Google Gemini**
+- **Local models** via OpenAI-compatible endpoints
+
+Example:
+```python
+from demogpt_agenthub.llms import OpenAIChatModel
+llm = OpenAIChatModel(model_name="gpt-4o-mini")
+```
+
+### How do I use RAG with DemoGPT?
+
+```python
+from demogpt_agenthub.rag import BaseRAG
+from demogpt_agenthub.llms import OpenAIChatModel
+
+rag = BaseRAG(
+    llm=OpenAIChatModel(model_name="gpt-4o-mini"),
+    vectorstore="chroma",  # Supports "chroma", "pinecone", "faiss"
+    persistent_path="rag_chroma",
+    reset_vectorstore=True
+)
+
+# Add documents (PDF, TXT, CSV, JSON)
+rag.add_files(["~/Downloads/document.pdf"])
+
+# Query
+response = rag.run("What is the document about?")
+```
+
+### Can I combine RAG with Agents?
+
+Yes! You can use RAG as a tool in agents:
+```python
+from demogpt_agenthub.agents import ReactAgent
+from demogpt_agenthub.tools import PythonTool
+
+python_tool = PythonTool()
+agent = ReactAgent(
+    tools=[python_tool, rag],  # rag is both a RAG system and a tool
+    llm=OpenAIChatModel(model_name="gpt-4o-mini"),
+    verbose=True
+)
+agent.run("What is the square root of the number mentioned in the document?")
+```
+
+### What vector stores are supported for RAG?
+
+DemoGPT supports:
+- **ChromaDB** — `vectorstore="chroma"`
+- **Pinecone** — `vectorstore="pinecone"`
+- **FAISS** — `vectorstore="faiss"`
+
+### What embedding models are supported?
+
+You can use:
+- **OpenAI embeddings** — default
+- **Sentence Transformers** — `embedding_model_name="sentence-transformers/all-mpnet-base-v2"`
+
+### How do I use YOLO object detection?
+
+```python
+from demogpt_agenthub.tools import YoloTool
+from demogpt_agenthub.agents import ReactAgent
+
+yolo_tool = YoloTool()
+agent = ReactAgent(tools=[yolo_tool], llm=llm, verbose=True)
+agent.run("Give me the objects in the image https://ultralytics.com/images/bus.jpg")
+```
+
+### Is there a web interface?
+
+Yes! Run `demogpt` command to launch the Streamlit web interface. Also available at:
+- **Streamlit Cloud**: [demogpt.streamlit.app](https://demogpt.streamlit.app)
+- **Hugging Face Spaces**: [hf.co/spaces/melihunsal/demogpt](https://huggingface.co/spaces/melihunsal/demogpt)
+
+### Where can I find documentation?
+
+- **Official Website**: [demogpt.io](https://demogpt.io)
+- **Documentation**: [docs.demogpt.io](https://docs.demogpt.io)
+- **Chinese Docs**: [docs/README_CN.md](docs/README_CN.md)
+- **Roadmap**: [docs/ROADMAP.md](docs/ROADMAP.md)
+
+### How can I contribute?
+
+See [Contribute](#-contribute) section and [`CONTRIBUTING`](CONTRIBUTING.md) file for:
+- Code of Conduct
+- PR submission process
+- Development guidelines
+
+### What license does DemoGPT use?
+
+DemoGPT is licensed under [MIT License](LICENSE) — free for personal and commercial use.
+
+### How do I get help?
+
+- **GitHub Issues**: [github.com/melih-unsal/DemoGPT/issues](https://github.com/melih-unsal/DemoGPT/issues)
+- **Twitter**: [@demo_gpt](https://twitter.com/demo_gpt)
+- **Medium**: [demogpt.medium.com](https://demogpt.medium.com/)
+- **Documentation**: [docs.demogpt.io](https://docs.demogpt.io)
+
 ## 🤝 Contribute
 
 Contributions to the DemoGPT project are welcomed! Whether you're fixing bugs, improving the documentation, or proposing new features, your efforts are highly appreciated. Please check the open issues before starting any work.
