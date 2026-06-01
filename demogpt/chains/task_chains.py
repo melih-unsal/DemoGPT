@@ -11,6 +11,7 @@ from langchain_core.prompts.chat import (ChatPromptTemplate,
 
 from demogpt import utils
 from demogpt.chains import prompts
+from demogpt.chains._llm_factory import create_llm
 
 
 class TaskChains:
@@ -23,12 +24,14 @@ class TaskChains:
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
         temperature=0.0,
         openai_api_base=None,
+        provider=None,
     ):
-        cls.llm = ChatOpenAI(
+        cls.llm = create_llm(
             model=model,
-            openai_api_key=openai_api_key,
+            api_key=openai_api_key,
             temperature=temperature,
-            openai_api_base=openai_api_base
+            api_base=openai_api_base,
+            provider=provider,
         )
 
     @classmethod
