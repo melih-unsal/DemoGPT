@@ -23,6 +23,7 @@ class DemoGPT:
         max_steps=10,
         plan_max_steps = 3,
         openai_api_base="",
+        provider=None,
     ):
         assert len(
             openai_api_key.strip()
@@ -32,6 +33,7 @@ class DemoGPT:
         self.max_steps = max_steps  # max iteration for refining the model purpose
         self.plan_max_steps = plan_max_steps # max iteration for refining the plan
         self.openai_api_base = openai_api_base
+        self.provider = provider
         self.FAIL_MESSAGE = """ğŸš€âœ¨ Impressive! While DemoGPT can handle a galaxy of app ideas, 
         you've shot for the stars with a unique one. We're ramping up our engines to meet such visionary requests. 
         Give us a little time, and we'll be right there with you.\n\nğŸ“§
@@ -64,13 +66,13 @@ We appreciate your understanding and look forward to seeing what you create! ğŸ˜
     def _initLlm(self):
         """Initialize LLM chains without model validation."""
         Chains.setLlm(
-            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, has_gpt4=self.hasGPT4
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, has_gpt4=self.hasGPT4, provider=self.provider
         )
         TaskChains.setLlm(
-            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, provider=self.provider
         )
         TaskChainsSeperate.setLlm(
-            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, provider=self.provider
         )
 
     @property
@@ -84,22 +86,13 @@ We appreciate your understanding and look forward to seeing what you create! ğŸ˜
         assert self.model_name in self.available_models , self.gpt4_message.format(model_name=self.model_name)
                 
         Chains.setLlm(
-            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, has_gpt4=self.hasGPT4
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, has_gpt4=self.hasGPT4, provider=self.provider
         )
         TaskChains.setLlm(
-            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, provider=self.provider
         )
         TaskChainsSeperate.setLlm(
-            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
-        )
-        Chains.setLlm(
-            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, has_gpt4=self.hasGPT4
-        )
-        TaskChains.setLlm(
-            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
-        )
-        TaskChainsSeperate.setLlm(
-            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base
+            self.model_name, self.openai_api_key, openai_api_base=self.openai_api_base, provider=self.provider
         )
 
     def __repr__(self) -> str:

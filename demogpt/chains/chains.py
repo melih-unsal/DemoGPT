@@ -12,6 +12,7 @@ from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 
 from demogpt import utils
 from demogpt.chains.task_definitions import getPlanGenHelper, getTasks
+from demogpt.chains._llm_factory import create_llm
 from demogpt.controllers import validate
 
 from . import prompts
@@ -24,6 +25,7 @@ class Chains:
     openai_api_key = ""
     temperature = 0.0
     openai_api_base = None
+    provider = None
 
     @classmethod
     def setLlm(
@@ -32,38 +34,43 @@ class Chains:
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
         temperature=0.0,
         openai_api_base=None,
-        has_gpt4=False
+        has_gpt4=False,
+        provider=None
     ):
         cls.openai_api_key=openai_api_key
         cls.temperature=temperature
         cls.openai_api_base=openai_api_base
         cls.has_gpt4=has_gpt4
-        cls.llm = ChatOpenAI(
+        cls.provider=provider
+        cls.llm = create_llm(
             model=model,
-            openai_api_key=openai_api_key,
+            api_key=openai_api_key,
             temperature=temperature,
-            openai_api_base=openai_api_base
+            api_base=openai_api_base,
+            provider=provider,
         )
         cls.model = model
-    
+
     @classmethod
     def getModel(cls, change=False, temperature=0, change_model="gpt-4o"):
         if change and cls.has_gpt4:
-            return ChatOpenAI(
+            return create_llm(
                 model=change_model,
-                openai_api_key=cls.openai_api_key,
+                api_key=cls.openai_api_key,
                 temperature=temperature,
-                openai_api_base=cls.openai_api_base
-        )
-        
+                api_base=cls.openai_api_base,
+                provider=cls.provider,
+            )
+
         if temperature > 0:
-            return ChatOpenAI(
+            return create_llm(
                 model=cls.model,
-                openai_api_key=cls.openai_api_key,
+                api_key=cls.openai_api_key,
                 temperature=temperature,
-                openai_api_base=cls.openai_api_base
-        )
-        
+                api_base=cls.openai_api_base,
+                provider=cls.provider,
+            )
+
         return cls.llm
         
     @classmethod
